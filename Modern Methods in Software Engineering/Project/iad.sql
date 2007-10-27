@@ -1,16 +1,22 @@
-/*
-MySQL Data Transfer
-Source Host: localhost
-Source Database: iad
-Target Host: localhost
-Target Database: iad
-Date: 2007-10-26 23:59:23
-*/
+# MySQL-Front 3.2  (Build 14.8)
 
-SET FOREIGN_KEY_CHECKS=0;
--- ----------------------------
--- Table structure for campaigns
--- ----------------------------
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='SYSTEM' */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE */;
+/*!40101 SET SQL_MODE='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES */;
+/*!40103 SET SQL_NOTES='ON' */;
+
+
+# Host: localhost    Database: iad
+# ------------------------------------------------------
+# Server version 5.0.45-community-nt
+
+#
+# Table structure for table campaigns
+#
+
+DROP TABLE IF EXISTS `campaigns`;
 CREATE TABLE `campaigns` (
   `id` int(11) NOT NULL auto_increment,
   `start_date` datetime default NULL,
@@ -18,84 +24,153 @@ CREATE TABLE `campaigns` (
   `client_id` int(11) default NULL,
   `director_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `f_client_id` (`client_id`),
-  KEY `f_director_id` (`director_id`),
-  CONSTRAINT `campaigns_ibfk_1` FOREIGN KEY (`director_id`) REFERENCES `directors` (`id`),
-  CONSTRAINT `campaigns_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `client_id` (`client_id`),
+  KEY `director_id` (`director_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for campaigns_staffs
--- ----------------------------
+#
+# Dumping data for table campaigns
+#
+
+
+#
+# Table structure for table campaigns_staffs
+#
+
+DROP TABLE IF EXISTS `campaigns_staffs`;
 CREATE TABLE `campaigns_staffs` (
   `id` int(11) NOT NULL auto_increment,
   `campaign_id` int(11) default NULL,
   `staff_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `f_campaign_id` (`campaign_id`),
-  KEY `staff_id` (`staff_id`),
-  CONSTRAINT `campaigns_staffs_ibfk_2` FOREIGN KEY (`staff_id`) REFERENCES `staffs` (`id`),
-  CONSTRAINT `campaigns_staffs_ibfk_1` FOREIGN KEY (`campaign_id`) REFERENCES `campaigns` (`id`)
+  KEY `campaign_id` (`campaign_id`),
+  KEY `staff_id` (`staff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for clients
--- ----------------------------
+#
+# Dumping data for table campaigns_staffs
+#
+
+
+#
+# Table structure for table clients
+#
+
+DROP TABLE IF EXISTS `clients`;
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL auto_increment,
-  `client_number` varchar(255) default NULL,
-  `password` varchar(255) default NULL,
-  `company` varchar(255) default NULL,
-  `email` varchar(255) default NULL,
-  `telephone` varchar(255) default NULL,
+  `username` varchar(11) default NULL,
+  `password` varchar(11) default NULL,
+  `name` varchar(50) default NULL,
+  `company` varchar(80) default NULL,
   `address` varchar(255) default NULL,
+  `telephone` varchar(15) default NULL,
+  `email` varchar(25) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for directors
--- ----------------------------
+#
+# Dumping data for table clients
+#
+
+
+#
+# Table structure for table directors
+#
+
+DROP TABLE IF EXISTS `directors`;
 CREATE TABLE `directors` (
   `id` int(11) NOT NULL auto_increment,
-  `director_number` varchar(255) default NULL,
-  `password` varchar(255) default NULL,
-  `name` varchar(255) default NULL,
-  `telephone` varchar(255) default NULL,
-  `e-mail` varchar(255) default NULL,
+  `username` varchar(11) default NULL,
+  `password` varchar(11) default NULL,
+  `name` varchar(50) default NULL,
+  `telephone` varchar(15) default NULL,
+  `email` varchar(25) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for notes
--- ----------------------------
+#
+# Dumping data for table directors
+#
+
+
+#
+# Table structure for table notes
+#
+
+DROP TABLE IF EXISTS `notes`;
 CREATE TABLE `notes` (
   `id` int(11) NOT NULL auto_increment,
-  `target_director_id` int(11) default NULL,
   `source_director_id` int(11) default NULL,
+  `target_director_id` int(11) default NULL,
   `staff_id` int(11) default NULL,
-  `acknowledgement` int(11) default '0' COMMENT '0=no ack, 1=ack',
+  `acknowledge` tinyint(1) default '0',
   PRIMARY KEY  (`id`),
-  CONSTRAINT `notes_ibfk_1` FOREIGN KEY (`id`) REFERENCES `staffs` (`id`),
-  CONSTRAINT `notes_ibfk_2` FOREIGN KEY (`id`) REFERENCES `directors` (`id`),
-  CONSTRAINT `notes_ibfk_3` FOREIGN KEY (`id`) REFERENCES `directors` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `source_director_id` (`source_director_id`),
+  KEY `target_director_id` (`target_director_id`),
+  KEY `staff_id` (`staff_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for staffs
--- ----------------------------
+#
+# Dumping data for table notes
+#
+
+
+#
+# Table structure for table staffs
+#
+
+DROP TABLE IF EXISTS `staffs`;
 CREATE TABLE `staffs` (
   `id` int(11) NOT NULL auto_increment,
-  `stuff_number` varchar(255) default NULL,
-  `password` varchar(255) default NULL,
-  `name` varchar(255) default NULL,
-  `telephone` varchar(255) default NULL,
-  `e-mail` varchar(255) default NULL,
+  `username` varchar(11) default NULL,
+  `password` varchar(11) default NULL,
+  `name` varchar(50) default NULL,
+  `telephone` varchar(15) default NULL,
+  `email` varchar(25) default NULL,
   `director_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `f_s_d_id` (`director_id`),
-  CONSTRAINT `f_s_d_id` FOREIGN KEY (`director_id`) REFERENCES `directors` (`id`)
+  KEY `director_id` (`director_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Records 
--- ----------------------------
+#
+# Dumping data for table staffs
+#
+
+
+#
+#  Foreign keys for table campaigns
+#
+
+ALTER TABLE `campaigns`
+  ADD FOREIGN KEY (`director_id`) REFERENCES `directors` (`id`),
+  ADD FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`);
+
+#
+#  Foreign keys for table campaigns_staffs
+#
+
+ALTER TABLE `campaigns_staffs`
+  ADD FOREIGN KEY (`staff_id`) REFERENCES `staffs` (`id`),
+  ADD FOREIGN KEY (`campaign_id`) REFERENCES `campaigns` (`id`);
+
+#
+#  Foreign keys for table notes
+#
+
+ALTER TABLE `notes`
+  ADD FOREIGN KEY (`source_director_id`) REFERENCES `directors` (`id`),
+  ADD FOREIGN KEY (`target_director_id`) REFERENCES `directors` (`id`),
+  ADD FOREIGN KEY (`staff_id`) REFERENCES `staffs` (`id`);
+
+#
+#  Foreign keys for table staffs
+#
+
+ALTER TABLE `staffs`
+  ADD FOREIGN KEY (`director_id`) REFERENCES `directors` (`id`);
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
