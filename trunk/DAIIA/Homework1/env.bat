@@ -1,0 +1,2 @@
+set JADE_HOME=D:\JADE-all-3.5\JADE-bin-3.5\jade\lib
+set CLASSPATH=%CLASSPATH%;.;%JADE_HOME%\http.jar;%JADE_HOME%\iiop.jar;%JADE_HOME%\jade.jar;%JADE_HOME%\jadeTools.jar;%JADE_HOME%\commons-codec\commons-codec-1.3.jar
