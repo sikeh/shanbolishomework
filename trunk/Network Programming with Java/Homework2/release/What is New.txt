@@ -1,0 +1,13 @@
+
+What is new?
+
+1. same client can login from different GUI with account and balance associated.
+2. add disable/enable to buttons
+3. pre-condition illegal input before do functions
+4. bugs fix.
+
+Shanbo Li
+
+19/11/2007
+
+ 
