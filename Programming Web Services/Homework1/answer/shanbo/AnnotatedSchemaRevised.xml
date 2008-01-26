@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 2 U (http://www.xmlspy.com) by John (NJU) -->
+<xs:schema xmlns="http://www.ibm.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ibm.com" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>                          Resume Schema Definition V1.1</xs:documentation>
+	</xs:annotation>
+	<xs:element name="Resume">
+		<xs:annotation>
+			<xs:documentation>It describes a resume or CV of a candidate being submitted for the job positions. It specifies a candidate's contact information, his objectives, education history, language capability, experience, qualifications and professional associations. At the end, there can be a brief summary.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ContactInfo" type="ContactInfoType"/>
+				<xs:element name="Objectives">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Objective" type="ObjectiveType" maxOccurs="4"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="EducationHistory">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Education" type="EducationType" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Languages" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Language" type="LanguageType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Experience" type="ExperienceType" minOccurs="0"/>
+				<xs:element name="Qualifications" type="QualificationType" minOccurs="0"/>
+				<xs:element name="ProfessionalAssociations" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ProfessionalAssociation" type="ProfessionalAssociationType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Summary" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="1024"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:key name="PublicationTitleKey">
+			<xs:selector xpath="Qualifications/Publication/*"/>
+			<xs:field xpath="PublicationTitle"/>
+		</xs:key>
+		<xs:key name="PatentNameKey">
+			<xs:selector xpath="Qualifications/Patent"/>
+			<xs:field xpath="PatentName"/>
+		</xs:key>
+		<xs:key name="CertificationTitleKey">
+			<xs:selector xpath="Qualifications/Certification"/>
+			<xs:field xpath="CertificationTitle"/>
+		</xs:key>
+		<xs:key name="AwardNameKey">
+			<xs:selector xpath="Qualifications/Award"/>
+			<xs:field xpath="AwardName"/>
+		</xs:key>
+		<xs:key name="SpecialityNameKey">
+			<xs:selector xpath="Qualifications/Speciality"/>
+			<xs:field xpath="SpecialityName"/>
+		</xs:key>
+		<xs:keyref name="PublicationTitleKeyRef" refer="PublicationTitleKey">
+			<xs:selector xpath=".//QualificationReference"/>
+			<xs:field xpath="PublicationRef"/>
+		</xs:keyref>
+		<xs:keyref name="PatentNameKeyRef" refer="PatentNameKey">
+			<xs:selector xpath=".//QualificationReference"/>
+			<xs:field xpath="PatentRef"/>
+		</xs:keyref>
+		<xs:keyref name="CertificationTitleKeyRef" refer="CertificationTitleKey">
+			<xs:selector xpath=".//QualificationReference"/>
+			<xs:field xpath="CertificationRef"/>
+		</xs:keyref>
+		<xs:keyref name="AwardNameKeyRef" refer="AwardNameKey">
+			<xs:selector xpath=".//QualificationReference"/>
+			<xs:field xpath="AwardRef"/>
+		</xs:keyref>
+		<xs:keyref name="SpecialityNameKeyRef" refer="SpecialityNameKey">
+			<xs:selector xpath=".//QualificationReference"/>
+			<xs:field xpath="SpecialityRef"/>
+		</xs:keyref>
+	</xs:element>
+	<!-- =====================Contact Info Definition========================-->
+	<xs:complexType name="ContactInfoType">
+		<xs:annotation>
+			<xs:documentation>It specifies the information to contact a person or an organization, including the person name, and his contact methods, such as phones, fax, emails, postal address, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PersonName" type="PersonNameType"/>
+			<xs:element name="ContactMethod" type="ContactMethodType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PersonNameType">
+		<xs:annotation>
+			<xs:documentation>It is person name information, including the given name, family name and optional middle name. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="GivenName" type="NameType"/>
+			<xs:element name="MiddleName" type="NameType" minOccurs="0"/>
+			<xs:element name="FamilyName" type="NameType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactMethodType">
+		<xs:annotation>
+			<xs:documentation>It defines the methods to contact a person or an organization. It includes phones, fax, pager, emails, web site and postal address. A noticeable thing is that the first email in sequence is regarded as the main email address, and the second one, if existing, acts as a backup email</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Phone" type="PhoneNumberType" maxOccurs="3"/>
+			<xs:element name="Fax" type="PhoneNumberType" minOccurs="0"/>
+			<xs:element name="InternetEmailAddress" type="InternetEmailAddressType" maxOccurs="2"/>
+			<xs:element name="InternetWebAddress" type="InternetWebAddressType" minOccurs="0"/>
+			<xs:element name="Postal" type="PostalType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PostalType">
+		<xs:sequence>
+			<xs:element name="PostalAddress">
+				<xs:simpleType>
+					<xs:restriction base="PostalAddressType"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PostalCode" type="PostalCodeType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="PostalAddressType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="256"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PostalCodeType">
+		<xs:annotation>
+			<xs:documentation>Postal code is consist of 6 digits,  and starts with non-zero digit.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[1-9][0-9]{5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="InternetEmailAddressType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="128"/>
+			<xs:pattern value="[^@]+@[^.]+\..+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="InternetWebAddressType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="128"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PhoneNumberType">
+		<xs:annotation>
+			<xs:documentation>It specifies a phone number, including its area city code, subscriber number and extension number. And there is a required type to specify the phone purpose, such as home, office or mobile.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AreaCityCode" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="6"/>
+						<xs:pattern value="[\d]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SubscriberNumber">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="12"/>
+						<xs:pattern value="[\d]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Extension" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="8"/>
+						<xs:pattern value="[\d]*"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="type" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Home"/>
+					<xs:enumeration value="Office"/>
+					<xs:enumeration value="Mobile"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- =====================End of Contact Info Definition=================  -->
+	<!-- =====================Objective Definition============================  -->
+	<xs:simpleType name="ObjectiveType">
+		<xs:annotation>
+			<xs:documentation>It specifies a candidate's objective. It is an union of the ObjectiveEnumType and the NameType. Its value can be either an item defined in the ObjectiveEnumType, or a piece of objective description that conforms to the NameType.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="ObjectiveEnumType NameType"/>
+	</xs:simpleType>
+	<xs:simpleType name="ObjectiveEnumType">
+		<xs:annotation>
+			<xs:documentation>It is an enumeration of the currently available job positions in IBM China Research Lab and IBM China Development Lab. A candidate can get the detailed job positions in User Guide, or write your own objectives.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CRL-Business Transformation Solution"/>
+			<xs:enumeration value="CRL-Supply Chain and Logistics Management Research"/>
+			<xs:enumeration value="CRL-Management Science and Operations Research"/>
+			<xs:enumeration value="CRL-User Paradigm Research"/>
+			<xs:enumeration value="CRL-Distributed Computing"/>
+			<xs:enumeration value="CRL-Data Management"/>
+			<xs:enumeration value="CRL-Internet Media"/>
+			<xs:enumeration value="CRL-Embedded System Design"/>
+			<xs:enumeration value="CRL-Knowledge Representation and Reasoning"/>
+			<xs:enumeration value="CRL-Mobile Messaging"/>
+			<xs:enumeration value="CRL-Wireless Applications and Solutions"/>
+			<xs:enumeration value="CRL-Home/Office Automation"/>
+			<xs:enumeration value="CRL-Speech Technology"/>
+			<xs:enumeration value="CDL-Pervasive Computing"/>
+			<xs:enumeration value="CDL-Web Platform and Applications"/>
+			<xs:enumeration value="CDL-Tivoli Development"/>
+			<xs:enumeration value="CDL-Linux Development, Cluster And Grid Computing"/>
+			<xs:enumeration value="CDL-Speech Development"/>
+			<xs:enumeration value="CDL-Middleware and Systems Development"/>
+			<xs:enumeration value="CDL-eBusiness"/>
+			<xs:enumeration value="CDL-Banking System Development"/>
+			<xs:enumeration value="CDL-Lotus Software Testing"/>
+			<xs:enumeration value="CDL-eCommerce testing and Linux development"/>
+			<xs:enumeration value="CDL-e-Commerce Development"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- =====================End of Objective Definition=====================  -->
+	<!-- =====================Education History ===========================-->
+	<xs:complexType name="EducationType">
+		<xs:annotation>
+			<xs:documentation>It describes a piece of education experience, including the school name, the degree name and major information. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SchoolName" type="NameType"/>
+			<xs:element name="Degree" type="DegreeType"/>
+			<xs:element name="Major" type="MajorType"/>
+			<xs:element name="DissertationName" type="NameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The name of the degree dissertation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="QualificationReference" type="QualificationReferenceType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Here to list the qualifications that are achieved during the education experience. They refer to qualifications specified in the Qualifications dimension.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="MajorType">
+		<xs:annotation>
+			<xs:documentation>It describes the major of a formal education degree. It is the union of the MajorEnumType and the NameType. So its value can be an item listed in the MajorEnumType, or a customized value conforming to the NameType.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="MajorEnumType NameType"/>
+	</xs:simpleType>
+	<xs:simpleType name="MajorEnumType">
+		<xs:annotation>
+			<xs:documentation>It lists several major names, including CS, EE, Math, Automation, Information, Physics, and so on.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Computer Science"/>
+			<xs:enumeration value="Electronic Engineering"/>
+			<xs:enumeration value="Math"/>
+			<xs:enumeration value="Information"/>
+			<xs:enumeration value="Physics"/>
+			<xs:enumeration value="Automation"/>
+			<xs:enumeration value="Psychology"/>
+			<xs:enumeration value="Behavioral Science"/>
+			<xs:enumeration value="Recognition"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="DegreeType">
+		<xs:annotation>
+			<xs:documentation>It describes a degree, including its name and granted date.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DegreeName">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Doctor"/>
+						<xs:enumeration value="Master"/>
+						<xs:enumeration value="Bachelor"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="DegreeDate" type="FlexibleDates"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ===================End of Education History =======================-->
+	<!-- =====================Language Definition =========================-->
+	<xs:complexType name="LanguageType">
+		<xs:annotation>
+			<xs:documentation>It describes a candidate's information about a kind of language, including the language name, his level, and references to corresponding language qualifications.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LanguageName" type="LanguageNameType"/>
+			<xs:element name="Level" type="SkillLevelType">
+				<xs:annotation>
+					<xs:documentation>Here is a candidate's self-assessment of his language level.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="QualificationReference" type="QualificationReferenceType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>It refers to specified qualifications, which could demonstrates a candidate's language capability.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="LanguageNameType">
+		<xs:annotation>
+			<xs:documentation>It specifies the name of a language. It is an union of LanguageNameEnumType and NameType, so its value can be selected from the enumeration, or a customized value conforming to the NameType.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="LanguageNameEnumType NameType"/>
+	</xs:simpleType>
+	<xs:simpleType name="LanguageNameEnumType">
+		<xs:annotation>
+			<xs:documentation>It enumerates several language names.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="English"/>
+			<xs:enumeration value="French"/>
+			<xs:enumeration value="German"/>
+			<xs:enumeration value="Russian"/>
+			<xs:enumeration value="Spanish"/>
+			<xs:enumeration value="Japanese"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ==================End of Language Definition ======================-->
+	<!-- =====================Experience Definition==========================-->
+	<xs:complexType name="ExperienceType">
+		<xs:annotation>
+			<xs:documentation>It describes a candidate's experience, including his project experience, employment history, professional training and social activity experience. It should be noticed that there are two special elements in every experience, one is the DemonstratedSkills and the other is the QualificationReference. The DemonstratedSkills is used to specify what skills are demonstrated (applied in or acquired from) during the experience, and the QualificationReference is used to specify the qualifications which could prove your success during the experience. An important state is that the value of the QualificationReference element must refer to an item you inputted in the Qualifications dimension.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Project" type="ProjectType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Employment" type="EmploymentType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ProfessionalTraining" type="ProfessionalTrainingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="SocialActivity" type="SocialActivityType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProfessionalTrainingType">
+		<xs:annotation>
+			<xs:documentation>It describes a professional training, such as the training name, provider, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TrainingName" type="NameType"/>
+			<xs:element name="TrainingProvider" type="NameType"/>
+			<xs:element name="TrainingSite" type="NameType" minOccurs="0"/>
+			<xs:element name="Duration" type="DurationType"/>
+			<xs:element name="DemonstratedSkills" type="DemonstratedSkillsType" minOccurs="0"/>
+			<xs:element name="QualificationReference" type="QualificationReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EmploymentType">
+		<xs:annotation>
+			<xs:documentation>It describes a candidate's employment experience in one unit. Except the employer information, there are positions a candidate have held in the unit.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EmployerInfo" type="EmployerInfoType"/>
+			<xs:element name="Position" type="PositionType" maxOccurs="unbounded"/>
+			<xs:element name="ReferencePerson" type="ContactInfoType" minOccurs="0"/>
+			<xs:element name="ReasonToLeave" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="TextDescriptionType">
+						<xs:maxLength value="256"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProjectType">
+		<xs:annotation>
+			<xs:documentation>It describes a candidate's experience in a project. There is a required attribute isResearchProject to specify whether the project is a research project or not. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ProjectName" type="NameType"/>
+			<xs:element name="ProjectDescription" type="TextDescriptionType"/>
+			<xs:element name="ProjectKeyword" minOccurs="0" maxOccurs="6">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="16"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Sponsor" type="NameType" minOccurs="0"/>
+			<xs:element name="PersonMonthScale" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="RoleInProject" type="RoleType" maxOccurs="unbounded"/>
+			<xs:element name="Duration" type="DurationType"/>
+			<xs:element name="PersonalContributionDescription" type="TextDescriptionType" minOccurs="0"/>
+			<xs:element name="ReferencePerson" type="ContactInfoType" minOccurs="0"/>
+			<xs:element name="DemonstratedSkills" type="DemonstratedSkillsType" minOccurs="0"/>
+			<xs:element name="QualificationReference" type="QualificationReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="isResearchProject" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="SocialActivityType">
+		<xs:annotation>
+			<xs:documentation>It describes a social activity, including a brief description, time duration, played roles etc.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ActivityDescription">
+				<xs:simpleType>
+					<xs:restriction base="TextDescriptionType">
+						<xs:maxLength value="256"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Duration" type="DurationType"/>
+			<xs:element name="Role" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="32"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="DemonstratedSkills" type="DemonstratedSkillsType" minOccurs="0"/>
+			<xs:element name="QualificationReference" type="QualificationReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EmployerInfoType">
+		<xs:annotation>
+			<xs:documentation>It describes information of an employer.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EmployerOrgName" type="NameType"/>
+			<xs:element name="OrgSize" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>It means the number of employee of the position organization.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="OrgLocationCity" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="32"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="WebSite" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="InternetWebAddressType"/>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PositionType">
+		<xs:annotation>
+			<xs:documentation>It describes a position that a candidate has held in the position organization.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Title" type="NameType"/>
+			<xs:element name="Department" type="NameType" minOccurs="0"/>
+			<xs:element name="ContributionDescription" type="TextDescriptionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Here to brief introduce a candidate's contribution and achievement in the position.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Duration" type="DurationType"/>
+			<xs:element name="DemonstratedSkills" type="DemonstratedSkillsType" minOccurs="0"/>
+			<xs:element name="QualificationReference" type="QualificationReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="QualificationReferenceType">
+		<xs:annotation>
+			<xs:documentation>It defines how to refer to the specified qualifications in the Qualification dimension. Consistent with the Qualification definition, here are five choice of reference.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="AwardRef" type="NameType">
+				<xs:annotation>
+					<xs:documentation>It refers to the AwardName in the Qualification/Award.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CertificationRef" type="NameType">
+				<xs:annotation>
+					<xs:documentation>It refers to the CertificationTitle in the Qualification/Certification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PatentRef" type="NameType">
+				<xs:annotation>
+					<xs:documentation>It refers to the PatentName in the Qualification/Patent.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PublicationRef" type="NameType">
+				<xs:annotation>
+					<xs:documentation>It refers to the PublicationTitle in the Qualification/Publication.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SpecialityRef" type="NameType">
+				<xs:annotation>
+					<xs:documentation>It refers to the SpecialityTitle in the Qualification/Speciality.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:simpleType name="RoleType">
+		<xs:annotation>
+			<xs:documentation>It specifies a candidate's role in a project. It is the union of the RoleEnumType and NameType. A valid value can be either an item from the predefined RoleEnumType enumeration, or a customized value conforming to the NameType.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="RoleEnumType NameType"/>
+	</xs:simpleType>
+	<xs:simpleType name="RoleEnumType">
+		<xs:annotation>
+			<xs:documentation>It defines several common roles, such as Manager, Architect, Analyzer, Designer, Coder and Tester.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Manager"/>
+			<xs:enumeration value="Architect"/>
+			<xs:enumeration value="Designer"/>
+			<xs:enumeration value="Tester"/>
+			<xs:enumeration value="Coder"/>
+			<xs:enumeration value="Analyzer"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- =====================End of Experience Definition===================-->
+	<!-- =====================Qualification Defintion===================  -->
+	<xs:complexType name="QualificationType">
+		<xs:annotation>
+			<xs:documentation>It specifies a candidate's qualifications, which can demonstrate one's capability. It is result-oriented, including publication, patent, certification, award and speciality.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Publication" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Publication is divided into journal publication, conference publication and book.  So for each publication, a candidate could select the content model and input corresponding information.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="JournalPublication" type="JournalPublicationType"/>
+						<xs:element name="ConferencePublication" type="ConferencePublicationType"/>
+						<xs:element name="Book" type="BookType"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Patent" type="PatentType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Certification" type="CertificationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Award" type="AwardType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Speciality" type="SpecialityType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PatentType">
+		<xs:annotation>
+			<xs:documentation>it specifies the information of a patent, such as the patent name and number, filed date. At the end, a candidate could state his personal contribution for the patent.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PatentName" type="NameType"/>
+			<xs:element name="PatentNo">
+				<xs:annotation>
+					<xs:documentation>The patent SN number, such as U.S., Patent 1,000,000</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="32"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="FiledDate" type="FlexibleDates"/>
+			<xs:element name="PersonalContributionDescription" type="TextDescriptionType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AwardType">
+		<xs:annotation>
+			<xs:documentation>It describes the information of an award.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AwardName" type="NameType"/>
+			<xs:element name="Level" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>It specifies the award level, such as First Class</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="16"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AwardGrantor" type="NameType" minOccurs="0"/>
+			<xs:element name="AwardedDate" type="FlexibleDates"/>
+			<xs:element name="ReasonToBeAwarded" type="TextDescriptionType" minOccurs="0"/>
+			<xs:element name="PersonalContributionDescription" type="TextDescriptionType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CertificationType">
+		<xs:annotation>
+			<xs:documentation>It describes all kinds of certifications, including professional certification and language certification, such as IBM AIX Certification and TOFEL.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CertificationTitle" type="NameType"/>
+			<xs:element name="CertificationGrantor" type="NameType"/>
+			<xs:element name="CertifiedDate" type="FlexibleDates"/>
+			<xs:element name="Score" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Some certifications have score, for example, the score of a TOFEL can be 630, and the score of an IBM AIX certification can be excellent.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="16"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="DemonstratedSkills" type="DemonstratedSkillsType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SpecialityType">
+		<xs:annotation>
+			<xs:documentation>Speciality means your strong suits, such as music, sports, etc</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SpecialityName" type="NameType"/>
+			<xs:element name="SpecialityDescription" type="TextDescriptionType">
+				<xs:annotation>
+					<xs:documentation>It is a brief description of a candidate's capability of the speciality.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PublicationType">
+		<xs:annotation>
+			<xs:documentation>It specifies the common information of a publication, such as a title, publish date, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PublicationTitle" type="NameType"/>
+			<xs:element name="PublishDate" type="FlexibleDates"/>
+			<xs:element name="AuthorOrder">
+				<xs:annotation>
+					<xs:documentation>It is the candidate's order in the publication's authors list.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="3"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="PersonalContributionDescription" type="TextDescriptionType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="JournalPublicationType">
+		<xs:annotation>
+			<xs:documentation>It describes a journal publication information. It extends from the PublicationType by adding the journal name and journal volume information.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PublicationType">
+				<xs:sequence>
+					<xs:element name="JournalName" type="NameType"/>
+					<xs:element name="JournalVolume" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>It describes in which volume the journal publication is, it can also include the page number. For example, its value can be Vol.26, No.1, pp.55-69.</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:maxLength value="32"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ConferencePublicationType">
+		<xs:annotation>
+			<xs:documentation>It describes a conference publication. It extends the PublicationType by adding the conference name and conference sponsors.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PublicationType">
+				<xs:sequence>
+					<xs:element name="ConferenceName" type="NameType"/>
+					<xs:element name="ConferenceSponsor" type="NameType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BookType">
+		<xs:annotation>
+			<xs:documentation>It describes the information of a book. It reuses the PublicationType.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PublicationType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- =====================End of Qualification Definition===========-->
+	<!-- =====================Professional Association Definition============-->
+	<xs:complexType name="ProfessionalAssociationType">
+		<xs:annotation>
+			<xs:documentation>It describes a professional association with which a candidate maintains a membership.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Association" type="NameType">
+				<xs:annotation>
+					<xs:documentation>The name of an association, such as ACM, IEEE</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Membership" type="NameType">
+				<xs:annotation>
+					<xs:documentation>It describes a candidate's membership to the association, such as member, fellow, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ===============End of Professional Association Definition===========-->
+	<!--  -->
+	<xs:simpleType name="NameType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="128"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TextDescriptionType">
+		<xs:annotation>
+			<xs:documentation>Usually it is used to describe various description, such as personal contribution description, etc.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="512"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<!-- =====================Skill Definition===============================-->
+	<xs:complexType name="DemonstratedSkillsType">
+		<xs:annotation>
+			<xs:documentation>It specified skills demonstrated in a piece of experience, or a qualification. It includes both technical skills and non technical skills. For example, in a piece of project experience, both programming skill(technical) and leadership skill(non-technical) are demonstrated.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TechnicalSkill" type="TechSkillType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="NonTechnicalSkill" type="NonTechSkillType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Such as Communication, Leadership, and so on</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TechSkillType">
+		<xs:sequence>
+			<xs:element name="SkillName">
+				<xs:simpleType>
+					<xs:union memberTypes="TechSkillEnumType NameType"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SkillLevel" type="SkillLevelType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NonTechSkillType">
+		<xs:sequence>
+			<xs:element name="SkillName" type="NameType"/>
+			<xs:element name="SkillLevel" type="SkillLevelType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="TechSkillEnumType">
+		<xs:annotation>
+			<xs:documentation>It enumerates some common used skill terms. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="3G"/>
+			<xs:enumeration value="802.11b"/>
+			<xs:enumeration value="Access"/>
+			<xs:enumeration value="ActiveX"/>
+			<xs:enumeration value="Ad-hoc Network"/>
+			<xs:enumeration value="Agent"/>
+			<xs:enumeration value="AIX"/>
+			<xs:enumeration value="Anti-SPAM"/>
+			<xs:enumeration value="Apache"/>
+			<xs:enumeration value="Applet"/>
+			<xs:enumeration value="Architecture"/>
+			<xs:enumeration value="ASIC/SoC"/>
+			<xs:enumeration value="ASP"/>
+			<xs:enumeration value="Assemble Language"/>
+			<xs:enumeration value="ATM"/>
+			<xs:enumeration value="Audio"/>
+			<xs:enumeration value="Automatic Machine"/>
+			<xs:enumeration value="Autonomic Computing"/>
+			<xs:enumeration value="A/D"/>
+			<xs:enumeration value="Behavioral Science"/>
+			<xs:enumeration value="Basic"/>
+			<xs:enumeration value="Blue Tooth"/>
+			<xs:enumeration value="Browser"/>
+			<xs:enumeration value="Browser-Server"/>
+			<xs:enumeration value="Business Operations"/>
+			<xs:enumeration value="Business Process Integration and Management"/>
+			<xs:enumeration value="C"/>
+			<xs:enumeration value="C Sharp"/>
+			<xs:enumeration value="CA"/>
+			<xs:enumeration value="CAD"/>
+			<xs:enumeration value="CAM"/>
+			<xs:enumeration value="CDMA"/>
+			<xs:enumeration value="CGI"/>
+			<xs:enumeration value="CIM"/>
+			<xs:enumeration value="CIMS"/>
+			<xs:enumeration value="Client-Server"/>
+			<xs:enumeration value="CMM"/>
+			<xs:enumeration value="Cobal"/>
+			<xs:enumeration value="Coding"/>
+			<xs:enumeration value="CodeFusion"/>
+			<xs:enumeration value="Cognitive Science"/>
+			<xs:enumeration value="COM"/>
+			<xs:enumeration value="Computing Mathematics"/>
+			<xs:enumeration value="Configure Management"/>
+			<xs:enumeration value="Consulting"/>
+			<xs:enumeration value="Corba"/>
+			<xs:enumeration value="CPLD"/>
+			<xs:enumeration value="CRM"/>
+			<xs:enumeration value="CSCW"/>
+			<xs:enumeration value="C++ Builder"/>
+			<xs:enumeration value="C++"/>
+			<xs:enumeration value="D3D"/>
+			<xs:enumeration value="Data Compression"/>
+			<xs:enumeration value="Data Mining"/>
+			<xs:enumeration value="Data Warehousing/OLAP"/>
+			<xs:enumeration value="Database"/>
+			<xs:enumeration value="DB2"/>
+			<xs:enumeration value="DC-DC Converter"/>
+			<xs:enumeration value="DCOM"/>
+			<xs:enumeration value="Delphi"/>
+			<xs:enumeration value="DES"/>
+			<xs:enumeration value="Design Pattern"/>
+			<xs:enumeration value="Detail Design"/>
+			<xs:enumeration value="DHTML"/>
+			<xs:enumeration value="Digital Signal Processing"/>
+			<xs:enumeration value="DirectX"/>
+			<xs:enumeration value="Distributed Computing"/>
+			<xs:enumeration value="DNS"/>
+			<xs:enumeration value="DRAM"/>
+			<xs:enumeration value="DreamWaver"/>
+			<xs:enumeration value="DSound"/>
+			<xs:enumeration value="DSP"/>
+			<xs:enumeration value="D/A"/>
+			<xs:enumeration value="e-Banking"/>
+			<xs:enumeration value="e-Commerce"/>
+			<xs:enumeration value="e-Education"/>
+			<xs:enumeration value="e-Government"/>
+			<xs:enumeration value="EAI"/>
+			<xs:enumeration value="Eclipse"/>
+			<xs:enumeration value="EDI"/>
+			<xs:enumeration value="Embedded Linux Software"/>
+			<xs:enumeration value="Embedded System"/>
+			<xs:enumeration value="EJB"/>
+			<xs:enumeration value="Encryption"/>
+			<xs:enumeration value="EPLD"/>
+			<xs:enumeration value="ERP"/>
+			<xs:enumeration value="File Management"/>
+			<xs:enumeration value="Firewall"/>
+			<xs:enumeration value="Fortran"/>
+			<xs:enumeration value="Foxpro"/>
+			<xs:enumeration value="FPGA"/>
+			<xs:enumeration value="FreeBSD"/>
+			<xs:enumeration value="FTP"/>
+			<xs:enumeration value="Graph Theory"/>
+			<xs:enumeration value="Grid"/>
+			<xs:enumeration value="GSM"/>
+			<xs:enumeration value="HP-UX"/>
+			<xs:enumeration value="Hosting Service"/>
+			<xs:enumeration value="HTML"/>
+			<xs:enumeration value="HTTP(s)"/>
+			<xs:enumeration value="Human Computer Interaction/User Study"/>
+			<xs:enumeration value="IBM IHS"/>
+			<xs:enumeration value="IBM pSeries"/>
+			<xs:enumeration value="IBM iSeries"/>
+			<xs:enumeration value="IBM zSeries"/>
+			<xs:enumeration value="Industrial Engineering"/>
+			<xs:enumeration value="Image"/>
+			<xs:enumeration value="Informix"/>
+			<xs:enumeration value="Intelligent Information Integration"/>
+			<xs:enumeration value="IPv6"/>
+			<xs:enumeration value="ISA/PCI"/>
+			<xs:enumeration value="ISO"/>
+			<xs:enumeration value="IO Management"/>
+			<xs:enumeration value="iPlanet"/>
+			<xs:enumeration value="IVR"/>
+			<xs:enumeration value="J2EE"/>
+			<xs:enumeration value="J2ME"/>
+			<xs:enumeration value="Java ME"/>
+			<xs:enumeration value="Java EE"/>
+			<xs:enumeration value="Java SE"/>
+			<xs:enumeration value="Java"/>
+			<xs:enumeration value="JavaScript"/>
+			<xs:enumeration value="JavaBean"/>
+			<xs:enumeration value="JBuilder"/>
+			<xs:enumeration value="JDBC"/>
+			<xs:enumeration value="JSP"/>
+			<xs:enumeration value="Knowledge Management"/>
+			<xs:enumeration value="LAN"/>
+			<xs:enumeration value="LDAP"/>
+			<xs:enumeration value="Linux"/>
+			<xs:enumeration value="Lisp"/>
+			<xs:enumeration value="Lotus Domino"/>
+			<xs:enumeration value="LotusScript"/>
+			<xs:enumeration value="Machine Learning"/>
+			<xs:enumeration value="Machine Translation"/>
+			<xs:enumeration value="Management Science"/>
+			<xs:enumeration value="Marketing Service"/>
+			<xs:enumeration value="Matlab"/>
+			<xs:enumeration value="Memory Management"/>
+			<xs:enumeration value="Messaging Queue"/>
+			<xs:enumeration value="MHP"/>
+			<xs:enumeration value="Micro-Processor"/>
+			<xs:enumeration value="Middleware"/>
+			<xs:enumeration value="Minix"/>
+			<xs:enumeration value="Mobile/Wireless Network"/>
+			<xs:enumeration value="MPEG"/>
+			<xs:enumeration value="MPEG-4"/>
+			<xs:enumeration value="MQSeries"/>
+			<xs:enumeration value="MQSeries Integrator"/>
+			<xs:enumeration value="MRP"/>
+			<xs:enumeration value="MS IIS"/>
+			<xs:enumeration value="MS SQL Server"/>
+			<xs:enumeration value="MS Test"/>
+			<xs:enumeration value="MS .Net"/>
+			<xs:enumeration value="Multimedia"/>
+			<xs:enumeration value="Multi Modal Interaction"/>
+			<xs:enumeration value="Natural Language Process"/>
+			<xs:enumeration value="Network Security"/>
+			<xs:enumeration value="Neural Network"/>
+			<xs:enumeration value="Object-Oriented Methodology"/>
+			<xs:enumeration value="ODBC"/>
+			<xs:enumeration value="OMG"/>
+			<xs:enumeration value="OMT"/>
+			<xs:enumeration value="Ontology"/>
+			<xs:enumeration value="OpenGL"/>
+			<xs:enumeration value="Operating System"/>
+			<xs:enumeration value="Oracle"/>
+			<xs:enumeration value="ORB"/>
+			<xs:enumeration value="OSGi"/>
+			<xs:enumeration value="OS/400"/>
+			<xs:enumeration value="Parlay/OSA"/>
+			<xs:enumeration value="Pascal"/>
+			<xs:enumeration value="Pattern Recognition"/>
+			<xs:enumeration value="Project Management"/>
+			<xs:enumeration value="Psychology"/>
+			<xs:enumeration value="P2P"/>
+			<xs:enumeration value="Perl"/>
+			<xs:enumeration value="Pervasive Computing"/>
+			<xs:enumeration value="POP"/>
+			<xs:enumeration value="Power Electronics"/>
+			<xs:enumeration value="PowerBuilder"/>
+			<xs:enumeration value="Predicate Logic"/>
+			<xs:enumeration value="Process Management"/>
+			<xs:enumeration value="Prolog"/>
+			<xs:enumeration value="PSP"/>
+			<xs:enumeration value="QoS"/>
+			<xs:enumeration value="QuickPlace"/>
+			<xs:enumeration value="Rapid-Prototype"/>
+			<xs:enumeration value="RC5"/>
+			<xs:enumeration value="RDF"/>
+			<xs:enumeration value="Realtime System"/>
+			<xs:enumeration value="Redhat"/>
+			<xs:enumeration value="Requirement Capture"/>
+			<xs:enumeration value="RIPV1"/>
+			<xs:enumeration value="Rose"/>
+			<xs:enumeration value="RSA"/>
+			<xs:enumeration value="Rule System"/>
+			<xs:enumeration value="RUP"/>
+			<xs:enumeration value="SAP R3"/>
+			<xs:enumeration value="Sametime"/>
+			<xs:enumeration value="SCM"/>
+			<xs:enumeration value="Search Engine"/>
+			<xs:enumeration value="Security"/>
+			<xs:enumeration value="Servlet"/>
+			<xs:enumeration value="SET"/>
+			<xs:enumeration value="Set Theory"/>
+			<xs:enumeration value="SHA1"/>
+			<xs:enumeration value="Siebel"/>
+			<xs:enumeration value="Signal Processing"/>
+			<xs:enumeration value="SIP"/>
+			<xs:enumeration value="SmallTalk"/>
+			<xs:enumeration value="SMTP"/>
+			<xs:enumeration value="SNMP"/>
+			<xs:enumeration value="SOAP"/>
+			<xs:enumeration value="Solaris"/>
+			<xs:enumeration value="Software Engineering"/>
+			<xs:enumeration value="Spatial"/>
+			<xs:enumeration value="Speech Recognition"/>
+			<xs:enumeration value="Speech Technology's deployment in e-business"/>
+			<xs:enumeration value="SQL"/>
+			<xs:enumeration value="SSL"/>
+			<xs:enumeration value="Statistics"/>
+			<xs:enumeration value="SuSE"/>
+			<xs:enumeration value="Sybase"/>
+			<xs:enumeration value="System Analysis"/>
+			<xs:enumeration value="System Engineering"/>
+			<xs:enumeration value="System and Network Management"/>
+			<xs:enumeration value="Tcl/Tk"/>
+			<xs:enumeration value="TCP/IP"/>
+			<xs:enumeration value="Telecommunication Facilities and Protocols"/>
+			<xs:enumeration value="Testing"/>
+			<xs:enumeration value="Text To Speech"/>
+			<xs:enumeration value="Tivoli"/>
+			<xs:enumeration value="Tone Recognition"/>
+			<xs:enumeration value="Transcoding"/>
+			<xs:enumeration value="TSP"/>
+			<xs:enumeration value="UDDI"/>
+			<xs:enumeration value="UML"/>
+			<xs:enumeration value="Unix"/>
+			<xs:enumeration value="Unstructured Information Management"/>
+			<xs:enumeration value="Verilog HDL"/>
+			<xs:enumeration value="VHDL"/>
+			<xs:enumeration value="Visibroker"/>
+			<xs:enumeration value="VisualAge for Java"/>
+			<xs:enumeration value="Visual Basic"/>
+			<xs:enumeration value="Visual Studio"/>
+			<xs:enumeration value="VRML"/>
+			<xs:enumeration value="WAN"/>
+			<xs:enumeration value="WAP"/>
+			<xs:enumeration value="Web Service"/>
+			<xs:enumeration value="WebLogic"/>
+			<xs:enumeration value="WebSphere"/>
+			<xs:enumeration value="Windows"/>
+			<xs:enumeration value="Wireless Lan"/>
+			<xs:enumeration value="Workflow"/>
+			<xs:enumeration value="WSAD"/>
+			<xs:enumeration value="WSDL"/>
+			<xs:enumeration value="XML"/>
+			<xs:enumeration value="z/OS"/>
+			<xs:enumeration value="Latex"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SkillLevelType">
+		<xs:annotation>
+			<xs:documentation>It defines three skill levels, outstanding, above average and normal.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Outstanding"/>
+			<xs:enumeration value="AboveAverage"/>
+			<xs:enumeration value="Normal"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- =====================End of Skill Definition========================-->
+	<!-- =====================Date Definition================================-->
+	<xs:complexType name="DurationType">
+		<xs:annotation>
+			<xs:documentation>It describes a time span by specifying the start date and the end date. The end date can be blank, which means it is still going on.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="StartDate" type="FlexibleDates"/>
+			<xs:element name="EndDate" type="FlexibleDates" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FlexibleDates">
+		<xs:annotation>
+			<xs:documentation>It specifies a date value. It can be either Year, YearMonth, or YearMonthDay. User can choose proper format flexibly.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="YearMonth" type="xs:gYearMonth"/>
+			<xs:element name="YearMonthDay" type="LocalDateType"/>
+			<xs:element name="Year" type="xs:gYear"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:simpleType name="LocalDateType">
+		<xs:annotation>
+			<xs:documentation>It defines a date type in format YYYY-MM-DD.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:date">
+			<xs:pattern value="\d\d\d\d-\d\d-\d\d"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- =====================End of Date Definition=========================-->
+</xs:schema>
