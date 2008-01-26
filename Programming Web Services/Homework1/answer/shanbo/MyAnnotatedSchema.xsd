@@ -12,13 +12,6 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="ContactInfo" type="ContactInfoType"/>
-				<xs:element name="Objectives">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Objective" type="ObjectiveType" maxOccurs="4"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="EducationHistory">
 					<xs:complexType>
 						<xs:sequence>
@@ -33,13 +26,27 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="SkillSet" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Set of skills</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Skill" type="DemonstratedSkillsType" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Skill</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="Hobbies" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Hobby Lists</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="HobbyName" type="HobbyNameType" maxOccurs="unbounded">
+							<xs:element name="HobbyName" type="HobbyNameType" minOccurs="0" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>It is the name of hobby.</xs:documentation>
 								</xs:annotation>
@@ -49,13 +56,6 @@
 				</xs:element>
 				<xs:element name="Experience" type="ExperienceType" minOccurs="0"/>
 				<xs:element name="Qualifications" type="QualificationType" minOccurs="0"/>
-				<xs:element name="ProfessionalAssociations" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="ProfessionalAssociation" type="ProfessionalAssociationType" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
 				<xs:element name="Summary" minOccurs="0">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
