@@ -39,7 +39,7 @@
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="HobbyName" type="Hobby" maxOccurs="unbounded">
+							<xs:element name="HobbyName" type="HobbyNameType" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>It is the name of hobby.</xs:documentation>
 								</xs:annotation>
@@ -549,9 +549,15 @@
 	</xs:simpleType>
 	<!-- =====================End of Experience Definition===================-->
 	<!-- =====================Hobby Definition======================= -->
-	<xs:simpleType name="Hobby">
+	<xs:simpleType name="HobbyNameType">
 		<xs:annotation>
-			<xs:documentation>It defines hobbies.</xs:documentation>
+			<xs:documentation>It specifies the name of a Hobby. It is an union of HobbyNameEnumType and NameType, so its value can be selected from the enumeration, or a customized value conforming to the NameType.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="HobbyNameEnumType NameType"/>
+	</xs:simpleType>
+	<xs:simpleType name="HobbyNameEnumType">
+		<xs:annotation>
+			<xs:documentation>It enumerates several hobby names.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Amateur as                                             "/>
@@ -1292,7 +1298,7 @@
 			<xs:enumeration value="Java ME"/>
 			<xs:enumeration value="Java EE"/>
 			<xs:enumeration value="Java SE"/>
-			<xs:enumeration value="Java RMI"/>	
+			<xs:enumeration value="Java RMI"/>
 			<xs:enumeration value="Java"/>
 			<xs:enumeration value="JavaScript"/>
 			<xs:enumeration value="JavaBean"/>
@@ -1371,8 +1377,8 @@
 			<xs:enumeration value="RSA"/>
 			<xs:enumeration value="Rule System"/>
 			<xs:enumeration value="RUP"/>
-	        <xs:enumeration value="Ruby"/>
-	        <xs:enumeration value="Ruby on Rails"/>
+			<xs:enumeration value="Ruby"/>
+			<xs:enumeration value="Ruby on Rails"/>
 			<xs:enumeration value="SAP R3"/>
 			<xs:enumeration value="Sametime"/>
 			<xs:enumeration value="SCM"/>
