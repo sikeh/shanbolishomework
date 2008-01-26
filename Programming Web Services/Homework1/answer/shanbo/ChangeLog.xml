@@ -37,7 +37,7 @@
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" name="HobbyName" type="Hobby">
+							<xs:element maxOccurs="unbounded" name="HobbyName" type="HobbyNameType">
 								<xs:annotation>
 									<xs:documentation>It is the name of hobby.</xs:documentation>
 								</xs:annotation>
@@ -74,9 +74,15 @@
 		</right_location>
 		<right_content>
 			<element>
-				<xs:simpleType name="Hobby">
+				<xs:simpleType name="HobbyNameType">
 					<xs:annotation>
-						<xs:documentation>It defines hobbies.</xs:documentation>
+						<xs:documentation>It specifies the name of a Hobby. It is an union of HobbyNameEnumType and NameType, so its value can be selected from the enumeration, or a customized value conforming to the NameType.</xs:documentation>
+					</xs:annotation>
+					<xs:union memberTypes="HobbyNameEnumType NameType"/>
+				</xs:simpleType>
+				<xs:simpleType name="HobbyNameEnumType">
+					<xs:annotation>
+						<xs:documentation>It enumerates several hobby names.</xs:documentation>
 					</xs:annotation>
 					<xs:restriction base="xs:string">
 						<xs:enumeration value="Amateur as                                             "/>
@@ -471,7 +477,7 @@
 			<position>119</position>
 		</left_location>
 		<right_location>
-			<parent xpath="/xs:schema/xs:simpleType[16]/xs:restriction"/>
+			<parent xpath="/xs:schema/xs:simpleType[17]/xs:restriction"/>
 			<position>119</position>
 		</right_location>
 		<right_content>
@@ -489,7 +495,7 @@
 			<position>197</position>
 		</left_location>
 		<right_location>
-			<parent xpath="/xs:schema/xs:simpleType[16]/xs:restriction"/>
+			<parent xpath="/xs:schema/xs:simpleType[17]/xs:restriction"/>
 			<position>201</position>
 		</right_location>
 		<right_content>
