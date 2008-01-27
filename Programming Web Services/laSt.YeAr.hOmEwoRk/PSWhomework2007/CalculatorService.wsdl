@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions 
+  targetNamespace="http://localhost:8080/axis/services/CalculatorService" 
+  xmlns="http://schemas.xmlsoap.org/wsdl/" 
+  xmlns:apachesoap="http://xml.apache.org/xml-soap" 
+  xmlns:impl="http://localhost:8080/axis/services/CalculatorService"
+  xmlns:intf="http://localhost:8080/axis/services/CalculatorService"
+  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <wsdl:message name="multiplicationResponse">
+    <wsdl:part name="multiplicationReturn" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="subtractionResponse">
+    <wsdl:part name="subtractionReturn" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="addRequest">
+    <wsdl:part name="addend1" type="xsd:int"/>
+    <wsdl:part name="addend2" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="divisionResponse">
+    <wsdl:part name="divisionReturn" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="subtractionRequest">
+    <wsdl:part name="minuend" type="xsd:int"/>
+    <wsdl:part name="subtrahend" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="divisionRequest">
+    <wsdl:part name="dividend" type="xsd:int"/>
+    <wsdl:part name="divisor" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="multiplicationRequest">
+    <wsdl:part name="multiplicand" type="xsd:int"/>
+    <wsdl:part name="multiplier" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="addResponse">
+    <wsdl:part name="addReturn" type="xsd:int"/>
+  </wsdl:message>
+  <wsdl:message name="divideZeroException">
+    <wsdl:part name="divideZeroError" type="xsd:string"/>
+  </wsdl:message>
+  <wsdl:portType name="CalculatorService">
+    <wsdl:operation name="add" parameterOrder="addend1 addend2">
+      <wsdl:input message="impl:addRequest" name="addRequest"/>
+      <wsdl:output message="impl:addResponse" name="addResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="division" parameterOrder="dividend divisor">
+      <wsdl:input message="impl:divisionRequest" name="divisionRequest"/>
+      <wsdl:output message="impl:divisionResponse" name="divisionResponse"/>
+      <wsdl:fault message="impl:divideZeroException" name="divideZeroException"/>
+    </wsdl:operation>
+    <wsdl:operation name="multiplication" parameterOrder="multiplicand multiplier">
+      <wsdl:input message="impl:multiplicationRequest" name="multiplicationRequest"/>
+      <wsdl:output message="impl:multiplicationResponse" name="multiplicationResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="subtraction" parameterOrder="minuend subtrahend">
+      <wsdl:input message="impl:subtractionRequest" name="subtractionRequest"/>
+      <wsdl:output message="impl:subtractionResponse" name="subtractionResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CalculatorServiceSoapBinding" type="impl:CalculatorService">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="add">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="addRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://DefaultNamespace" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="addResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8080/axis/CalculatorService.jws" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="division">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="divisionRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://DefaultNamespace" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="divisionResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8080/axis/CalculatorService.jws" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="divideZeroException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8080/axis/CalculatorService.jws" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="multiplication">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="multiplicationRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://DefaultNamespace" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="multiplicationResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8080/axis/CalculatorService.jws" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="subtraction">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="subtractionRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://DefaultNamespace" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="subtractionResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://localhost:8080/axis/CalculatorService.jws" use="encoded"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CalculatorServiceService">
+    <wsdl:port binding="impl:CalculatorServiceSoapBinding" name="CalculatorService">
+      <wsdlsoap:address location="http://localhost:8080/axis/CalculatorService.jws"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

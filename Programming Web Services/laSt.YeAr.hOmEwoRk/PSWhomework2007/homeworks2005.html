@@ -1,0 +1,1041 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<!-- index.html --><!-- page header start -->
+  <title>Distributed Artificial Intelligence and Intelligent Agents</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta http-equiv="DESCRIPTION"
+ content="Master of Science Program: Software Engineering of Distributed Systems (SEDS)">
+  <meta http-equiv="Content-Type"
+ content="text/html; CHARSET=iso-8859-10">
+  <meta http-equiv="Content-Type" content="text/html">
+  <meta name="Author" content="SEDS-Master">
+<!--meta name="GENERATOR" content="HomeSite"-->
+</head>
+<body topmargin="0" leftmargin="0" alink="#003390" vlink="#003366"
+ link="#003366"
+ style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);">
+<table width="805" border="0" cellspacing="0" cellpadding="0"
+ align="left">
+  <tbody>
+    <tr>
+      <td width="800" align="left" valign="top">
+      <table style="width: 800px;" border="0" cellspacing="0"
+ cellpadding="0">
+        <tbody>
+          <tr>
+            <td width="800" height="72" colspan="2" align="left"
+ valign="top">
+            <table nosave="">
+              <tbody>
+                <tr nosave="">
+                  <td valign="top"><a href="http://www.kth.se"><img
+ src="../pic/kth_microelektr_inf_rgb.gif" alt="KTH"
+ style="border: 0px solid ; width: 150px; height: 140px;" title=""> </a> </td>
+                  <td nosave="" align="center" valign="top">
+                  <h2><span
+ style="font-family: helvetica,arial,sans-serif;"> 2G1523 Programming
+Web Services </span></h2>
+                  <small><span
+ style="font-family: helvetica,arial,sans-serif;">5 credits course
+offered by the <a href="http://www.imit.kth.se/info/LECS/">Laboratory
+of Electronics and Computer Systems</a>, </span><a
+ href="http://www.imit.kth.se/"
+ style="font-family: helvetica,arial,sans-serif;">Dept. of
+Microelectronics and Information       Technology (IMIT)</a></small></td>
+                  <td valign="top"><a href="http://www.it.kth.se"><img
+ src="../pic/top_logotyp_4.gif" nosave="" border="0" height="51"
+ width="146" alt="IT-Universitetet"> </a></td>
+                </tr>
+              </tbody>
+            </table>
+            </td>
+          </tr>
+          <tr>
+            <td width="800" colspan="2" align="left" valign="top"
+ nowrap="nowrap" bgcolor="#e0e0e0">
+            <table
+ style="width: 800px; background-color: rgb(224, 224, 224); text-align: left; margin-left: auto; margin-right: auto;"
+ border="0" cellspacing="0" cellpadding="0">
+              <tbody>
+                <tr style="font-weight: bold;">
+                  <td
+ style="width: 800px; height: 25px; background-color: rgb(204, 204, 204);"
+ colspan="3" background="empty.gif"> <a
+ href="http://www.imit.kth.se/courses/2G1523/">Home</a> <a
+ href="mailto:misha@imit.kth.se"
+ style="font-family: times new roman,times,serif;">Contact</a><small
+ style="font-family: times new roman,times,serif;"><small> </small></small> </td>
+                </tr>
+                <tr>
+<!-- page header end --><!-- menu start --> <td
+ style="text-align: left; vertical-align: top; width: 100px; background-color: rgb(102, 204, 204);"
+ class="text"> <big><big style="font-weight: bold;"><br>
+                  </big></big>
+                  <div style="text-align: justify; font-weight: bold;"><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><a href="../news.html">
+News</a></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><br>
+                  <big><big> <font
+ style="font-family: helvetica,arial,sans-serif;"><a
+ href="http://www.kth.se/student/studiehandbok/Kurs.asp?Code=2G1523&amp;Lang=1">Course
+description</a> </font> </big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><br>
+                  <big><big> <font
+ style="font-family: helvetica,arial,sans-serif;"><a
+ href="http://daisy.it.kth.se/servlet/anstalld.schema.BoardSchema?generator=true&amp;momentid=1059">Schedule</a></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><br>
+                  <big><big> <font
+ style="font-family: helvetica,arial,sans-serif;"><a
+ href="../literature.html">Course literature</a></font><font
+ style="font-family: helvetica,arial,sans-serif;"> </font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><br>
+                  <a><big><big> </big></big></a><big><big><a
+ href="../LectureNotes/lectures.html"><font
+ style="font-family: helvetica,arial,sans-serif;"> Lecture<br>
+Note</font></a></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><a
+ href="homeworks.html"><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big></a><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><a
+ href="homeworks.html">Homeworks</a></font></big></big><a
+ href="homeworks.html"><br>
+                  <big><big> </big></big></a><a
+ href="../Project/project.html"><br>
+                  <big><big> </big></big><br>
+                  </a><big><big><a href="../Project/project.html"> <font
+ style="font-family: helvetica,arial,sans-serif;">Project</font></a> <br>
+                  </big></big><a href="../staff.html"></a><a
+ href="file:///F:/Project/project.html"><br>
+                  <big><big> </big></big></a><a
+ href="file:///F:/Project/project.html"><br>
+                  <big><big> </big></big></a><big><big><a
+ href="../Exam/exam.html"><font
+ style="font-family: helvetica,arial,sans-serif;">Examination</font></a></big></big><br>
+                  <big><big> </big></big><br>
+                  <big><big> </big></big><br>
+                  <big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><a
+ href="../staff.html">Course<br>
+staff</a></font><br>
+                  </big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;"><small><small><br>
+                  </small></small></font></big></big><big><big><font
+ style="font-family: helvetica,arial,sans-serif;">Useful links</font><br>
+                  </big></big></div>
+                  <br>
+                  <big style="font-weight: bold;"><br>
+                  </big> </td>
+                  <td width="1" height="500" align="left" valign="top"
+ bgcolor="#003366" background="bluepix.gif"><img src="bluepix.gif"
+ width="1" height="1" alt="" border="0" hspace="0" vspace="0"
+ align="left"></td>
+                  <td
+ style="width: 600px; text-align: left; vertical-align: top; background-color: rgb(255, 255, 255);"
+ class="text">
+                  <div style="text-align: center;"><!-- menu end --> </div>
+                  <big
+ style="font-family: times new roman,times,serif; font-weight: bold;"><big><big><font
+ size="+3"><span style="font-family: helvetica,arial,sans-serif;">
+HOMEWORKS</span></font><small><big><big><big><br
+ style="font-family: helvetica,arial,sans-serif;">
+                  </big></big></big> <br>
+                  </small> <big><big
+ style="font-family: times new roman,times,serif;"><big
+ style="font-family: times new roman,times,serif;"><big><big><big><small><br>
+There are 3 homeworks in the course<br>
+                  </small></big></big></big></big><big
+ style="font-family: helvetica,arial,sans-serif;"><big><big><small><small><br>
+It is assumed that Homeworks will be done by groups of two students.
+There will be no additional bonus for making the Homeworks alone.</small></small></big></big></big></big></big></big></big></big><br
+ style="font-family: helvetica,arial,sans-serif;">
+                  <br>
+                  <table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: center; width: 100%;">
+                    <tbody>
+                      <tr>
+                        <td
+ style="text-align: center; font-weight: bold;"><br>
+                        </td>
+                        <td
+ style="text-align: center; font-weight: bold;">Start Date</td>
+                        <td
+ style="text-align: center; font-weight: bold;">Due Date</td>
+                        <td
+ style="text-align: center; font-weight: bold;">Description Links</td>
+                        <td
+ style="text-align: center; font-weight: bold;">Slides</td>
+                      </tr>
+                      <tr>
+                        <td
+ style="vertical-align: top; width: 3%; font-family: helvetica,arial,sans-serif;">1<br>
+                        </td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">2005-01-21</td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">2005-01-28</td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><a
+ href="homework1.html">Homework 1</a></td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><a
+ href="homework1_1.pdf" target="_blank">pdf1</a> <a
+ href="homework1_6.pdf" target="_blank">pdf6</a></td>
+                      </tr>
+                      <tr>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">2<br>
+                        </td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">2005-01-28</td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">2005-02-04</td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><a
+ href="./homework2.html">Homework 2</a></td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><a
+ href="homework2_1.pdf" target="_blank">pdf1</a> <a
+ href="homework2_6.pdf" target="_blank">pdf6</a></td>
+                      </tr>
+                      <tr>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">3<br>
+                        </td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">2005-02-04</td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;">2005-02-11</td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><a
+ href="./homework3.html">Homework 3</a></td>
+                        <td
+ style="vertical-align: top; font-family: helvetica,arial,sans-serif;"><a
+ href="homework3_1.pdf" target="_blank">pdf1</a> <a
+ href="homework3_6.pdf" target="_blank">pdf6</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br>
+                  <br>
+                  <br>
+                  <big style="font-weight: bold;"><big><big><br>
+Results of homeworks delivering<br>
+                  <br>
+                  </big></big></big>
+                  <table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+                    <tbody>
+                      <tr>
+                        <td
+ style="text-align: center; font-weight: bold;"><small>Name<br>
+                        </small></td>
+                        <td
+ style="text-align: center; font-weight: bold;"><small>HW1<br>
+                        </small></td>
+                        <td
+ style="text-align: center; font-weight: bold;"><small>HW2<br>
+                        </small></td>
+                        <td
+ style="text-align: center; font-weight: bold;"><small>HW3<br>
+                        </small></td>
+                        <td
+ style="text-align: center; font-weight: bold;"><small>Project<br>
+                        </small></td>
+                        <td
+ style="text-align: center; font-weight: bold;"><small>Bonus</small></td>
+                      </tr>
+                      <tr>
+                        <td>Yashar Baradaran</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Rana Bakhshi</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Jennifer Thorsley</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Abdul Haseeb</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Åsa Pehrsson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Mikael Johansson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Herwig Moser</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Heiko Aydt</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Charles Blanquet</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>William Groleau</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Yuanping Xiao</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Xiaokun Yi</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Boxun Zhang</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Pin Zheng</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Ting Wu</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Mikael Collin</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Karl Fock</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Magnus Bodin</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Öyvind Johannessen</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Fredrik Westberg</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Andreas Friberg</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Erik Pramsten</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Heng Fang</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Honghu Wu</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Birgir Stefansson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Paolo Rito</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Ola Herrdahl</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Magnus Broman</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Peder Nordvaller</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Johan Rydström</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Philipp Bodenbenner</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Dzenan Dzemidzic</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Maria Katsoufi</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>German Gonzalez</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Anne Isakson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Selmir Zupcic</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Almir Zupcic</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Ahmad Abdul Wakeel</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Hamid Mahmood</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Amar Bahadur Patel</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Patrik Åkerlund</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Mathias Johansson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Can Kuruca</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Qi Zhang</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Peng Li</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Faisal Ghias Mir</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Tallat Mahmood Shafaat</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Daniel Roberthson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Marcus Johansson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Mohammad Ashiqur Rahaman</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Ratnesh Nandan Sahay</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Yongrim Rhee</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Ho-Jun Choi</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Antonis Thodis</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Hoshyar Dewali</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Liu Shenghua</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Mohammad Shahjahan Feroz Farazi</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">0<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Liang Jin</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Waqas Ahmed Saeed</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Harpareet Singh Aulakh</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Xuetao Niu</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Limin Wei</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>S. M. Aminur Rahman Faisal</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">0<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Sheak Rashed Haider Noori</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">0<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Ifitkhar ul Hassan</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Sanaullah Nazir</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Waseem Akhtar</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Hassan Rasheed</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Ahsan Saleem</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Adeel Iqbal</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Zafar Abbas</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Javed Ahmed</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">6<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Habib Virji</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Amer Hashmi</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Asif Siddique</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Shankar Gopinath</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">0<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Md. Juwel Rana</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS*</td>
+                        <td style="text-align: center;">0<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Naveed Ahsan Tariq</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;"><br>
+                        </td>
+                        <td style="text-align: center;">0<br>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Johan Svensson</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">PASS</td>
+                        <td style="text-align: center;">14<br>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br>
+*:After deadline. <br>
+                  <br>
+<!-- page footer start --></td>
+                </tr>
+                <tr>
+                  <td style="vertical-align: top;"><br>
+                  </td>
+                  <td style="vertical-align: top;"><br>
+                  </td>
+                  <td style="vertical-align: top;"><br>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </td>
+          </tr>
+          <tr>
+            <td width="800" height="0" colspan="2" align="left"
+ valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td width="654" height="30" align="left" valign="top"
+ bgcolor="#ffffff" class="addresstext"><big><span
+ style="font-style: italic;">Mihhail Matskin, January 10, 2005</span></big><br>
+            <img src="empty.gif" width="639" height="1" alt=""
+ border="0"></td>
+            <td width="146" height="41" align="left" valign="top"><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+      <td width="5" align="left" valign="top" bgcolor="#003366"
+ background="bluepix.gif"><img src="bluepix.gif" width="5" height="1"
+ alt="" border="0" hspace="0" vspace="0" align="left"></td>
+    </tr>
+    <tr>
+      <td width="805" height="5" colspan="3" align="left" valign="top"><img
+ src="bluepix.gif" width="805" height="5" alt="" border="0" hspace="0"
+ vspace="0" align="left"></td>
+    </tr>
+  </tbody>
+</table>
+<!-- end of document -->
+</body>
+</html>
