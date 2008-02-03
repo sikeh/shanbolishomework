@@ -1,0 +1,15 @@
+<topology xsi:noNamespaceSchemaLocation="topology.xsd" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <nodes number="3">
+      	<node id="0" ip="127.0.0.1" port="12340" />
+     	<node id="1" ip="127.0.0.1" port="12341" />
+  		<node id="2" ip="127.0.0.1" port="12342" />
+  </nodes>
+    
+  <links>
+		<link src_id="0" dst_id="1" latency="3000" undirected="true"/>
+		<link src_id="0" dst_id="2" latency="2000" undirected="true"/>
+        <link src_id="1" dst_id="2" latency="1000" undirected="true"/>
+  </links>
+</topology>
