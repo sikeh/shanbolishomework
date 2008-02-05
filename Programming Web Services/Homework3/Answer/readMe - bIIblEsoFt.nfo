@@ -1,0 +1,17 @@
+run juddi and juddi client
+
+run juddi register server:
+step1: copy juddi.war to %GLASSFISH_HOME%/domains/domain1/autodeploy
+step2: create a database named "juddi" in MySQL
+step3: dump juddi.sql into DATABASE juddi
+step3: start GlassFish and configure a JNDI Datasource with a name of 'jdbc/juddiDB' in the GlassFish
+step4: Enjoy 
+
+run client
+step1: extract juddi2_client_api.rar to your project lib
+step2: use com.biiblesoft.pws.hw3.PublishBusinessEntity to publish business
+step3: use com.biiblesoft.pws.hw3.FindBusinessEntity to find business
+step4: Enjoy
+
+Cheers and Happy new Year,
+bIIblEsoFt 2008
