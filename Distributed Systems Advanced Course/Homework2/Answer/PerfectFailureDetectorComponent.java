@@ -42,8 +42,8 @@ public class PerfectFailureDetectorComponent {
     private Collection<NodeReference> allNodes;
     private NodeReference myNodeRef;
 
-    private Collection<NodeReference> alive;
-    private Collection<NodeReference> detected;
+    private Set<NodeReference> alive;
+    private Set<NodeReference> detected;
 
     private long gamma;
     private long delta;
@@ -82,9 +82,9 @@ public class PerfectFailureDetectorComponent {
         allNodes = topologyDescriptor.getAllNodes();
         myNodeRef = topologyDescriptor.getMyNodeRef();
 
-        alive = new ArrayList<NodeReference>();
+        alive = new HashSet<NodeReference>();
         alive.addAll(allNodes);
-        detected = new ArrayList<NodeReference>();
+        detected = new HashSet<NodeReference>();
 
         try {
             timerHandler.startTimer(new CheckTimeOutEvent(), "handleCheckTimeOutEvent", gamma + delta);
