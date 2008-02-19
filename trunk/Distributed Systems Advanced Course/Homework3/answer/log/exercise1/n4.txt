@@ -1,0 +1,8 @@
+Application THREAD RUNNING
+Enter Message to do ReliableBroadcast:
+
+*********Get a rbDeliverEvent: a from Node 0 with InitNode 0*************
+
+*********Get a rbDeliverEvent: b from Node 0 with InitNode 0*************
+
+*********Get a rbDeliverEvent: c from Node 0 with InitNode 0*************
