@@ -1,0 +1,91 @@
+Application THREAD RUNNING
+Enter Message to do ReliableBroadcast:
+
+*********Get a rbDeliverEvent: a from Node 0 with InitNode 0*************
+
+*********Get a rbDeliverEvent: b from Node 0 with InitNode 0*************
+
+*********Get a rbDeliverEvent: c from Node 0 with InitNode 0*************
+
+ignore a delivered message "c" from Node 3
+
+Delivered List
+"c" from Node 0 counter = 2
+"a" from Node 0 counter = 1
+"b" from Node 0 counter = 1
+
+
+ignore a delivered message "a" from Node 3
+
+Delivered List
+"c" from Node 0 counter = 2
+"a" from Node 0 counter = 2
+"b" from Node 0 counter = 1
+
+
+ignore a delivered message "b" from Node 3
+
+Delivered List
+"c" from Node 0 counter = 2
+"a" from Node 0 counter = 2
+"b" from Node 0 counter = 2
+
+Node 1 : discovers that node 0 crashed!
+
+Raise BebBroadcastEvent since crash discovered!
+
+Raise BebBroadcastEvent since crash discovered!
+
+Raise BebBroadcastEvent since crash discovered!
+
+Node 1 : discovers that node 4 crashed!
+
+ignore a delivered message "c" from Node 1
+
+Delivered List
+"c" from Node 0 counter = 3
+"a" from Node 0 counter = 2
+"b" from Node 0 counter = 2
+
+
+ignore a delivered message "a" from Node 1
+
+Delivered List
+"c" from Node 0 counter = 3
+"a" from Node 0 counter = 3
+"b" from Node 0 counter = 2
+
+
+ignore a delivered message "b" from Node 1
+
+Delivered List
+"c" from Node 0 counter = 3
+"a" from Node 0 counter = 3
+"b" from Node 0 counter = 3
+
+
+ignore a delivered message "c" from Node 2
+
+Garbage collect delivered list, remove message "c" from Node 2
+
+Delivered List
+"a" from Node 0 counter = 3
+"b" from Node 0 counter = 3
+
+
+ignore a delivered message "a" from Node 2
+
+Garbage collect delivered list, remove message "a" from Node 2
+
+Delivered List
+"b" from Node 0 counter = 3
+
+
+ignore a delivered message "b" from Node 2
+
+Garbage collect delivered list, remove message "b" from Node 2
+
+Delivered List
+empty!
+
+Node 1 : discovers that node 3 crashed!

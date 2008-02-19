@@ -1,0 +1,30 @@
+Application THREAD RUNNING
+Enter Message to do ReliableBroadcast:
+a
+
+Start RelibaleBroadcast message: a
+
+Raising RbBroadcastEvent
+Enter Message to do ReliableBroadcast:
+
+*********Get a rbDeliverEvent: a from Node 0 with InitNode 0*************
+b
+
+Start RelibaleBroadcast message: b
+
+Raising RbBroadcastEvent
+Enter Message to do ReliableBroadcast:
+
+*********Get a rbDeliverEvent: b from Node 0 with InitNode 0*************
+c
+
+Start RelibaleBroadcast message: c
+
+Raising RbBroadcastEvent
+Enter Message to do ReliableBroadcast:
+
+*********Get a rbDeliverEvent: c from Node 0 with InitNode 0*************
+Enter Message to do ReliableBroadcast:
+Enter Message to do ReliableBroadcast:
+
+Process finished with exit code 1
