@@ -1,0 +1,178 @@
+From: <Saved by Windows Internet Explorer 7>
+Subject: LaTeX Counters
+Date: Sun, 24 Feb 2008 20:23:41 +0100
+MIME-Version: 1.0
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.personal.ceu.hu/tex/counters.htm
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.3198
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" =
+"http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<HTML><HEAD><TITLE>LaTeX Counters</TITLE>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 6.00.6000.16608" name=3DGENERATOR></HEAD>
+<BODY>
+<H1>LaTeX Counters</H1>Everything LaTeX numbers for you has a counter =
+associated=20
+with it. The name of the counter is the same as the name of the =
+environment or=20
+command that produces the number, except with no \. Below is a list of =
+the=20
+counters used LaTeX's standard document styles to control numbering.=20
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD>part=20
+    <TD>part=20
+    <TD>figure=20
+    <TD>enumi=20
+  <TR>
+    <TD>chapter=20
+    <TD>subparagraph=20
+    <TD>table=20
+    <TD>enumii=20
+  <TR>
+    <TD>section=20
+    <TD>page=20
+    <TD>footnote=20
+    <TD>enumiii=20
+  <TR>
+    <TD>subsection=20
+    <TD>equation=20
+    <TD>mpfootnote=20
+    <TD>enumiv=20
+  <TR>
+    <TD>subsubsection </TR></TBODY></TABLE>Here are the commands to be =
+used with=20
+counters:=20
+<UL>
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#addtocounter">\addtoc=
+ounter{counter}{value}</A>=20
+  increments counter by the amount, which can be negative=20
+  <LI><A =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#alph">\alph{counter},=
+=20
+  \Alph{counter}</A> print the value of the counter as a lower or upper =
+case=20
+  letter.=20
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#arabic">\arabic{count=
+er}</A>=20
+  print the value of the counter as am arabic number=20
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#fnsymbol">\fnsymbol{c=
+ounter}</A>=20
+  print the counter as a footnote symbol=20
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#newcounter">\newcount=
+er</A>=20
+  define a new counter=20
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#roman">\roman{counter=
+},=20
+  \Roman{counter}</A> print the value of the counter as a roman letter =
+using=20
+  lower or upper case letters=20
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#setcounter">\setcount=
+er{counter}{value}</A>=20
+  assign the value to the counter=20
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#usecounter">\usecount=
+er{counter}</A>=20
+  to be used in <A=20
+  href=3D"http://www.personal.ceu.hu/tex/environ.htm#list">list</A> =
+environment.=20
+  <LI><A=20
+  =
+href=3D"http://www.personal.ceu.hu/tex/counters.htm#value">\value{counter=
+}</A>=20
+  get the value of the counter. </LI></UL>
+<HR>
+
+<H3><A name=3Daddtocounter>\addtocounter</A></H3><PRE> =
+\addtocounter{counter}{value}
+</PRE>The command increments the counter by the amount specified by the =
+value=20
+argument. The value argument can be negative.=20
+<HR>
+
+<H3><A name=3Dalph>\alph, \Alph</A></H3><PRE> \alph{counter} =
+\Alph{counter}
+</PRE>This command causes the value of the counter to be printed in =
+alphabetic=20
+characters. The \alph command causes lower case alphabetic alphabetic=20
+characters, i.e., a, b, c... while the \Alph command causes upper case=20
+alphabetic characters, i.e., A, B, C...=20
+<HR>
+
+<H3><A name=3Darabic>\arabic</A></H3><PRE> \arabic{counter}
+</PRE>The \arabic command causes the value of the counter to be printed =
+in=20
+arabic numbers, i.e., 3.=20
+<HR>
+
+<H3><A name=3Dfnsymbol>\fnsymbol</A></H3><PRE> \fnsymbol{counter}
+</PRE>The \fnsymbol command causes the value of the counter to be =
+printed in a=20
+specific sequence of nine symbols that can be used for numbering <A=20
+href=3D"http://www.personal.ceu.hu/tex/footnote.htm">footnotes</A>.=20
+<HR>
+
+<H3><A name=3Dnewcounter>\newcounter</A></H3><PRE> =
+\newcounter{foo}[counter]
+</PRE>The \newcounter command defines a new counter named foo. The =
+optional=20
+argument [counter] causes the counter foo to be reset whenever the =
+counter named=20
+in the optional argument is incremented.=20
+<HR>
+
+<H3><A name=3Droman>\roman, \Roman</A></H3><PRE> \roman{counter} =
+\Roman{counter}
+</PRE>This command causes the value of the counter to be printed in =
+roman=20
+numerals. The \roman command causes lower case roman numerals, i.e., i, =
+ii,=20
+iii..., while the \Roman command causes upper case roman numerals, i.e., =
+I, II,=20
+III...=20
+<HR>
+
+<H3><A name=3Dsetcounter>\setcounter</A></H3><PRE> =
+\setcounter{counter}{value}
+</PRE>The \setcounter command sets the value of the counter to that =
+specified by=20
+the value argument.=20
+<HR>
+
+<H3><A name=3Dusecounter>\usecounter</A></H3><PRE> \usecounter{counter}
+</PRE>The \usecounter command is used in the second argument of the <A=20
+href=3D"http://www.personal.ceu.hu/tex/environ.htm#list">list</A> =
+environment to=20
+allow the counter specified to be used to number the list items.=20
+<HR>
+
+<H3><A name=3Dvalue>\value</A></H3><PRE> \value{counter}
+</PRE>The \value command produces the value of the counter named in the=20
+mandatory argument. It can be used where LaTeX expects an integer or =
+number,=20
+such as the second argument of a \setcounter or \addtocounter command, =
+or in <PRE>      \hspace{\value{foo}\parindent}
+</PRE>It is useful for doing arithmetic with counters.=20
+<HR>
+
+<P><A href=3D"http://www.personal.ceu.hu/tex/latex.htm">Back to the main =
+LaTeX=20
+page.</A> </P></BODY></HTML>
