@@ -1,0 +1,166 @@
+From: =?gb2312?B?08kgV2luZG93cyBJbnRlcm5ldCBFeHBsb3JlciA3ILGjtOY=?=
+Subject: ISO-8859-1 Characters in Octal, Hex and HTML
+Date: Sat, 5 Apr 2008 23:13:51 +0200
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_003A_01C89772.B6267A20"
+X-MimeOLE: Produced By Microsoft MimeOLE V6.0.6000.16545
+
+这是 MIME 格式的多方邮件。
+
+------=_NextPart_000_003A_01C89772.B6267A20
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.pjb.com.au/comp/diacritics.html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>ISO-8859-1 Characters in Octal, Hex and HTML</TITLE>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1"><LINK=20
+title=3D"PJB Comp Styles" href=3D"http://www.pjb.com.au/comp/styles.css" =
+
+type=3Dtext/css rel=3Dstylesheet>
+<META http-equiv=3DKeywords=20
+content=3D"ISO, diacrytics, umlaut, acute accent, grave accent, =
+circumflex">
+<META content=3D"MSHTML 6.00.6000.16609" name=3DGENERATOR></HEAD>
+<BODY vLink=3D#000066 aLink=3D#000066 link=3D#000066>
+<DIV>
+<H2><IMG height=3D32 alt=3D" " =
+src=3D"http://www.pjb.com.au/comp/logo.gif" width=3D81>=20
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B><I> ISO-8859-1 and <FONT=20
+color=3D#bb0000>ISO-8859-15</FONT> Characters in Oct, Hex and HTML =
+</I></B></H2>
+<HR>
+<PRE>US-Kbd    Octal  Hex    HTML           Details
+
+Alt-"     \242   A2    &amp;cent;      =A2  cent sign
+Alt-#     \243   A3    &amp;pound;     =A3  Pound sign (British)
+<FONT color=3D#bb0000>Alt-$     \244   A4    &amp;euro;      =80  Euro =
+sign (in ISO-8859-15)</FONT>
+Alt-%     \245   A5    &amp;yen;       =A5  Yen sign (Japanese)
+Alt-0     \260   B0    &amp;deg;       =B0  degrees
+
+Alt-&lt;     \274   BC    &amp;frac14;    =BC  fraction one-quarter
+<FONT color=3D#bb0000>Alt-&lt;     \274   BC    &amp;OElig;     =8C  OE =
+ligature, French (in ISO-8859-15)</FONT>
+Alt-=3D     \275   BD    &amp;frac12;    =BD  fraction one-half
+<FONT color=3D#bb0000>Alt-=3D     \275   BD    &amp;oelig;     =9C  oe =
+ligature, French (in ISO-8859-15)</FONT>
+Alt-&gt;     \276   BE    &amp;frac34;    =BE  fraction three-quarters
+<FONT color=3D#bb0000>Alt-&gt;     \276   BE    &amp;Yuml;      =9F  Y =
+diaeresis, French (in ISO-8859-15)</FONT>
+
+Alt-!     \241   A1    &amp;iexcl;     =A1  upside-down exclamation mark
+Alt-+     \253   AB    &amp;laquo;     =AB  close (or open) =
+chevron-style quotes
+Alt-;     \273   BB    &amp;raquo;     =BB  open (or close) =
+chevron-style quotes
+Alt-?     \277   BF    &amp;iquest;    =BF  upside-down question mark
+
+Alt-@     \300   C0    &amp;Agrave;    =C0  capital A, grave accent
+Alt-A     \301   C1    &amp;Aacute;    =C1  capital A, acute accent
+Alt-B     \302   C2    &amp;Acirc;     =C2  capital A, circumflex accent
+Alt-C     \303   C3    &amp;Atilde;    =C3  capital A, tilde
+Alt-D     \304   C4    &amp;Auml;      =C4  capital A, umlaut mark
+Alt-E     \305   C5    &amp;Aring;     =C5  capital A, ring
+Alt-F     \306   C6    &amp;AElig;     =C6  capital AE diphthong
+Alt-G     \307   C7    &amp;Ccedil;    =C7  capital C, cedilla
+Alt-H     \310   C8    &amp;Egrave;    =C8  capital E, grave accent
+Alt-I     \311   C9    &amp;Eacute;    =C9  capital E, acute accent
+Alt-J     \312   CA    &amp;Ecirc;     =CA  capital E, circumflex accent
+Alt-K     \313   CB    &amp;Euml;      =CB  capital E, umlaut mark
+Alt-L     \314   CC    &amp;Igrave;    =CC  capital I, grave accent
+Alt-M     \315   CD    &amp;Iacute;    =CD  capital I, acute accent
+Alt-N     \316   CE    &amp;Icirc;     =CE  capital I, circumflex accent
+Alt-O     \317   CF    &amp;Iuml;      =CF  capital I, umlaut mark
+Alt-P     \320   D0    &amp;ETH;       =D0  capital Eth, Icelandic
+Alt-Q     \321   D1    &amp;Ntilde;    =D1  capital N, tilde
+Alt-R     \322   D2    &amp;Ograve;    =D2  capital O, grave accent
+Alt-S     \323   D3    &amp;Oacute;    =D3  capital O, acute accent
+Alt-T     \324   D4    &amp;Ocirc;     =D4  capital O, circumflex accent
+Alt-U     \325   D5    &amp;Otilde;    =D5  capital O, tilde
+Alt-V     \326   D6    &amp;Ouml;      =D6  capital O, umlaut mark
+Alt-X     \330   D8    &amp;Oslash;    =D8  capital O, slash
+Alt-Y     \331   D9    &amp;Ugrave;    =D9  capital U, grave accent
+Alt-Z     \332   DA    &amp;Uacute;    =DA  capital U, acute accent
+Alt-[     \333   DB    &amp;Ucirc;     =DB  capital U, circumflex accent
+Alt-\     \334   DC    &amp;Uuml;      =DC  capital U, umlaut mark
+Alt-]     \335   DD    &amp;Yacute;    =DD  capital Y, acute accent
+Alt-^     \336   DE    &amp;THORN;     =DE  capital THORN, Icelandic
+Alt-_     \337   DF    &amp;szlig;     =DF  sz ligature, German
+
+Alt-`     \340   E0    &amp;agrave;    =E0  small a, grave accent
+Alt-a     \341   E1    &amp;aacute;    =E1  small a, acute accent
+Alt-b     \342   E2    &amp;acirc;     =E2  small a, circumflex accent
+Alt-c     \343   E3    &amp;atilde;    =E3  small a, tilde
+Alt-d     \344   E4    &amp;auml;      =E4  small a, umlaut mark
+Alt-e     \345   E5    &amp;aring;     =E5  small a, ring
+Alt-f     \346   E6    &amp;aelig;     =E6  small ae diphthong
+Alt-g     \347   E7    &amp;ccedil;    =E7  small c, cedilla
+Alt-h     \350   E8    &amp;egrave;    =E8  small e, grave accent
+Alt-i     \351   E9    &amp;eacute;    =E9  small e, acute accent
+Alt-j     \352   EA    &amp;ecirc;     =EA  small e, circumflex accent
+Alt-k     \353   EB    &amp;euml;      =EB  small e, umlaut mark
+Alt-l     \354   EC    &amp;igrave;    =EC  small i, grave accent
+Alt-m     \355   ED    &amp;iacute;    =ED  small i, acute accent
+Alt-n     \356   EE    &amp;icirc;     =EE  small i, circumflex accent
+Alt-o     \357   EF    &amp;iuml;      =EF  small i, umlaut mark
+Alt-p     \360   F0    &amp;eth;       =F0  small eth, Icelandic
+Alt-q     \361   F1    &amp;ntilde;    =F1  small n, tilde
+Alt-r     \362   F2    &amp;ograve;    =F2  small o, grave accent
+Alt-s     \363   F3    &amp;oacute;    =F3  small o, acute accent
+Alt-t     \364   F4    &amp;ocirc;     =F4  small o, circumflex accent
+Alt-u     \365   F5    &amp;otilde;    =F5  small o, tilde
+Alt-v     \366   F6    &amp;ouml;      =F6  small o, umlaut mark
+Alt-x     \370   F8    &amp;oslash;    =F8  small o, slash
+Alt-y     \371   F9    &amp;ugrave;    =F9  small u, grave accent
+Alt-z     \372   FA    &amp;uacute;    =FA  small u, acute accent
+Alt-{     \373   FB    &amp;ucirc;     =FB  small u, circumflex accent
+Alt-|     \374   FC    &amp;uuml;      =FC  small u, umlaut mark
+Alt-}     \375   FD    &amp;yacute;    =FD  small y, acute accent
+Alt-~     \376   FE    &amp;thorn;     =FE  small thorn, Icelandic
+          \377   FF    &amp;yuml;      =FF  small y, umlaut mark
+</PRE>
+<HR>
+
+<CENTER>
+<P>Back to <A href=3D"http://www.pjb.com.au/comp/index.html">P J B =
+Computing</A>=20
+or to <A=20
+href=3D"http://www.pjb.com.au/index.html">http://www.pjb.com.au/index.htm=
+l</A> or=20
+to <A=20
+href=3D"http://en.wikipedia.org/wiki/Latin-9">en.wikipedia.org/wiki/Latin=
+-9</A>=20
+&nbsp;.&nbsp;.&nbsp;.</CENTER></P></DIV></BODY></HTML>
+
+------=_NextPart_000_003A_01C89772.B6267A20
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+Content-Location: http://www.pjb.com.au/comp/logo.gif
+
+R0lGODdhUQAgAKEAAAAAAP///+Xl5QAAACwAAAAAUQAgAAAC/oyPqcsND+GJtL6mrKZ47bmFXUgC
+HSIGJems36m+kUDXtvBm0M3XFTzDSWKPnpHjKRpxvAhQKTQZdrSQzalTlq6XEzUKAvhI4y6KuipL
+W9ph0FUdntvb6JrxdqPlxL05XJZEdycoZjflR9gX94doCJZliMUW6FiZkKeYqbgIySYplzgnikk6
+ysh5etgJh6Q66Tg4Qrq5Ycf5xVeB6gUVmqhxi+e75UrJCLh0Y/xaDDss27lEzBcGGozaWMjLWscs
+rXybWhpda7s6F/6RQnSZm8Ydq8YS+2OJfO9Jfn1nntPnapM8dPviddNwzJPAg6kW5nv2Kd5Ch80a
+vRsXiZvDSIvedJnqNWgXOo5WCDKEMVAcNSn+LGQraHLWI5cSgYkUl+USyiBjuPyCEg5nTnwoAfaw
+kE4Zu1H2igIswdTFt3pTQUKNKnVcAQA7
+
+------=_NextPart_000_003A_01C89772.B6267A20
+Content-Type: text/css;
+	charset="gb2312"
+Content-Transfer-Encoding: 7bit
+Content-Location: http://www.pjb.com.au/comp/styles.css
+
+BODY {
+	BACKGROUND: url(ribbon.gif) white fixed repeat-y left top
+}
+DIV {
+	MARGIN-LEFT: 83px
+}
+
+------=_NextPart_000_003A_01C89772.B6267A20--
