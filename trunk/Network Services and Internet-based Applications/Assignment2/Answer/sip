@@ -1,0 +1,161 @@
+INVITE sip:sikeh@192.168.1.4:5070 SIP/2.0
+Max-Forwards: 19
+Allow: INVITE,ACK,CANCEL,OPTIONS,BYE,INFO,REFER,NOTIFY
+Supported: replaces
+CSeq: 532 INVITE
+P-Called-Party-ID: <sip:sikeh@192.168.1.4:5070>
+Content-Length: 384
+Record-Route: <sip:127.0.0.1:5082;from-tag=4771;lr>
+Contact: <sip:tom@192.168.1.8:5071>
+User-Agent: NCH Swift Sound Express Talk 3.06
+P-Asserted-Identity: <sip:tom@ericsson.com>
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+To: <sip:sikeh@192.168.1.4:5070>
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bKa03da15ee422ac6218fb5ceaac1fd687,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK123764;received_port_ext=5081;received=127.0.0.1
+Content-Type: application/sdp
+
+v=0
+o=NCHSoftware-Talk 1208092253 1208092266 IN IP4 213.89.36.128
+s=Express Talk Call
+c=IN IP4 213.89.36.128
+t=0 0
+m=audio 8000 RTP/AVP 0 8 96 3 13 101
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:96 G726-32/8000
+a=rtpmap:3 GSM/8000
+a=rtpmap:13 CN/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+a=sendrecv
+a=local:192.168.1.8 8000
+a=domain:213.89.36.128
+
+SIP/2.0 180 Ringing
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bKa03da15ee422ac6218fb5ceaac1fd687,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK123764;received_port_ext=5081;received=127.0.0.1
+Record-Route: <sip:127.0.0.1:5082;from-tag=4771;lr>
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+CSeq: 532 INVITE
+User-Agent: NCH Swift Sound Express Talk 3.07
+Content-Length: 0
+
+
+SIP/2.0 180 Ringing
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bKa03da15ee422ac6218fb5ceaac1fd687,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK123764;received_port_ext=5081;received=127.0.0.1
+Record-Route: <sip:127.0.0.1:5082;from-tag=4771;lr>
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+CSeq: 532 INVITE
+User-Agent: NCH Swift Sound Express Talk 3.07
+Content-Length: 0
+
+
+SIP/2.0 180 Ringing
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bKa03da15ee422ac6218fb5ceaac1fd687,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK123764;received_port_ext=5081;received=127.0.0.1
+Record-Route: <sip:127.0.0.1:5082;from-tag=4771;lr>
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+CSeq: 532 INVITE
+User-Agent: NCH Swift Sound Express Talk 3.07
+Content-Length: 0
+
+
+SIP/2.0 200 OK
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bKa03da15ee422ac6218fb5ceaac1fd687,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK123764;received_port_ext=5081;received=127.0.0.1
+Record-Route: <sip:127.0.0.1:5082;from-tag=4771;lr>
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+CSeq: 532 INVITE
+User-Agent: NCH Swift Sound Express Talk 3.07
+Contact: <sip:sikeh@192.168.1.4:5070>
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY
+Accept: application/sdp
+Supported: replaces
+Content-Type: application/sdp
+Content-Length: 350
+
+v=0
+o=NCHSoftware-Talk 1208092438 1208092444 IN IP4 192.168.1.4
+s=Express Talk Call
+c=IN IP4 192.168.1.4
+t=0 0
+m=audio 8000 RTP/AVP 0 8 96 3 13 101
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:96 G726-32/8000
+a=rtpmap:3 GSM/8000
+a=rtpmap:13 CN/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+a=sendrecv
+a=direction:active
+
+SIP/2.0 200 OK
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bKa03da15ee422ac6218fb5ceaac1fd687,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK123764;received_port_ext=5081;received=127.0.0.1
+Record-Route: <sip:127.0.0.1:5082;from-tag=4771;lr>
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+CSeq: 532 INVITE
+User-Agent: NCH Swift Sound Express Talk 3.07
+Contact: <sip:sikeh@192.168.1.4:5070>
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY
+Accept: application/sdp
+Supported: replaces
+Content-Type: application/sdp
+Content-Length: 350
+
+v=0
+o=NCHSoftware-Talk 1208092438 1208092444 IN IP4 192.168.1.4
+s=Express Talk Call
+c=IN IP4 192.168.1.4
+t=0 0
+m=audio 8000 RTP/AVP 0 8 96 3 13 101
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:96 G726-32/8000
+a=rtpmap:3 GSM/8000
+a=rtpmap:13 CN/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+a=sendrecv
+a=direction:active
+
+ACK sip:sikeh@192.168.1.4:5070 SIP/2.0
+CSeq: 532 ACK
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bKfc9e5de6dc70851616cc4b699213631b,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK133764;received_port_ext=5082;received=127.0.0.1
+Content-Length: 0
+Max-Forwards: 19
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+User-Agent: NCH Swift Sound Express Talk 3.06
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+
+
+BYE sip:sikeh@192.168.1.4:5070 SIP/2.0
+CSeq: 533 BYE
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bK855fe7e72e9bb8646376de7b08988a31,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK143764;received_port_ext=5082;received=127.0.0.1
+Content-Length: 0
+Max-Forwards: 19
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+User-Agent: NCH Swift Sound Express Talk 3.06
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+
+
+SIP/2.0 200 OK
+Via: SIP/2.0/udp 127.0.0.1:5082;branch=z9hG4bK855fe7e72e9bb8646376de7b08988a31,SIP/2.0/UDP 192.168.1.8:5071;rport=5071;branch=z9hG4bK143764;received_port_ext=5082;received=127.0.0.1
+To: <sip:sikeh@192.168.1.4:5070>;tag=4649
+From: "tom" <sip:tom@ericsson.com>;tag=4771
+Call-ID: 1208092259-3764-SEDS-F23A65A673@213.89.36.128
+CSeq: 533 BYE
+User-Agent: NCH Swift Sound Express Talk 3.07
+Content-Length: 0
+
+
