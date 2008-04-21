@@ -209,6 +209,7 @@ public class Node implements PeerInterface {
     private void findSuccessor(NodeId id, Message msg) {
         if (math.belongsTo(id.id, myid.id, succ.id)) {
             int[] tmp = {succ.id, succ.ip};
+            //TODO modify here
             Message returnMsg = new Message(EventType.REPLY_FIND_SUCCESSOR, tmp);
             com.send(id, msg);
         } else {
@@ -237,6 +238,16 @@ public class Node implements PeerInterface {
 
     private void askSuccessor(NodeId source, Message msg) {
         //TODO
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void handleReplyFindSuccessor(NodeId source, Message msg) {
+        //TODO Not yet implemented
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void handleReplyFindPredecessor(NodeId source, Message msg) {
+        //TODO Not yet implemented
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -403,13 +414,13 @@ public class Node implements PeerInterface {
 
         addEventListener(EventType.REPLY_FIND_PREDECESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
-                handleReplyAskPredecessor(source, msg);
+                handleReplyFindPredecessor(source, msg);
             }
         });
 
         addEventListener(EventType.REPLY_FIND_SUCCESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
-                handleReplyAskSuccessor(source, msg);
+                handleReplyFindSuccessor(source, msg);
             }
         });
 
@@ -445,9 +456,6 @@ public class Node implements PeerInterface {
 
 
     }
-
-
-
 
 
     // for GUI
