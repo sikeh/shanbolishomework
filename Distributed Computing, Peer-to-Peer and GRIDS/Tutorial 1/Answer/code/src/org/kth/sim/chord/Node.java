@@ -26,7 +26,7 @@ import java.util.EventListener;
 public class Node implements PeerInterface {
 
     public static int seed = 7;
-    
+
     public int N = 128 * 1024;
     private CommInterface com;
     public MathMiscConstant math = null;
@@ -181,16 +181,16 @@ public class Node implements PeerInterface {
      */
     private void stabilize() {
 
-        // check if your predecessor is alive. If not, set to null and update susbcription list
+        //TODO check if your predecessor is alive. If not, set to null and update susbcription list
 
         // if its time to stabilize fingers, do it!
         bfdelay += stabilizeDelay;
         if (bfdelay > buildFingersDelay) {
             bfdelay = 0;
-            // buildFingers(); -> build fingers here
+            //TODO buildFingers(); -> build fingers here
         }
 
-        // do the part in the protocol i.e. ask your successor abt its predecessor
+        //TODO do the part in the protocol i.e. ask your successor abt its predecessor
 
     }
 
@@ -199,18 +199,38 @@ public class Node implements PeerInterface {
      */
     private void notify_s(NodeId pos_pred) {
         // received a notify
-        if (pred != null || (pred.id < pos_pred.id && pos_pred.id <= myid.id)) {
+        if (pred == null || (pred.id < pos_pred.id && pos_pred.id <= myid.id)) {
             pred = pos_pred;
         }
     }
 
-    private void findSuccessor(NodeId source, Message msg) {
+    private void handleFindSuccessor(NodeId source, Message msg) {
         // TODO: find successor
         int[] data = msg.data;
         int id = data[0];
         if (pred != null && (pred.id < id && id <= source.id)) {
 
         }
+    }
+
+    private void handleFindPredecessor(NodeId source, Message msg) {
+        //TODO: handle find predecessor
+    }
+
+    private void handleAskPredecessor(NodeId source, Message msg) {
+        //TODO: handle ask Predecessor
+    }
+
+    private void handleAskSuccessor(NodeId source, Message msg) {
+        //TODO handle ask successor
+    }
+
+    private void handleReplyAskPredecessor(NodeId source, Message msg) {
+        //TODO handle Reply Ask Predecessor
+    }
+
+    private void handleReplyAskSuccessor(NodeId source, Message msg) {
+        //TODO handle Reply Ask Successor
     }
 
     /**
@@ -346,17 +366,50 @@ public class Node implements PeerInterface {
                 stabilize();
             }
         });
+
         addEventListener(EventType.NOTIFY, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
                 notify_s(source);
             }
         });
+
         addEventListener(EventType.FIND_SUCC, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
-                findSuccessor(source, msg);
+                handleFindSuccessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.FIND_PRED, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleFindPredecessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.ASK_PRED, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleAskPredecessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.ASK_SUCC, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleAskSuccessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.REPLY_ASK_PRED, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleReplyAskPredecessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.REPLY_ASK_SUCC, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleReplyAskSuccessor(source, msg);
             }
         });
     }
+
 
     // for GUI
     public NodeId pred() {
