@@ -2,19 +2,19 @@ package org.kth.sim.chord;
 
 public enum EventType {
 
-	// It is important that the enums start from zero,
-	// and are let to have the original values
-	
-	/**
-	 * for calling periodic stabilization
-	 */
-	PERIODIC,					
-	
-	/**
-	 * notify successor											
-	 * [initiator's id, initiator's ip]
-	 */
-	NOTIFY,
+    // It is important that the enums start from zero,
+    // and are let to have the original values
+
+    /**
+     * for calling periodic stabilization
+     */
+    PERIODIC,
+
+    /**
+     * notify successor
+     * [initiator's id, initiator's ip]
+     */
+    NOTIFY,
 
     FIND_SUCCESSOR,
 
@@ -26,6 +26,14 @@ public enum EventType {
 
     CLOSEST_PRECEDING_NODE,
 
-    FIX_FINGERS
+    FIX_FINGERS,
+
+    ASK_PREDECESSOR,
+    
+    ASK_SUCCESSOR,
+
+    REPLY_ASK_PREDECESSOR,
+
+    REPLY_ASK_SUCCESSOR,
 
 }

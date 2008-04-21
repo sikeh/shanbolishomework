@@ -38,14 +38,16 @@ public class Node implements PeerInterface {
     public NodeId[] successors;
     public int r = 9;    // size of the successor list  10->1024, 6->64
 
-    NodeId pred = new NodeId(-1, -1); //int pred = -1;
-    NodeId succ = new NodeId(-2, -1); //int succ = -2;
+    private NodeId pred = new NodeId(-1, -1); //int pred = -1;
+    private NodeId succ = new NodeId(-2, -1); //int succ = -2;
 
     private SicsSim sim;
     // The time delay used for periodic stabilization
     private final int stabilizeDelay = 10;
     private final int buildFingersDelay = 7 * stabilizeDelay;
     public int bfdelay = 0;
+
+    private NodeId x;
 
     // hashtable for keeping track of nodes that i want to subscribe to (ie. to be notified when they fail) x=id, y=# of times subscribed
     public Hashtable<NodeId, Integer> subsc = new Hashtable<NodeId, Integer>(m); // just for the fingers!
@@ -112,7 +114,7 @@ public class Node implements PeerInterface {
 
         init(N, seed, id, com);
 
-        succ =  myid;
+        succ = myid;
         pred = null;
         //status = Status.INSIDE;
         // build fingers!
@@ -138,7 +140,7 @@ public class Node implements PeerInterface {
         data[2] = id.id;
         data[3] = id.ip;
         Message msg = new Message(EventType.FIND_SUCCESSOR, data);
-        com.send(existingId,msg);
+        com.send(existingId, msg);
     }
 
     public void leave() {
@@ -209,9 +211,9 @@ public class Node implements PeerInterface {
             int[] tmp = {succ.id, succ.ip};
             Message returnMsg = new Message(EventType.REPLY_FIND_SUCCESSOR, tmp);
             com.send(id, msg);
-        } else{
+        } else {
             NodeId nPrime = closestPrecedingNode(id);
-            
+
         }
     }
 
@@ -220,17 +222,28 @@ public class Node implements PeerInterface {
     }
 
     private void handleReplyAskPredecessor(NodeId source, Message msg) {
-        //TODO handle Reply Ask Predecessor
+        succ = new NodeId(msg.data[0], msg.data[1]);
     }
 
     private void handleReplyAskSuccessor(NodeId source, Message msg) {
         //TODO handle Reply Ask Successor
     }
 
+
+    private void askPredecessor(NodeId source, Message msg) {
+        //TODO Not yet implemented
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void askSuccessor(NodeId source, Message msg) {
+        //TODO
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     private NodeId closestPrecedingNode(NodeId id) {
         for (int i = m; i >= 1; i--) {
             if (math.belongsTo(fingers[i - 1].id, myid.id, id.id)) {
-                return fingers[i-1];
+                return fingers[i - 1];
             }
         }
         return myid;
@@ -400,6 +413,30 @@ public class Node implements PeerInterface {
             }
         });
 
+        addEventListener(EventType.ASK_PREDECESSOR, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                askPredecessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.ASK_SUCCESSOR, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                askSuccessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.REPLY_ASK_SUCCESSOR, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleReplyAskSuccessor(source, msg);
+            }
+        });
+
+        addEventListener(EventType.REPLY_ASK_PREDECESSOR, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleReplyAskPredecessor(source, msg);
+            }
+        });
+
 //        addEventListener(EventType.CLOSEST_PRECEDING_NODE, new ChordEventListener() {
 //            public void receivedEvent(NodeId source, Message msg) {
 //                closestPrecedingNode(source, msg);
@@ -408,6 +445,9 @@ public class Node implements PeerInterface {
 
 
     }
+
+
+
 
 
     // for GUI
