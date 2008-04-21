@@ -22,11 +22,11 @@ public enum EventType {
 
     ASK_PRED,
 
-    REPLY_2_ASK_PRED,
+    REPLY_ASK_PRED,
 
     ASK_SUCC,
 
-    REPLY_2_ASK_SUCC,
+    REPLY_ASK_SUCC,
 
 
     
