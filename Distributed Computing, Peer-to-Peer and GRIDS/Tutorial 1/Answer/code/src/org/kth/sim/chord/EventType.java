@@ -18,9 +18,17 @@ public enum EventType {
 
     FIND_SUCC,
 
+    FIND_PRED,
+
     ASK_PRED,
 
     REPLY_2_ASK_PRED,
+
+    ASK_SUCC,
+
+    REPLY_2_ASK_SUCC,
+
+
     
 
 }
