@@ -135,7 +135,7 @@ public class Node implements PeerInterface {
         int[] data = new int[2];
         data[0] = id.id;
         data[1] = id.ip;
-        Message msg = new Message(EventType.FIND_SUCC, data);
+        Message msg = new Message(EventType.FIND_SUCCESSOR, data);
 //        com.send();
     }
 
@@ -229,6 +229,16 @@ public class Node implements PeerInterface {
 
     private void handleReplyAskSuccessor(NodeId source, Message msg) {
         //TODO handle Reply Ask Successor
+    }
+
+    private void handleClosestPrecedingNode(NodeId id, Message msg) {
+        for (int i = m; i >= 1; i--) {
+            if (math.belongsTo(fingers[i - 1].id, myid.id, id.id)) {
+                //TODO EVENT
+//                return fingers[i-1];
+            }
+        }
+        //TODO EVENT
     }
 
     /**
@@ -371,42 +381,51 @@ public class Node implements PeerInterface {
             }
         });
 
-        addEventListener(EventType.FIND_SUCC, new ChordEventListener() {
+        addEventListener(EventType.FIND_SUCCESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
                 handleFindSuccessor(source, msg);
             }
         });
 
-        addEventListener(EventType.FIND_PRED, new ChordEventListener() {
+        addEventListener(EventType.FIND_PREDECESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
                 handleFindPredecessor(source, msg);
             }
         });
 
-        addEventListener(EventType.ASK_PRED, new ChordEventListener() {
+        addEventListener(EventType.ASK_PREDECESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
                 handleAskPredecessor(source, msg);
             }
         });
 
-        addEventListener(EventType.ASK_SUCC, new ChordEventListener() {
+        addEventListener(EventType.ASK_SUCCESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
                 handleAskSuccessor(source, msg);
             }
         });
 
-        addEventListener(EventType.REPLY_ASK_PRED, new ChordEventListener() {
+        addEventListener(EventType.REPLY_ASK_PREDECESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
                 handleReplyAskPredecessor(source, msg);
             }
         });
 
-        addEventListener(EventType.REPLY_ASK_SUCC, new ChordEventListener() {
+        addEventListener(EventType.REPLY_ASK_SUCCESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
                 handleReplyAskSuccessor(source, msg);
             }
         });
+
+        addEventListener(EventType.CLOSEST_PRECEDING_NODE, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleClosestPrecedingNode(source, msg);
+            }
+        });
+
+
     }
+
 
 
     // for GUI
