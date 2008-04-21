@@ -25,8 +25,6 @@ import java.util.EventListener;
 
 public class Node implements PeerInterface {
 
-    public static int seed = 7;
-
     public int N = 128 * 1024;
     private CommInterface com;
     public MathMiscConstant math = null;
