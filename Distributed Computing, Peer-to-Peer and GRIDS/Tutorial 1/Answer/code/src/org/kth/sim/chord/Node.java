@@ -112,8 +112,8 @@ public class Node implements PeerInterface {
 
         init(N, seed, id, com);
 
-        // TODO shouldn't predecessor = nil ?
-        succ = pred = myid;
+        succ =  myid;
+        pred = null;
         //status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
@@ -130,13 +130,15 @@ public class Node implements PeerInterface {
 
         init(N, seed, id, com);
 
-        // TODO: join the network
         pred = null;
-        int[] data = new int[2];
+        int[] data = new int[4];
         data[0] = id.id;
         data[1] = id.ip;
+        //date[2] and data[3] store the initial findSuccessor id.
+        data[2] = id.id;
+        data[3] = id.ip;
         Message msg = new Message(EventType.FIND_SUCCESSOR, data);
-//        com.send();
+        com.send(existingId,msg);
     }
 
     public void leave() {
@@ -205,7 +207,7 @@ public class Node implements PeerInterface {
     private void findSuccessor(NodeId id, Message msg) {
         if (math.belongsTo(id.id, myid.id, succ.id)) {
             int[] tmp = {succ.id, succ.ip};
-            msg = new Message(EventType.REPLY_FIND_SUCCESSOR, tmp);
+            Message returnMsg = new Message(EventType.REPLY_FIND_SUCCESSOR, tmp);
             com.send(id, msg);
         } else{
             NodeId nPrime = closestPrecedingNode(id);
@@ -217,11 +219,11 @@ public class Node implements PeerInterface {
         //TODO: handle find predecessor
     }
 
-    private void replyAskPredecessor(NodeId source, Message msg) {
+    private void handleReplyAskPredecessor(NodeId source, Message msg) {
         //TODO handle Reply Ask Predecessor
     }
 
-    private void replyAskSuccessor(NodeId source, Message msg) {
+    private void handleReplyAskSuccessor(NodeId source, Message msg) {
         //TODO handle Reply Ask Successor
     }
 
@@ -388,13 +390,13 @@ public class Node implements PeerInterface {
 
         addEventListener(EventType.REPLY_FIND_PREDECESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
-                replyAskPredecessor(source, msg);
+                handleReplyAskPredecessor(source, msg);
             }
         });
 
         addEventListener(EventType.REPLY_FIND_SUCCESSOR, new ChordEventListener() {
             public void receivedEvent(NodeId source, Message msg) {
-                replyAskSuccessor(source, msg);
+                handleReplyAskSuccessor(source, msg);
             }
         });
 
