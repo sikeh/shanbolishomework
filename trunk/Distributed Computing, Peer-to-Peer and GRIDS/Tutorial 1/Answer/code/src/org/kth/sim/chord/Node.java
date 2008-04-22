@@ -47,8 +47,6 @@ public class Node implements PeerInterface {
     private final int buildFingersDelay = 7 * stabilizeDelay;
     public int bfdelay = 0;
 
-    private NodeId x;
-
     private int indexInFigures = 0;
 
     // hashtable for keeping track of nodes that i want to subscribe to (ie. to be notified when they fail) x=id, y=# of times subscribed
@@ -228,18 +226,18 @@ public class Node implements PeerInterface {
 
     private void fixFingers() {
         if (indexInFigures == m) {
-            indexInFigures = 0;            
+            indexInFigures = 0;
         }
         int[] data = new int[5];
         data[0] = 1;
-        data[1] = myid.id + (int) Math.pow(2, indexInFigures);
+        data[1] = (myid.id + (int) Math.pow(2, indexInFigures)) % (int) (Math.pow(2, m));
         data[2] = myid.id;
         data[3] = myid.ip;
         data[4] = indexInFigures;
         Message msg = new Message(EventType.FIND_SUCCESSOR, data);
         com.send(myid, msg);
 
-        indexInFigures ++;
+        indexInFigures++;
     }
 
     /**
