@@ -49,6 +49,8 @@ public class Node implements PeerInterface {
 
     private NodeId x;
 
+    private int indexInFigures = 0;
+
     // hashtable for keeping track of nodes that i want to subscribe to (ie. to be notified when they fail) x=id, y=# of times subscribed
     public Hashtable<NodeId, Integer> subsc = new Hashtable<NodeId, Integer>(m); // just for the fingers!
 
@@ -97,6 +99,7 @@ public class Node implements PeerInterface {
         this.N = N;
         this.math = new MathMiscConstant(N, 2);   // for chord, k=2
         this.myid = id;
+        System.out.println("********** myid: " + myid.id + ", ip:" + myid.ip);
         this.com = com;
         this.rnd = new Random(seed);
 
@@ -116,7 +119,7 @@ public class Node implements PeerInterface {
 
         succ = myid;
         pred = null;
-        //status = Status.INSIDE;
+//        status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
             fingers[i] = null;    // TODO sikeh: should it be null (instead of myid)?
@@ -133,12 +136,13 @@ public class Node implements PeerInterface {
         init(N, seed, id, com);
 
         pred = null;
-        int[] data = new int[4];
-        data[0] = id.id;
-        data[1] = id.ip;
+        int[] data = new int[5];
+        data[0] = 0; // find_successor from join
         //date[2] and data[3] store the initial findSuccessor id.
-        data[2] = id.id;
-        data[3] = id.ip;
+        data[1] = id.id; // param id
+        data[2] = id.id; // init node id
+        data[3] = id.ip; // init node ip
+        data[4] = -1; // pos in fingers[], since it's not a join, make it -1 
         Message msg = new Message(EventType.FIND_SUCCESSOR, data);
         com.send(existingId, msg);
     }
@@ -203,7 +207,7 @@ public class Node implements PeerInterface {
     private void stabilize() {
 
         //TODO check if your predecessor is alive. If not, set to null and update susbcription list
-        if (!sim.isAlive(pred.id,  myid)) {
+        if (!sim.isAlive(pred.id, myid)) {
             pred = null;
             subsc.remove(pred);
         }
@@ -213,10 +217,27 @@ public class Node implements PeerInterface {
         if (bfdelay > buildFingersDelay) {
             bfdelay = 0;
             //TODO buildFingers(); -> build fingers here
+            fixFingers();
         }
 
         //TODO do the part in the protocol i.e. ask your successor abt its predecessor
 
+    }
+
+    private void fixFingers() {
+        if (indexInFigures == m) {
+            indexInFigures = 0;            
+        }
+        int[] data = new int[5];
+        data[0] = 1;
+        data[1] = myid.id + (int) Math.pow(2, indexInFigures);
+        data[2] = myid.id;
+        data[3] = myid.ip;
+        data[4] = indexInFigures;
+        Message msg = new Message(EventType.FIND_SUCCESSOR, data);
+        com.send(myid, msg);
+
+        indexInFigures ++;
     }
 
     /**
@@ -229,15 +250,24 @@ public class Node implements PeerInterface {
         }
     }
 
-    private void findSuccessor(NodeId id, Message msg) {
-        if (math.belongsTo(id.id, myid.id, succ.id)) {
-            int[] tmp = {succ.id, succ.ip};
-            //TODO modify here
-            Message returnMsg = new Message(EventType.REPLY_FIND_SUCCESSOR, tmp);
-            com.send(id, msg);
+    private void findSuccessor(NodeId source, Message inMsg) {
+        int[] inData = inMsg.data;
+        int paramId = inData[0];
+        int initId = inData[1];
+        int initIp = inData[2];
+        if (math.belongsTo(paramId, myid.id, succ.id)) {
+            NodeId initNode = new NodeId(initId, initIp);
+            int[] outData = {succ.id, succ.ip};
+            Message outMsg = new Message(EventType.REPLY_FIND_SUCCESSOR, outData);
+            com.send(initNode, outMsg);
         } else {
-            NodeId nPrime = closestPrecedingNode(id);
-
+            NodeId nPrime = closestPrecedingNode(paramId);
+            int[] outData = new int[3];
+            outData[0] = paramId;
+            outData[1] = initId;
+            outData[2] = initIp;
+            Message outMsg = new Message(EventType.FIND_SUCCESSOR, outData);
+            com.send(nPrime, outMsg);
         }
     }
 
@@ -266,7 +296,19 @@ public class Node implements PeerInterface {
 
     private void handleReplyFindSuccessor(NodeId source, Message msg) {
         //TODO Not yet implemented
-        throw new UnsupportedOperationException("Not yet implemented");
+        int[] data = msg.data;
+        int succId = data[2];
+        int succIp = data[3];
+        int flag = data[0]; // 0 -> join, 1 -> fix_fingers
+        switch (flag) {
+            case 0:
+                succ = new NodeId(succId, succIp);
+                break;
+            case 1:
+                int index = data[4];
+                fingers[index] = new NodeId(succId, succIp);
+                break;
+        }
     }
 
     private void handleReplyFindPredecessor(NodeId source, Message msg) {
@@ -274,9 +316,9 @@ public class Node implements PeerInterface {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private NodeId closestPrecedingNode(NodeId id) {
+    private NodeId closestPrecedingNode(int id) {
         for (int i = m; i >= 1; i--) {
-            if (math.belongsTo(fingers[i - 1].id, myid.id, id.id)) {
+            if (math.belongsTo(fingers[i - 1].id, myid.id, id)) {
                 return fingers[i - 1];
             }
         }
