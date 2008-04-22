@@ -188,6 +188,9 @@ public class Node implements PeerInterface {
         // case 3: my predecessor failed ->
         //		1. set it to null and let periodic stabilization fix it
         //		2. update your subscription list for failures
+        if (fid.equals(pred)) {
+            pred = null;
+        }
 
         // unsubscride from this node
         subsc.remove(fid);
@@ -200,6 +203,10 @@ public class Node implements PeerInterface {
     private void stabilize() {
 
         //TODO check if your predecessor is alive. If not, set to null and update susbcription list
+        if (!sim.isAlive(pred.id,  myid)) {
+            pred = null;
+            subsc.remove(pred);
+        }
 
         // if its time to stabilize fingers, do it!
         bfdelay += stabilizeDelay;
