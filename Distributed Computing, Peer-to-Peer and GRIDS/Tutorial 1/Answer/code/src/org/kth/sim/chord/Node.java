@@ -116,7 +116,7 @@ public class Node implements PeerInterface {
         init(N, seed, id, com);
 
         succ = myid;
-        pred = null;
+        pred = myid;
 //        status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
@@ -140,7 +140,8 @@ public class Node implements PeerInterface {
         data[1] = id.id; // param id
         data[2] = id.id; // init node id
         data[3] = id.ip; // init node ip
-        data[4] = -1; // pos in fingers[], since it's not a join, make it -1 
+        data[4] = -1; // pos in fingers[], since it's not a join, make it -1
+        System.out.printf("%d: join, ask %d about who is my successor%n", id.id, existingId.id);
         Message msg = new Message(EventType.FIND_SUCCESSOR, data);
         com.send(existingId, msg);
     }
@@ -295,11 +296,13 @@ public class Node implements PeerInterface {
     private void handleReplyFindSuccessor(NodeId source, Message msg) {
         //TODO Not yet implemented
         int[] data = msg.data;
+        int paramId = data[1];
         int succId = data[2];
         int succIp = data[3];
         int flag = data[0]; // 0 -> join, 1 -> fix_fingers
         switch (flag) {
             case 0:
+                System.out.printf("%d: successor of %d is %d%n", myid.id, paramId, succId);
                 succ = new NodeId(succId, succIp);
                 break;
             case 1:
