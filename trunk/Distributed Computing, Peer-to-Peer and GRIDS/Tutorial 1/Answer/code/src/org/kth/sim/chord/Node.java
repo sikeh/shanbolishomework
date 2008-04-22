@@ -119,10 +119,10 @@ public class Node implements PeerInterface {
         //status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
-            fingers[i] = myid;
+            fingers[i] = null;    // TODO sikeh: should it be null (instead of myid)?
         // build successor list!
         for (int i = 0; i < r; i++)
-            successors[i] = myid;
+            successors[i] = null;   // TODO sikeh: should it be null (instead of myid)?
         // registering for periodic event with the simulator
         this.sim.addPeriodicEvent(stabilizeDelay, myid, /*networkid, */new Message(EventType.PERIODIC, null));
         //System.out.println("\t Node: "+myid+", i'm starting the ring. This shouldnt happen after merger");
@@ -164,10 +164,26 @@ public class Node implements PeerInterface {
         //		1. replace succ by first 'alive' node in ur successor list
         //		2. update your first finger as it is the same as ur successor
         //		3. update your subscription list for failures
+        if (fid.equals(succ)) {
+            for (NodeId aNode : successors) {
+                if (sim.isAlive(aNode.id, myid)) {
+                    succ = aNode;
+                    fingers[0] = succ;
+                    break;
+                } else {
+                    subsc.remove(aNode);
+                }
+            }
+        }
 
         // case 2: one of my fingers failed ->
         //		1. set it to null and let periodic stabilization fix it
         //		2. update your subscription list for failures
+        for (int i = 0; i < fingers.length; i++) {
+            if (fid.equals(fingers[i])) {
+                fingers[i] = null;
+            }
+        }
 
         // case 3: my predecessor failed ->
         //		1. set it to null and let periodic stabilization fix it
