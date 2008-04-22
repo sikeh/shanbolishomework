@@ -116,7 +116,7 @@ public class Node implements PeerInterface {
         init(N, seed, id, com);
 
         succ = myid;
-        pred = myid;
+        pred = null;
 //        status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
@@ -252,20 +252,19 @@ public class Node implements PeerInterface {
 
     private void findSuccessor(NodeId source, Message inMsg) {
         int[] inData = inMsg.data;
-        int paramId = inData[0];
-        int initId = inData[1];
-        int initIp = inData[2];
+        int flag = inData[0];
+        int paramId = inData[1];
+        int initId = inData[2];
+        int initIp = inData[3];
+        int index = inData[4];
         if (math.belongsTo(paramId, myid.id, succ.id)) {
             NodeId initNode = new NodeId(initId, initIp);
-            int[] outData = {succ.id, succ.ip};
+            int[] outData = {flag, paramId, succ.id, succ.ip, index};
             Message outMsg = new Message(EventType.REPLY_FIND_SUCCESSOR, outData);
             com.send(initNode, outMsg);
         } else {
             NodeId nPrime = closestPrecedingNode(paramId);
-            int[] outData = new int[3];
-            outData[0] = paramId;
-            outData[1] = initId;
-            outData[2] = initIp;
+            int[] outData = {flag, paramId, initId, initIp, index};
             Message outMsg = new Message(EventType.FIND_SUCCESSOR, outData);
             com.send(nPrime, outMsg);
         }
