@@ -18,10 +18,6 @@ public enum EventType {
 
     FIND_SUCCESSOR,
 
-    FIND_PREDECESSOR,
-
-    REPLY_FIND_PREDECESSOR,
-
     REPLY_FIND_SUCCESSOR,
 
     CLOSEST_PRECEDING_NODE,
@@ -30,10 +26,6 @@ public enum EventType {
 
     ASK_PREDECESSOR,
     
-    ASK_SUCCESSOR,
-
     REPLY_ASK_PREDECESSOR,
-
-    REPLY_ASK_SUCCESSOR,
 
 }
