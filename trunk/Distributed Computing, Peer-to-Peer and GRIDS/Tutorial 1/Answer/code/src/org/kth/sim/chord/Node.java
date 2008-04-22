@@ -97,7 +97,7 @@ public class Node implements PeerInterface {
         this.N = N;
         this.math = new MathMiscConstant(N, 2);   // for chord, k=2
         this.myid = id;
-        System.out.println("********** myid: " + myid.id + ", ip:" + myid.ip);
+//        System.out.println("********** myid: " + myid.id + ", ip:" + myid.ip);
         this.com = com;
         this.rnd = new Random(seed);
 
@@ -204,6 +204,7 @@ public class Node implements PeerInterface {
      * Periodically verify's immediate successor, and tells the successor about itself
      */
     private void stabilize() {
+        System.out.printf("node %d: stabilize", myid.id);
 
         //TODO check if your predecessor is alive. If not, set to null and update susbcription list
         if (!sim.isAlive(myid.id, pred)) {
@@ -233,6 +234,7 @@ public class Node implements PeerInterface {
     }
 
     private void fixFingers() {
+        System.out.printf("node %d: fix fingers[%d]", myid.id, indexInFigures);
         if (indexInFigures == m) {
             indexInFigures = 0;
         }
