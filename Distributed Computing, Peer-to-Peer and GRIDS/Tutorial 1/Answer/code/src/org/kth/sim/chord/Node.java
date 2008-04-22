@@ -116,7 +116,7 @@ public class Node implements PeerInterface {
         init(N, seed, id, com);
 
         succ = myid;
-        pred = myid;
+//        pred = myid;
 //        status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
@@ -133,7 +133,7 @@ public class Node implements PeerInterface {
 
         init(N, seed, id, com);
 
-        pred = null;
+//        pred = null;
         int[] data = new int[5];
         data[0] = 0; // find_successor from join
         //date[2] and data[3] store the initial findSuccessor id.
@@ -141,7 +141,7 @@ public class Node implements PeerInterface {
         data[2] = id.id; // init node id
         data[3] = id.ip; // init node ip
         data[4] = -1; // pos in fingers[], since it's not a join, make it -1
-        System.out.printf("%d: join, ask %d about who is my successor%n", id.id, existingId.id);
+//        System.out.printf("%d: join, ask %d about who is my successor%n", id.id, existingId.id);
         Message msg = new Message(EventType.FIND_SUCCESSOR, data);
         com.send(existingId, msg);
     }
@@ -169,7 +169,7 @@ public class Node implements PeerInterface {
         //		3. update your subscription list for failures
         if (fid.equals(succ)) {
             for (NodeId aNode : successors) {
-                if (sim.isAlive(aNode.id, myid)) {
+                if (sim.isAlive(myid.id, aNode)) {
                     succ = aNode;
                     fingers[0] = succ;
                     break;
@@ -184,7 +184,7 @@ public class Node implements PeerInterface {
         //		2. update your subscription list for failures
         for (int i = 0; i < fingers.length; i++) {
             if (fid.equals(fingers[i])) {
-                fingers[i] = null;
+                fingers[i] = new NodeId(-1, -1);
             }
         }
 
@@ -192,7 +192,7 @@ public class Node implements PeerInterface {
         //		1. set it to null and let periodic stabilization fix it
         //		2. update your subscription list for failures
         if (fid.equals(pred)) {
-            pred = null;
+            pred = new NodeId(-1, -1);
         }
 
         // unsubscride from this node
@@ -206,8 +206,8 @@ public class Node implements PeerInterface {
     private void stabilize() {
 
         //TODO check if your predecessor is alive. If not, set to null and update susbcription list
-        if (!sim.isAlive(pred.id, myid)) {
-            pred = null;
+        if (!sim.isAlive(myid.id, pred)) {
+            pred = new NodeId(-1, -1);
             subsc.remove(pred);
         }
 
@@ -220,8 +220,15 @@ public class Node implements PeerInterface {
         }
 
         //TODO do the part in the protocol i.e. ask your successor abt its predecessor
+        NodeId dest = new NodeId(-1, -1);
+        for (NodeId aNode : successors) {
+            if (sim.isAlive(myid.id, aNode)) {
+                dest = aNode;
+                break;
+            }
+        }
         Message msg = new Message(EventType.ASK_PREDECESSOR, null);
-        com.send(succ, msg);
+        com.send(dest, msg);
 
     }
 
@@ -246,7 +253,7 @@ public class Node implements PeerInterface {
      */
     private void notify_s(NodeId pos_pred) {
         // received a notify
-        if (pred == null || math.belongsTonn(pos_pred.id, pred.id, myid.id)) {
+        if (pred.id < 0 || math.belongsTonn(pos_pred.id, pred.id, myid.id)) {
             pred = pos_pred;
         }
     }
@@ -283,6 +290,9 @@ public class Node implements PeerInterface {
         outData[1] = myid.ip;
         Message outMsg = new Message(EventType.NOTIFY, outData);
         com.send(succ, outMsg);
+
+        Message outMsg2 = new Message(EventType.ASK_SUCCESSOR_LIST, null);
+        com.send(succ, outMsg2);
     }
 
     private void askPredecessor(NodeId source, Message msg) {
@@ -302,8 +312,10 @@ public class Node implements PeerInterface {
         int flag = data[0]; // 0 -> join, 1 -> fix_fingers
         switch (flag) {
             case 0:
-                System.out.printf("%d: successor of %d is %d%n", myid.id, paramId, succId);
+//                System.out.printf("%d: successor of %d is %d%n", myid.id, paramId, succId);
                 succ = new NodeId(succId, succIp);
+                Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, null);
+                com.send(succ, outMsg);
                 break;
             case 1:
                 int index = data[4];
@@ -313,13 +325,23 @@ public class Node implements PeerInterface {
     }
 
     private void handleReplyAskSuccessorList(NodeId source, Message msg) {
-        //TODO Not yet implemented
-        throw new UnsupportedOperationException("Not yet implemented");
+        int sizeOfSuccessorList = msg.data.length / 2;
+        successors[0] = source;
+        for (int i = 0; i < sizeOfSuccessorList; i++) {
+            int id = msg.data[i];
+            int ip = msg.data[i + 1];
+            successors[i + 1] = new NodeId(id, ip);
+        }
     }
 
     private void askSuccessorList(NodeId source, Message msg) {
-        //TODO Not yet implemented
-        throw new UnsupportedOperationException("Not yet implemented");
+        int[] outData = new int[2 * r];
+        for (int i = 0; i < successors.length; i++) {
+            successors[i].id = outData[i];
+            successors[i].ip = outData[i + 1];
+        }
+        Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, outData);
+        com.send(source, outMsg);
     }
 
     private NodeId closestPrecedingNode(int id) {
