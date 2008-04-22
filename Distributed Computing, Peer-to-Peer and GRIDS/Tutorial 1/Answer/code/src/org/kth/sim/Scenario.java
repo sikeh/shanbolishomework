@@ -20,7 +20,7 @@ public class Scenario {
 
 	private ScenEvent scenArr[] = new ScenEvent[] {
 			//              NrEvents,    Time, Joins, 	Fails
-			new LotteryEvent(     5,      20,     1,      0),
+			new LotteryEvent(     10,      20,     1,      0),
 //			new LotteryEvent(     10,      20,     1,      0),
 			new DelayEvent(300),
 			new SaveSONEvent()	// this should always be the last event in the scenario
