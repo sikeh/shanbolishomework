@@ -312,6 +312,16 @@ public class Node implements PeerInterface {
         }
     }
 
+    private void handleReplyAskSuccessorList(NodeId source, Message msg) {
+        //TODO Not yet implemented
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void askSuccessorList(NodeId source, Message msg) {
+        //TODO Not yet implemented
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     private NodeId closestPrecedingNode(int id) {
         for (int i = m; i >= 1; i--) {
             if (math.belongsTo(fingers[i - 1].id, myid.id, id)) {
@@ -485,13 +495,16 @@ public class Node implements PeerInterface {
             }
         });
 
-//        addEventListener(EventType.CLOSEST_PRECEDING_NODE, new ChordEventListener() {
-//            public void receivedEvent(NodeId source, Message msg) {
-//                closestPrecedingNode(source, msg);
-//            }
-//        });
-
-
+        addEventListener(EventType.ASK_SUCCESSOR_LIST, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                askSuccessorList(source, msg);
+            }
+        });
+        addEventListener(EventType.REPLY_ASK_SUCCESSOR_LIST, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                handleReplyAskSuccessorList(source, msg);
+            }
+        });
     }
 
 
