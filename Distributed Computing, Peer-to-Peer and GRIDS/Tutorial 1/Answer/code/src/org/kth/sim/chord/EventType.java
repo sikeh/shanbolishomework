@@ -28,4 +28,8 @@ public enum EventType {
     
     REPLY_ASK_PREDECESSOR,
 
+    ASK_SUCCESSOR_LIST,
+
+    REPLY_ASK_SUCCESSOR_LIST
+
 }
