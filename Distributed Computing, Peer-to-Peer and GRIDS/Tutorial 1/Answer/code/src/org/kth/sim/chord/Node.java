@@ -65,7 +65,7 @@ public class Node implements PeerInterface {
      * 2) After failure of a node, successor list gets reconciled the next time periodic stabilization is done
      */
     public Node() {
-        logger.setLevel(Level.OFF);
+        logger.setLevel(Level.SEVERE);
         this.sim = SicsSim.getInstance();
         // no event listener is subscribed yet
         for (int i = 0; i < listeners.length; i++)
@@ -224,7 +224,9 @@ public class Node implements PeerInterface {
         if (!sim.isAlive(myid.id, pred)) {
             pred = new NodeId(-1, -1);
             subsc.remove(pred);
-        } else {
+        }
+
+        if (succ.id >=0 && sim.isAlive(myid.id, succ)) {
             Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, null);
             logger.info("ASK_SUCCESSOR_LIST");
             com.send(succ, outMsg);
@@ -241,7 +243,12 @@ public class Node implements PeerInterface {
         //TODO do the part in the protocol i.e. ask your successor abt its predecessor
         Message msg = new Message(EventType.ASK_PREDECESSOR, null);
         logger.info("ASK_PREDECESSOR");
-        com.send(succ, msg);
+        if (succ.id >= 0) {
+            com.send(succ, msg);
+        } else {
+            logger.severe("ASK_PREDECESSOR -> succ is null");
+//            System.out.println("$$$$$$$$$$$ Biiblesoft try to send to a null succ");
+        }
 
 //        for (NodeId aNode : successors) {
 //            if (aNode.id >= 0 && sim.isAlive(myid.id, aNode)) {
