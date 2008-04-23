@@ -11,6 +11,7 @@ import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * NOTES:
@@ -26,8 +27,6 @@ import java.util.logging.Logger;
 
 public class Node implements PeerInterface {
     public static final Logger logger = Logger.getLogger(Node.class.getName());
-
-
     public int N = 128 * 1024;
     private CommInterface com;
     public MathMiscConstant math = null;
@@ -66,6 +65,7 @@ public class Node implements PeerInterface {
      * 2) After failure of a node, successor list gets reconciled the next time periodic stabilization is done
      */
     public Node() {
+        logger.setLevel(Level.OFF);
         this.sim = SicsSim.getInstance();
         // no event listener is subscribed yet
         for (int i = 0; i < listeners.length; i++)
@@ -122,14 +122,14 @@ public class Node implements PeerInterface {
         init(N, seed, id, com);
 
         succ = myid;
-//        pred = myid;
+        pred = myid;
 //        status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
-            fingers[i] = new NodeId(-1, -1);    // TODO sikeh: should it be null (instead of myid)?
+            fingers[i] = myid;//new NodeId(-1, -1);    // TODO sikeh: should it be null (instead of myid)?
         // build successor list!
         for (int i = 0; i < r; i++)
-            successors[i] = new NodeId(-1, -1);   // TODO sikeh: should it be null (instead of myid)?
+            successors[i] = myid;//new NodeId(-1, -1);   // TODO sikeh: should it be null (instead of myid)?
         // registering for periodic event with the simulator
         this.sim.addPeriodicEvent(stabilizeDelay, myid, /*networkid, */new Message(EventType.PERIODIC, null));
         //System.out.println("\t Node: "+myid+", i'm starting the ring. This shouldnt happen after merger");
@@ -379,6 +379,8 @@ public class Node implements PeerInterface {
                 return fingers[i];
             }
         }
+        // TODO search successor list, same if as above
+               
         return myid;
     }
 
