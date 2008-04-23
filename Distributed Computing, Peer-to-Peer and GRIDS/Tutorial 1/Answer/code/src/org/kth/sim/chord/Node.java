@@ -114,6 +114,7 @@ public class Node implements PeerInterface {
         // initializing fingers
         fingers[0] = myid;
         for (int i = 0; i < m; i++)
+//            fingers[i] = new NodeId(-250, -1);
             fingers[i] = new NodeId(-1, -1);
     }
 
@@ -264,8 +265,8 @@ public class Node implements PeerInterface {
 
         int[] data = new int[5];
         data[0] = 1;
-//        data[1] = (int) math.modPlus(myid.id, (long) Math.pow(2, next - 1));
-        data[1] = (myid.id + (int) Math.pow(2, next - 1)) % (int) Math.pow(2, m - 1);
+        data[1] = (int) math.modPlus(myid.id, (long) Math.pow(2, next - 1));
+//        data[1] = (myid.id + (int) Math.pow(2, next - 1)) % (int) Math.pow(2, m - 1);
 
 
         data[2] = myid.id;
@@ -391,13 +392,13 @@ public class Node implements PeerInterface {
 
     private NodeId closestPrecedingNode(int id) {
         for (int i = m - 1; i >= 1; i--) {
-            if (fingers[i].id >= 0 && math.belongsTo(fingers[i].id, myid.id, id)) {
+            if (fingers[i].id >= 0 && math.belongsTonn(fingers[i].id, myid.id, id)) {
                 return fingers[i];
             }
         }
         // TODO search successor list, same if as above
         for (int i = 0; i < successors.length; i++) {
-            if (successors[i].id >= 0 && math.belongsTo(successors[i].id, myid.id, id)) {
+            if (successors[i].id >= 0 && math.belongsTonn(successors[i].id, myid.id, id)) {
                 return successors[i];
             }
         }
