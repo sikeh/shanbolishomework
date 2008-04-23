@@ -50,7 +50,7 @@ public class Node implements PeerInterface {
     private final int buildFingersDelay = 7 * stabilizeDelay;
     public int bfdelay = 0;
 
-    private int indexInFigures = 0;
+    private int next = 0;   // 1 <= next <= m
 
     // hashtable for keeping track of nodes that i want to subscribe to (ie. to be notified when they fail) x=id, y=# of times subscribed
     public Hashtable<NodeId, Integer> subsc = new Hashtable<NodeId, Integer>(m); // just for the fingers!
@@ -126,10 +126,10 @@ public class Node implements PeerInterface {
 //        status = Status.INSIDE;
         // build fingers!
         for (int i = 0; i < m; i++)
-            fingers[i] = myid;    // TODO sikeh: should it be null (instead of myid)?
+            fingers[i] = new NodeId(-1, -1);    // TODO sikeh: should it be null (instead of myid)?
         // build successor list!
         for (int i = 0; i < r; i++)
-            successors[i] = myid;   // TODO sikeh: should it be null (instead of myid)?
+            successors[i] = new NodeId(-1, -1);   // TODO sikeh: should it be null (instead of myid)?
         // registering for periodic event with the simulator
         this.sim.addPeriodicEvent(stabilizeDelay, myid, /*networkid, */new Message(EventType.PERIODIC, null));
         //System.out.println("\t Node: "+myid+", i'm starting the ring. This shouldnt happen after merger");
@@ -148,8 +148,9 @@ public class Node implements PeerInterface {
         data[3] = id.ip; // init node ip
         data[4] = -1; // pos in fingers[], since it's not a join, make it -1
 //        System.out.printf("%d: join, ask %d about who is my successor%n", id.id, existingId.id);
-//        Message msg = new Message(EventType.FIND_SUCCESSOR, data);
-//        com.send(existingId, msg);
+        Message msg = new Message(EventType.FIND_SUCCESSOR, data);
+        com.send(existingId, msg);
+        
         this.sim.addPeriodicEvent(stabilizeDelay, myid, /*networkid, */new Message(EventType.PERIODIC, null));
 
     }
@@ -242,24 +243,25 @@ public class Node implements PeerInterface {
     }
 
     private void fixFingers() {
-        System.out.printf("node %d: fix fingers[%d]", myid.id, indexInFigures);
-        if (indexInFigures > m-1) {
-            indexInFigures = 0;
+        logger.info("node " + myid.id + ": fix_fingers");
+        next ++;
+        if (next == m) {
+            next = 1;
         }
+        
         int[] data = new int[5];
         data[0] = 1;
-        data[1] = (int) math.modPlus(myid.id, (long) Math.pow(2, indexInFigures));
+        data[1] = (int) math.modPlus(myid.id, (long) Math.pow(2, next - 1));
 
 
 
         data[2] = myid.id;
         data[3] = myid.ip;
-        data[4] = indexInFigures;
+        data[4] = next;
         Message msg = new Message(EventType.FIND_SUCCESSOR, data);
         logger.info("Sending");
         com.send(myid, msg);
 
-        indexInFigures++;
     }
 
     /**
@@ -280,6 +282,7 @@ public class Node implements PeerInterface {
         int initIp = inData[3];
         int index = inData[4];
         if (math.belongsTo(paramId, myid.id, succ.id)) {
+//        if (myid.id < paramId && paramId <= succ.id) {
             NodeId initNode = new NodeId(initId, initIp);
             int[] outData = {flag, paramId, succ.id, succ.ip, index};
             Message outMsg = new Message(EventType.REPLY_FIND_SUCCESSOR, outData);
@@ -347,11 +350,12 @@ public class Node implements PeerInterface {
     private void handleReplyAskSuccessorList(NodeId source, Message msg) {
 
         successors[0] = source;
-        int j = 0;
-        for (int i = 0; j < r; i += 2) {
+        int j = 1;
+        // TODO two-d array merge into one-d array, check it!!!
+        for (int i = 0; i < ((r * 2) - 2); i += 2) {
             int id = msg.data[i];
             int ip = msg.data[i + 1];
-            successors[j + 1] = new NodeId(id, ip);
+            successors[j] = new NodeId(id, ip);
             j++;
         }
     }
@@ -364,15 +368,15 @@ public class Node implements PeerInterface {
             outData[j + 1] = successors[i].ip;
             j += 2;
         }
-        Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, outData);
+        Message outMsg = new Message(EventType.REPLY_ASK_SUCCESSOR_LIST, outData);
         logger.info("Sending");
         com.send(source, outMsg);
     }
 
     private NodeId closestPrecedingNode(int id) {
-        for (int i = m; i >= 1; i--) {
-            if (math.belongsTo(fingers[i - 1].id, myid.id, id)) {
-                return fingers[i - 1];
+        for (int i = m - 1; i >= 1; i--) {
+            if (math.belongsTo(fingers[i].id, myid.id, id)) {
+                return fingers[i];
             }
         }
         return myid;
