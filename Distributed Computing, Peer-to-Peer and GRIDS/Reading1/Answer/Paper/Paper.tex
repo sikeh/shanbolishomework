@@ -1,12 +1,89 @@
 \documentclass{article}
+\usepackage{indentfirst}
+
 
 \title{Report for Reading assignment on SkipNet}
-
 \begin{document}
-\maketitle
+
 
 \section{Motivation}
+{\itshape Why is the problem addressed in the paper interesting and important for the larger community to be solved?}
+
+Controlled data placement and guaranteed routing locality.
+
 
 \section{Contribution}
+{\itshape What are the main contributions of the paper?}
+
+A significant contribution of this paper is the concept of constrained load balancing, which is a generalization that combines two notions: Data is uniformly distributed across a well-defined subset of the nodes in a system. 
+
+
+\section{Solution}
+
+{\itshape How did the authors solve the problem at hand?}
+
+Network proximity-aware routing is obtained by means of two auxiliary routing tables, and constrained load balancing is supported through a combination of searches in both string name and numeric address space.
+
+
+\section{Evaluation}
+{\itshape How good is the solution?}
+
+The solution is creatively, practically, efficiently and has high commercial value. 
+
+{\itshape How did the authors evaluate their solution?}
+
+They used a simple packet-level, discrete event simulator to evaluate the SkipNet algorithm by compare it with Pastry and Chord. The performance characteristics of lookups are measured by Relative Delay Penalty, Physical network hops and Number of failed lookups. 
+
+
+{\itshape How good was the evaluation of their work?}
+
+The solution of evaluation is convictive to prove their algorithm's advantage, though they did not queuing delay or packet losses. 
+
+ 
+\section{Disadvantages of the Solution}
+{\itshape What are the disadvantages and shortcomings of the solution given by the authors?}
+
+It's expensive to perform insertions and deletions in a perfect Skip List.
+Constrained load balancing can't be performed over an arbitrary subset of the nodes of the overlay network.
+
+CLB domain is encoded in the name of a data object, thus transparent remapping to a different load balancing domain is not possible.
+
+It may be possible to target traffic between an administrative domain and the outside world with fewer attacking nodes.
+
+
+\section{Disadvantages of the Evaluation}
+{\itshape During the evaluation of their solution, did the authors overlook something?}
+
+The evaluation did not consider queuing delay or packet losses. 
+\section{Further improvements}
+{\itshape Are there any further improvements that can be made to the solution?}
+
+Use a reliable protocol to transfer the routing operation message.
+
+{\itshape Are there any future directions you can think of?}
+
+Consider network partitions on systems in which partially or overall independent portion of systems are formed, update their own states, and then rejoin later, therefore we have to enforce state consistency between peers updating replicated data.
+
+
+\section{Answers of Questions}
+\subsection{On the routing level, how is SkipNet similar to Chord?}
+Destination node to be the node whose ID is numerically closest to destination numeric ID among all nodes.
+
+Routing points are exponentially distributed in such manner that the point at level h hops over 2 to the power h nodes in expectation.
+
+
+\subsection{On the routing level, how is SkipNet similar to Pastry?}
+Lookups resolved with O(logN) hops.
+
+At each node, a message will be routed along the highest level pointer that does not point past the destination value.
+
+Routing traverses only nodes whose IDs share a non-decreasing prefix with the destination ID.
+
+
+\subsection{On the routing level (routing of lookups), how is SkipNet similar to Chord?}
+In Chord, nodes are distributed without concept of organization, and where is no control over where data is stored.
+
+Whereas, in SkipNet, names rather than hashed identifiers are used to order nodes in the overlay, so natural locality based on the names of objects is preserved. And data  is arranged in name order rather than dispersing it.
+
 
 \end{document}
