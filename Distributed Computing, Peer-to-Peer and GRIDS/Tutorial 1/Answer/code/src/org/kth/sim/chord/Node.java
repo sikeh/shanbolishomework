@@ -6,10 +6,7 @@ import org.kth.sim.util.MathMiscConstant;
 import org.kth.sim.NodeId;
 import org.kth.sim.SicsSim;
 
-import java.util.Random;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import java.util.EventListener;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -51,6 +48,11 @@ public class Node implements PeerInterface {
 
     private int next = 0;   // 1 <= next <= m
 
+    // failed while join
+    boolean haveJoined = false;
+    int waited = 0;
+
+
     // hashtable for keeping track of nodes that i want to subscribe to (ie. to be notified when they fail) x=id, y=# of times subscribed
     public Hashtable<NodeId, Integer> subsc = new Hashtable<NodeId, Integer>(m); // just for the fingers!
 
@@ -58,6 +60,7 @@ public class Node implements PeerInterface {
     // remember that only one listener is allowed for each type of event
     // can easily be extended but is not needed
     Object[] listeners = new Object[EventType.values().length];
+    private static final int TIMEOUT_WAITS = 10;
 
     /**
      * General Notes:
@@ -65,7 +68,9 @@ public class Node implements PeerInterface {
      * 2) After failure of a node, successor list gets reconciled the next time periodic stabilization is done
      */
     public Node() {
-        logger.setLevel(Level.SEVERE);
+//        logger.setLevel(Level.SEVERE);
+        logger.setLevel(Level.OFF);
+        haveJoined = true;
         this.sim = SicsSim.getInstance();
         // no event listener is subscribed yet
         for (int i = 0; i < listeners.length; i++)
@@ -140,7 +145,7 @@ public class Node implements PeerInterface {
     }
 
     public void join(int N, int seed, NodeId/*int*/ id, NodeId/*int*/ existingId, CommInterface com) {
-
+        haveJoined = false;
         init(N, seed, id, com);
 
 //        pred = null;
@@ -157,7 +162,6 @@ public class Node implements PeerInterface {
         com.send(existingId, msg);
 
         this.sim.addPeriodicEvent(stabilizeDelay, myid, /*networkid, */new Message(EventType.PERIODIC, null));
-
     }
 
     public void leave() {
@@ -165,6 +169,7 @@ public class Node implements PeerInterface {
     }
 
     public void failure(NodeId fid) {
+//        System.out.println(myid.id + ": node " + fid.id + " fails");
         if (fid.id < 0) {
             System.err.println("Node " + myid + "[@" + sim.getClock() + "]: Invalid fail node id -> " + fid);
             return;
@@ -220,34 +225,55 @@ public class Node implements PeerInterface {
     private void stabilize() {
         logger.info("node " + myid.id + ": stabilize");
 
-        //TODO check if your predecessor is alive. If not, set to null and update susbcription list
-        if (!sim.isAlive(myid.id, pred)) {
-            pred = new NodeId(-1, -1);
-            subsc.remove(pred);
-        }
+        if (haveJoined) {
+            //TODO check if your predecessor is alive. If not, set to null and update susbcription list
+            if (!sim.isAlive(myid.id, pred)) {
+                pred = new NodeId(-1, -1);
+                subsc.remove(pred);
+            }
 
-        if (succ.id >=0 && sim.isAlive(myid.id, succ)) {
-            Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, null);
-            logger.info("ASK_SUCCESSOR_LIST");
-            com.send(succ, outMsg);
-        }
+            if (succ.id >= 0 && sim.isAlive(myid.id, succ)) {
+                Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, null);
+                logger.info("ASK_SUCCESSOR_LIST");
+                com.send(succ, outMsg);
+            }
 
-        // if its time to stabilize fingers, do it!
-        bfdelay += stabilizeDelay;
-        if (bfdelay > buildFingersDelay) {
-            bfdelay = 0;
-            //TODO buildFingers(); -> build fingers here
-            fixFingers();
-        }
+            // if its time to stabilize fingers, do it!
+            bfdelay += stabilizeDelay;
+            if (bfdelay > buildFingersDelay) {
+                bfdelay = 0;
+                //TODO buildFingers(); -> build fingers here
+                fixFingers();
+            }
 
-        //TODO do the part in the protocol i.e. ask your successor abt its predecessor
-        Message msg = new Message(EventType.ASK_PREDECESSOR, null);
-        logger.info("ASK_PREDECESSOR");
-        if (succ.id >= 0) {
-            com.send(succ, msg);
-        } else {
-            logger.severe("ASK_PREDECESSOR -> succ is null");
+            //TODO do the part in the protocol i.e. ask your successor abt its predecessor
+            Message msg = new Message(EventType.ASK_PREDECESSOR, null);
+            logger.info("ASK_PREDECESSOR");
+            if (succ.id >= 0) {
+                com.send(succ, msg);
+            } else {
+//            logger.severe("ASK_PREDECESSOR -> succ is null");
 //            System.out.println("$$$$$$$$$$$ Biiblesoft try to send to a null succ");
+            }
+
+        } else {
+            waited++; // increment you waiting status
+            if (waited > TIMEOUT_WAITS) // waited enough for a reply to join
+                waited = 0;
+            // get another existing node from the sim
+            NodeId anotherNode = sim.getExistingNode(myid);
+            // send join request to the existing node
+            int[] data = new int[5];
+            data[0] = 0; // find_successor from join
+            //date[2] and data[3] store the initial findSuccessor id.
+            data[1] = myid.id; // param id
+            data[2] = myid.id; // init node id
+            data[3] = myid.ip; // init node ip
+            data[4] = -1; // pos in fingers[], since it's not a join, make it -1
+//        System.out.printf("%d: join, ask %d about who is my successor%n", id.id, existingId.id);
+            Message msg = new Message(EventType.FIND_SUCCESSOR, data);
+            com.send(anotherNode, msg);
+
         }
 
 //        for (NodeId aNode : successors) {
@@ -359,6 +385,7 @@ public class Node implements PeerInterface {
         switch (flag) {
             case 0:
 //                System.out.printf("%d: successor of %d is %d%n", myid.id, paramId, succId);
+                haveJoined = true;
                 succ = new NodeId(succId, succIp);
                 Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, null);
                 logger.info("ASK_SUCCESSOR_LIST");
