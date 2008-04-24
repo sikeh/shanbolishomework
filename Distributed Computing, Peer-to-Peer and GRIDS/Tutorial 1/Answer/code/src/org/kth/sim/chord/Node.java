@@ -181,29 +181,23 @@ public class Node implements PeerInterface {
             subsc.clear();
             return;
         }
+
         // TODO:
         // case 1: my successor failed ->
         //		1. replace succ by first 'alive' node in ur successor list
         //		2. update your first finger as it is the same as ur successor
         //		3. update your subscription list for failures
         if (fid.equals(succ)) {
-            for (NodeId aNode : successors) {
-                if (aNode.id >= 0 && sim.isAlive(myid.id, aNode)) {
-                    succ = aNode;
-                    fingers[0] = succ;
-                    break;
-                } else {
-                    subsc.remove(aNode);
-                }
-            }
+            doUpdateMySuccessorList();
         }
 
         // case 2: one of my fingers failed ->
         //		1. set it to null and let periodic stabilization fix it
         //		2. update your subscription list for failures
-        for (int i = 0; i < fingers.length; i++) {
+        for (int i = 1; i < fingers.length; i++) {
             if (fid.equals(fingers[i])) {
                 fingers[i] = new NodeId(-1, -1);
+                break;
             }
         }
 
@@ -217,6 +211,21 @@ public class Node implements PeerInterface {
         // unsubscride from this node
         subsc.remove(fid);
 
+    }
+
+    private void doUpdateMySuccessorList() {
+        for (NodeId aNode : successors) {
+            if (aNode.id >= 0 && sim.isAlive(myid.id, aNode)) {
+                succ = aNode;
+                fingers[1] = succ;
+                Message outMsg = new Message(EventType.ASK_SUCCESSOR_LIST, null);
+                logger.info("ASK_SUCCESSOR_LIST");
+                com.send(succ, outMsg);
+                break;
+            } else {
+                subsc.remove(aNode);
+            }
+        }
     }
 
     /**
@@ -406,8 +415,23 @@ public class Node implements PeerInterface {
         for (int i = 0; i < ((r * 2) - 2); i += 2) {
             int id = msg.data[i];
             int ip = msg.data[i + 1];
-            successors[j] = new NodeId(id, ip);
-            j++;
+            if (id >= 0 && sim.isAlive(myid.id, new NodeId(id, ip))) {
+                successors[j] = new NodeId(id, ip);
+                j++;
+            } else {
+                Message msg24 = new Message(EventType.UPDATE_YUOR_SUCCESSOR_LIST,null);
+                com.send(new NodeId(id,ip),msg24);
+            }
+
+//            successors[j] = new NodeId(id, ip);
+//            j++;
+//
+//            if (id >= 0 && sim.isAlive(myid.id, new NodeId(id,ip))){
+//
+//            }
+//
+//            successors[j] = new NodeId(id, ip);
+//            j++;
         }
     }
 
@@ -613,6 +637,14 @@ public class Node implements PeerInterface {
                 handleReplyAskSuccessorList(source, msg);
             }
         });
+
+        addEventListener(EventType.UPDATE_YUOR_SUCCESSOR_LIST, new ChordEventListener() {
+            public void receivedEvent(NodeId source, Message msg) {
+                doUpdateMySuccessorList();
+            }
+        });
+
+
     }
 
 
