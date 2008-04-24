@@ -9,18 +9,20 @@ import org.kth.sim.interfaces.ScenEvent;
 
 public class Scenario {
 
-    public static int seed = 24;
+    public static int seed = 100;
 
     static int choice = 0; //detailsLevel of the validation Use: 0: "Only successors", 1: "Successors and successor lists", 2: "Complete(including fingers)"
     static boolean debug = false;
-    static long maxSimTime = 30000;
+    static long maxSimTime = 5000;
     static int N = 128;
 
     private ScenEvent scenArr[] = new ScenEvent[]{
             //              NrEvents,    Time, Joins, 	Fails
-			new LotteryEvent(     100,      30,     10,      1),
+			new LotteryEvent(     100,      20,     1,      0),
+		     new DelayEvent(2000),
+				new LotteryEvent(     30,      1,     0,      1),
 
-            new DelayEvent(3000),
+                                   new DelayEvent(300),
             new SaveSONEvent()    // this should always be the last event in the scenario
     };
 
