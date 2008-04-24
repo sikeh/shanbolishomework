@@ -43,7 +43,6 @@ The solution of evaluation is convictive to prove their algorithm's advantage, t
 \section{Disadvantages of the Solution}
 {\itshape What are the disadvantages and shortcomings of the solution given by the authors?}
 
-It's expensive to perform insertions and deletions in a perfect Skip List.
 Constrained load balancing can't be performed over an arbitrary subset of the nodes of the overlay network.
 
 CLB domain is encoded in the name of a data object, thus transparent remapping to a different load balancing domain is not possible.
@@ -59,6 +58,8 @@ The evaluation did not consider queuing delay or packet losses.
 {\itshape Are there any further improvements that can be made to the solution?}
 
 Use a reliable protocol to transfer the routing operation message.
+
+The solution ultilizes DNS as a method of access control, which prevents some arbitrary node from joining.
 
 {\itshape Are there any future directions you can think of?}
 
