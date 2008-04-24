@@ -418,7 +418,7 @@ public class Node implements PeerInterface {
             if (id >= 0 && sim.isAlive(myid.id, new NodeId(id, ip))) {
                 successors[j] = new NodeId(id, ip);
                 j++;
-            } else {
+            } else if (id >=0){
                 Message msg24 = new Message(EventType.UPDATE_YUOR_SUCCESSOR_LIST,null);
                 com.send(new NodeId(id,ip),msg24);
             }
