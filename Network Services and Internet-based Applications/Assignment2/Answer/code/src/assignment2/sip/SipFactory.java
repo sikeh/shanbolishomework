@@ -1,5 +1,8 @@
 package assignment2.sip;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /**
  * User: Shanbo Li
  * Date: Apr 13, 2008
@@ -8,18 +11,145 @@ package assignment2.sip;
  * @author Shanbo Li
  */
 public class SipFactory {
-    public static String getResponse(String[] lines) {
-        StringBuilder sb = new StringBuilder();
+    public static final Logger logger = Logger.getLogger(SipFactory.class.getName());
 
-        for (String line:lines){
-            
+    private String[] lines;
+    private int rtpPort;
+    private int fromTag = -1;
+    private String toTag = null;
+    private String me;
+    private int initialCSeq;
+
+    public SipFactory(String[] lines, int rtpPort) {
+        this.lines = lines;
+        this.rtpPort = rtpPort;
+    }
+
+    public String getOkForInvite() throws ConstructSdpFailedException, ConstructSipFailedException {
+        String sip;
+        SIPBean sipBean = new SIPBean();
+        SDPBean sdpBean = new SDPBean();
+
+        for (String line : lines) {
+            if (line.startsWith("Via:")) {
+                sipBean.setVia(line + "\r\n");
+            }
+
+            if (line.startsWith("Record-Route:")) {
+                sipBean.setRoute(line + "\r\n");
+            }
+
+            if (line.startsWith("To:")) {
+                if (toTag != null) {
+                    sipBean.setTo(line + ";tag=" + toTag + "\r\n");
+                } else {
+                    sipBean.setTo(line + "\r\n");
+                }
+
+                me = line.split("<")[1].split(">")[0];
+
+                sipBean.setContact("Contact: " + line.substring(4) + "\r\n");
+            }
+
+            if (line.startsWith("From:")) {
+                sipBean.setFrom(line + "\r\n");
+                try {
+                    fromTag = Integer.parseInt(line.substring(line.length() - 4));
+                } catch (NumberFormatException e) {
+                }
+                if (fromTag != -1 && toTag != null) {
+                    toTag = GenerateTag.getTag(fromTag);
+                }
+            }
+
+            if (line.startsWith("Call-ID:")) {
+                sipBean.setCallId(line + "\r\n");
+            }
+
+            if (line.startsWith("CSeq:")) {
+                sipBean.setCseq(line + "\r\n");
+
+                initialCSeq = Integer.valueOf(line.split(" ")[1]);
+            }
+
+            if (line.startsWith("s=")) {
+                sdpBean.setS(line + "\r\n");
+            }
 
 
         }
 
+        sdpBean.setMWithPort(String.valueOf(rtpPort));
 
+        try {
+            sipBean.setSdp(sdpBean.getSdp());
+        } catch (ConstructSdpFailedException e) {
+            logger.log(Level.SEVERE, null, e);
+            throw e;
+        }
 
-        return null;
+        try {
+            sip = sipBean.getOkForInventBean();
+        } catch (ConstructSipFailedException e) {
+            logger.log(Level.SEVERE, null, e);
+            throw e;
+        }
+
+        return sip;
     }
 
+    public String getBye() throws ConstructSdpFailedException, ConstructSipFailedException {
+        SIPBean sipBean = new SIPBean();
+        for (String line : lines) {
+            if (line.startsWith("Via:")) {
+                sipBean.setVia(line + "\r\n");
+            }
+
+            if (line.startsWith("Record-Route:")) {
+                sipBean.setRoute(line + "\r\n");
+            }
+
+            if (line.startsWith("To:")) {
+                if (toTag != null) {
+                    sipBean.setTo(line + ";tag=" + toTag + "\r\n");
+                } else {
+                    sipBean.setTo(line + "\r\n");
+                }
+
+                me = line.split("<")[1].split(">")[0];
+                sipBean.setType("BYE " + me + " SIP/2.0\r\n");
+                sipBean.setContact("Contact: " + line.substring(4) + "\r\n");
+            }
+
+            if (line.startsWith("From:")) {
+                sipBean.setFrom(line + "\r\n");
+                try {
+                    fromTag = Integer.parseInt(line.substring(line.length() - 4));
+                } catch (NumberFormatException e) {
+                }
+                if (fromTag != -1 && toTag != null) {
+                    toTag = GenerateTag.getTag(fromTag);
+                }
+            }
+
+            if (line.startsWith("Call-ID:")) {
+                sipBean.setCallId(line + "\r\n");
+            }
+
+            if (line.startsWith("CSeq:")) {
+                sipBean.setCseq("CSeq: " + (initialCSeq + 1) + " BYE\r\n");
+            }
+
+        }
+
+        String sip;
+        try {
+            sip = sipBean.getByeBean();
+        } catch (ConstructSipFailedException e) {
+            logger.log(Level.SEVERE, null, e);
+            throw e;
+        }
+
+        return sip;
+    }
 }
