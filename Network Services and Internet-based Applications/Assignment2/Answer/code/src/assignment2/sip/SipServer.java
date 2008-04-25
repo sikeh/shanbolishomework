@@ -1,6 +1,8 @@
 package assignment2.sip;
 
 
+import assignment2.audio.AVTransmit2;
+
 import javax.media.MediaLocator;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
@@ -51,12 +53,15 @@ public class SipServer {
             }
             logger.info("Incoming SIP is \n" + incomingSIP);
 
+
+
             String[] lines = incomingSIP.split("\r\n");
+            SipFactory sf =  new SipFactory(lines,1124);
             String remoteIP = Communication.getContactIP(incomingSIP);
             int remotePort = Communication.getContactPort(incomingSIP);
             String remoteRTPPort = Communication.getRemoteRTPPort(incomingSIP);
             logger.info("Generating response SIP ...");
-            outgoingSIP = SipFactory.getOkForInvite(lines, 5078);
+            outgoingSIP = sf.getOkForInvite();
 
             // SIP/2.0 200 OK
             logger.info("Sending response SIP to " + remoteIP + ":" + remotePort);
