@@ -59,27 +59,13 @@ public class ConnectHandler{
         }
         if (responseOkForInvite != null) {
            MediaLocator mediaLocator = new MediaLocator("file:./" + SipSpeaker.getWavToPlay());
-            rtpTransmit = new RtpTransmit(media, remoteSIPIP, String.valueOf(remoteRTPPort), null);
+//           MediaLocator mediaLocator = new MediaLocator("file:./works.wav");
+            rtpTransmit = new RtpTransmit(mediaLocator, remoteSIPIP, String.valueOf(remoteRTPPort), null);
             rtpTransmit.start();
-            isTalking = true;
-        }
-
-        try {
-            TimeUnit.SECONDS.sleep((long) rtpTransmit.getPlayTime());
-        } catch (InterruptedException e) {
-        }
-        try {
-            bye = sipFactory.getBye();
-        } catch (ConstructSdpFailedException e) {
-        } catch (ConstructSipFailedException e) {
-        }
-
-        if (bye != null) {
-            sendSIP(bye, remoteSIPIP, remoteSIPPort);
-            sendSIP(bye, remoteSIPIP, remoteSIPPort);
 
         }
-        rtpTransmit.stop();
+
+      
     }
 
     public void sendNotFound(){

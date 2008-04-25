@@ -41,14 +41,14 @@ public class RtpTransmit {
      * Starts the transmission. Returns null if transmission started ok.
      * Otherwise it returns a string with the reason why the setup failed.
      */
-    public synchronized String start() {
+    public synchronized Time start() {
         String result;
 
         // Create a processor for the specified media locator
         // and program it to output JPEG/RTP
         result = createProcessor();
         if (result != null)
-            return result;
+            return null;
 
         // Create an RTP session to transmit the output of the
         // processor to the specified IP address and port no.
@@ -56,13 +56,12 @@ public class RtpTransmit {
         if (result != null) {
             processor.close();
             processor = null;
-            return result;
+            return null;
         }
 
         // Start the transmission
         processor.start();
-
-        return null;
+        return processor.getMediaTime();
     }
 
     /**
@@ -81,12 +80,6 @@ public class RtpTransmit {
             }
         }
     }
-
-    public double getPlayTime(){
-        return processor.getMediaTime().getSeconds();
-    }
-
-
 
     private String createProcessor() {
         if (locator == null)
@@ -388,70 +381,6 @@ public class RtpTransmit {
                 }
             }
         }
-    }
-
-
-    /**
-     * *************************************************************
-     * Sample Usage for AVTransmit2 class
-     * **************************************************************
-     */
-
-    public static void main(String[] args) {
-        // We need three parameters to do the transmission
-        // For example,
-        //   java RtpTransmit file:/C:/media/test.mov  129.130.131.132 42050
-
-        if (args.length < 3) {
-            prUsage();
-        }
-
-        Format fmt = null;
-        int i = 0;
-
-        // Create a audio transmit object with the specified params.
-        RtpTransmit at = new RtpTransmit(new MediaLocator(args[i]),
-                args[i + 1], args[i + 2], fmt);
-        // Start the transmission
-        String result = at.start();
-
-        // result will be non-null if there was an error. The return
-        // value is a String describing the possible error. Print it.
-        if (result != null) {
-            System.err.println("Error : " + result);
-            System.exit(0);
-        }
-
-        System.err.println("Start transmission for 60 seconds...");
-
-        // Transmit for 60 seconds and then close the processor
-        // This is a safeguard when using a capture data source
-        // so that the capture device will be properly released
-        // before quitting.
-        // The right thing to do would be to have a GUI with a
-        // "Stop" button that would call stop on RtpTransmit
-        try {
-            Thread.currentThread().sleep(60000);
-        } catch (InterruptedException ie) {
-        }
-
-        // Stop the transmission
-        at.stop();
-
-        System.err.println("...transmission ended.");
-
-        System.exit(0);
-    }
-
-
-    static void prUsage() {
-        System.err.println("Usage: RtpTransmit <sourceURL> <destIP> <destPortBase>");
-        System.err.println("     <sourceURL>: input URL or file name");
-        System.err.println("     <destIP>: multicast, broadcast or unicast IP address for the transmission");
-        System.err.println("     <destPortBase>: network port numbers for the transmission.");
-        System.err.println("                     The first track will use the destPortBase.");
-        System.err.println("                     The next track will use destPortBase + 2 and so on.\n");
-        System.exit(0);
     }
 }
 

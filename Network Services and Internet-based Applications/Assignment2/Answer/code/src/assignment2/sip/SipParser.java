@@ -131,7 +131,7 @@ public class SipParser {
             }
 
             if (line.startsWith("To:")){
-                this.to = line.split(":")[2];
+                this.to = line.split(":")[2].split("@")[0];
             }
         }
     }

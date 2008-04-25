@@ -40,7 +40,6 @@ public class SipServer {
 
             while (true) {
                 // Wait to receive a datagram
-                logger.info("Listening UDP at " + port + " ...");
                 dsocket.receive(packet);
 
                 // Convert the contents to a string, and display them
