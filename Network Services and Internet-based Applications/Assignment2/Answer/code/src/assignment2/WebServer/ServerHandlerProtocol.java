@@ -1,4 +1,4 @@
-/*
+package assignment2.WebServer;/*
  * Created on Jan 6, 2005
  * 
  * This file is created as assignment 1. WebMail in the course 2G1333
@@ -9,6 +9,8 @@
 /**
  * @author Mikael Rudholm
  */
+
+import assignment2.WebServer.HTTPRequest;
 
 import java.io.*;
 import java.net.URLDecoder;
