@@ -22,7 +22,7 @@ public class SipServer {
 
     public static void main(String[] args) {
         String incomingSIP;
-        String outgoingSIP;
+        String responseOkForInvite;
 
         try {
             int port = 5088;
@@ -57,32 +57,27 @@ public class SipServer {
 
             String[] lines = incomingSIP.split("\r\n");
             SipFactory sf =  new SipFactory(lines,1124);
-            String remoteIP = Communication.getContactIP(incomingSIP);
-            int remotePort = Communication.getContactPort(incomingSIP);
+            ParseContract parseContract = new ParseContract(incomingSIP);
+            String remoteSIPIP = parseContract.getRemoteSIPIp();
+            int remoteSIPPort = parseContract.getRemoteSIPPort();
             String remoteRTPPort = Communication.getRemoteRTPPort(incomingSIP);
             logger.info("Generating response SIP ...");
-            outgoingSIP = sf.getOkForInvite();
+            responseOkForInvite = sf.getOkForInvite();
 
             // SIP/2.0 200 OK
-            logger.info("Sending response SIP to " + remoteIP + ":" + remotePort);
-            Communication.sendSIP(outgoingSIP, remoteIP, remotePort);
+            logger.info("Sending response SIP to " + remoteSIPIP + ":" + remoteSIPPort);
+            Communication.sendSIP(responseOkForInvite, remoteSIPIP, remoteSIPPort);
 
             // TODO sikeh: wait for ACK from client, then establish RTP
 //            TimeUnit.MILLISECONDS.sleep(50);
 
-            AVTransmit2 rt = new AVTransmit2(new MediaLocator("file:./works.wav"), remoteIP, String.valueOf(remoteRTPPort), null);
+            AVTransmit2 rt = new AVTransmit2(new MediaLocator("file:./works.wav"), remoteSIPIP, String.valueOf(remoteRTPPort), null);
             rt.start();
-            logger.info("RTP to " + remoteIP + ":" + remoteRTPPort);
-//
-//            SoundSenderDemo aDemo = new SoundSenderDemo(false);
-//            Participant p = new Participant(remoteIP, Integer.parseInt(remoteRTPPort) , Integer.parseInt(remoteRTPPort));
-//            aDemo.rtpSession.addParticipant(p);
-//            aDemo.filename = "works.wav";
-//            aDemo.run();
-//
+            logger.info("RTP to " + remoteSIPIP + ":" + remoteRTPPort);
+
 
             try {
-                Thread.currentThread().sleep(60000);
+                Thread.currentThread().sleep(6000);
             } catch (InterruptedException ie) {
             }
 
