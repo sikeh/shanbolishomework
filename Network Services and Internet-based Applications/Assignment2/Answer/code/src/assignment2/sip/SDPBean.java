@@ -1,6 +1,7 @@
 package assignment2.sip;
 
-import assignment2.ui.IP;
+import assignment2.util.IP;
+
 
 /**
  * User: Shanbo Li
