@@ -20,6 +20,12 @@ public class SipFactory {
     private String me;
     private int initialCSeq;
 
+
+    /**
+     *
+     * @param lines inComing SIP
+     * @param rtpPort Local Listening RTP port
+     */
     public SipFactory(String[] lines, int rtpPort) {
         this.lines = lines;
         this.rtpPort = rtpPort;
