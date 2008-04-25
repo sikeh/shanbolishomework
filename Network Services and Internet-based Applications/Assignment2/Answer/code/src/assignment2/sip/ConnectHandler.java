@@ -1,6 +1,7 @@
 package assignment2.sip;
 
 import assignment2.audio.RtpTransmit;
+import assignment2.SipSpeaker;
 
 import javax.media.MediaLocator;
 import java.net.InetAddress;
@@ -8,6 +9,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
 
 /**
  * User: Shanbo Li
@@ -16,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author Shanbo Li
  */
-public class ConnectHandler implements Runnable {
+public class ConnectHandler{
     private static final Logger logger = Logger.getLogger(ConnectHandler.class.getName());
 
     private String callId;
@@ -33,6 +35,7 @@ public class ConnectHandler implements Runnable {
     private boolean isTalking = false;
     private MediaLocator media;
     private MediaLocator mediaClone;
+    private String notFound;
 
     public ConnectHandler(String incommingSip) {
         this.incommingSip = incommingSip;
@@ -44,26 +47,49 @@ public class ConnectHandler implements Runnable {
         this.remoteRTPPort = sipParser.getRemoteRTPPort();
     }
 
-    public void run() {
+    public void answer() {
         try {
             responseOkForInvite = sipFactory.getOkForInvite();
         } catch (ConstructSdpFailedException e) {
         } catch (ConstructSipFailedException e) {
         }
-
-        sendSIP(responseOkForInvite, remoteSIPIP, remoteSIPPort);
-        sendSIP(responseOkForInvite, remoteSIPIP, remoteSIPPort);
-
         if (responseOkForInvite != null) {
-            media = new MediaLocator("file:./works.wav");
-            
+            sendSIP(responseOkForInvite, remoteSIPIP, remoteSIPPort);
+            sendSIP(responseOkForInvite, remoteSIPIP, remoteSIPPort);
+        }
+        if (responseOkForInvite != null) {
+           MediaLocator mediaLocator = new MediaLocator("file:./" + SipSpeaker.getWavToPlay());
             rtpTransmit = new RtpTransmit(media, remoteSIPIP, String.valueOf(remoteRTPPort), null);
             rtpTransmit.start();
             isTalking = true;
         }
 
-        while (isTalking) {
+        try {
+            TimeUnit.SECONDS.sleep((long) rtpTransmit.getPlayTime());
+        } catch (InterruptedException e) {
+        }
+        try {
+            bye = sipFactory.getBye();
+        } catch (ConstructSdpFailedException e) {
+        } catch (ConstructSipFailedException e) {
+        }
 
+        if (bye != null) {
+            sendSIP(bye, remoteSIPIP, remoteSIPPort);
+            sendSIP(bye, remoteSIPIP, remoteSIPPort);
+
+        }
+        rtpTransmit.stop();
+    }
+
+    public void sendNotFound(){
+        try {
+            notFound = sipFactory.getNotFound();
+        } catch (ConstructSipFailedException e) {
+        }
+
+        if (notFound != null){
+            sendSIP(notFound,remoteSIPIP,remoteSIPPort);
         }
     }
 
