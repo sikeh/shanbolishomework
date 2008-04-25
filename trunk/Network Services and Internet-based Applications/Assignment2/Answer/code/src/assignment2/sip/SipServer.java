@@ -1,16 +1,12 @@
 package assignment2.sip;
 
 
-import assignment2.audio.SoundSenderDemo;
-import assignment2.audio.AVTransmit2;
-
 import javax.media.MediaLocator;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import jlibrtp.Participant;
 
 /**
  * User: Shanbo Li

@@ -1,35 +1,20 @@
 package assignment2.audio;
 
 
-
-import javax.media.control.QualityControl;
-import javax.media.control.TrackControl;
-import javax.media.format.VideoFormat;
-import javax.media.protocol.ContentDescriptor;
-import javax.media.protocol.DataSource;
-import javax.media.protocol.PushBufferDataSource;
-import javax.media.protocol.PushBufferStream;
-import javax.media.rtp.RTPManager;
-import javax.media.rtp.SendStream;
-import javax.media.rtp.SessionAddress;
-import javax.media.rtp.rtcp.SourceDescription;
-import javax.media.Codec;
-import javax.media.Control;
-import javax.media.Controller;
-import javax.media.ControllerClosedEvent;
-import javax.media.ControllerEvent;
-import javax.media.ControllerListener;
-import javax.media.Format;
-import javax.media.MediaLocator;
-import javax.media.NoProcessorException;
-import javax.media.Owned;
-import javax.media.Player;
-import javax.media.Processor;
-import java.awt.Dimension;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.net.InetAddress;
+import javax.media.*;
+import javax.media.protocol.*;
+import javax.media.protocol.DataSource;
+import javax.media.format.*;
+import javax.media.control.TrackControl;
+import javax.media.control.QualityControl;
+import javax.media.rtp.*;
+import javax.media.rtp.rtcp.*;
+import com.sun.media.rtp.*;
 
-public class RtpTransmit {
+public class AVTransmit2 {
 
     // Input MediaLocator
     // Can be a file or http or capture source
@@ -41,7 +26,7 @@ public class RtpTransmit {
     private RTPManager rtpMgrs[];
     private DataSource dataOutput = null;
 
-    public RtpTransmit(MediaLocator locator,
+    public AVTransmit2(MediaLocator locator,
 			 String ipAddress,
 			 String pb,
 			 Format format) {
@@ -154,13 +139,13 @@ public class RtpTransmit {
 		// We'll just pick the first one.
 
 		if (supported.length > 0) {
-		    if (supported[0] instanceof VideoFormat) {
-			// For video formats, we should double check the
-			// sizes since not all formats work in all sizes.
-			chosen = checkForVideoSizes(tracks[i].getFormat(),
-							supported[0]);
-		    } else
-			chosen = supported[0];
+//		    if (supported[0] instanceof VideoFormat) {
+//			// For video formats, we should double check the
+//			// sizes since not all formats work in all sizes.
+//			chosen = checkForVideoSizes(tracks[i].getFormat(),
+//							supported[4]);
+//		    } else
+			chosen = supported[4];
 		    tracks[i].setFormat(chosen);
 		    System.err.println("Track " + i + " is set to transmit as:");
 		    System.err.println("  " + chosen);
@@ -214,7 +199,7 @@ public class RtpTransmit {
 
 		// The local session address will be created on the
 		// same port as the the target port. This is necessary
-		// if you use RtpTransmit in conjunction with JMStudio.
+		// if you use AVTransmit2 in conjunction with JMStudio.
 		// JMStudio assumes -  in a unicast session - that the
 		// transmitter transmits from the same port it is receiving
 		// on and sends RTCP Receiver Reports back to this port of
@@ -224,7 +209,7 @@ public class RtpTransmit {
 		ipAddr = InetAddress.getByName(ipAddress);
 
 		localAddr = new SessionAddress( InetAddress.getLocalHost(),
-						port);
+						SessionAddress.ANY_PORT);
 
 		destAddr = new SessionAddress( ipAddr, port);
 
@@ -398,13 +383,13 @@ public class RtpTransmit {
 
 
     /****************************************************************
-     * Sample Usage for RtpTransmit class
+     * Sample Usage for AVTransmit2 class
      ****************************************************************/
 
     public static void main(String [] args) {
 	// We need three parameters to do the transmission
 	// For example,
-	//   java RtpTransmit file:/C:/media/test.mov  129.130.131.132 42050
+	//   java AVTransmit2 file:/C:/media/test.mov  129.130.131.132 42050
 
 	if (args.length < 3) {
 	    prUsage();
@@ -414,7 +399,7 @@ public class RtpTransmit {
 	int i = 0;
 
 	// Create a audio transmit object with the specified params.
-	RtpTransmit at = new RtpTransmit(new MediaLocator(args[i]),
+	AVTransmit2 at = new AVTransmit2(new MediaLocator(args[i]),
 					     args[i+1], args[i+2], fmt);
 	// Start the transmission
 	String result = at.start();
@@ -433,7 +418,7 @@ public class RtpTransmit {
 	// so that the capture device will be properly released
 	// before quitting.
 	// The right thing to do would be to have a GUI with a
-	// "Stop" button that would call stop on RtpTransmit
+	// "Stop" button that would call stop on AVTransmit2
 	try {
 	    Thread.currentThread().sleep(60000);
 	} catch (InterruptedException ie) {
@@ -449,7 +434,7 @@ public class RtpTransmit {
 
 
     static void prUsage() {
-	System.err.println("Usage: RtpTransmit <sourceURL> <destIP> <destPortBase>");
+	System.err.println("Usage: AVTransmit2 <sourceURL> <destIP> <destPortBase>");
 	System.err.println("     <sourceURL>: input URL or file name");
 	System.err.println("     <destIP>: multicast, broadcast or unicast IP address for the transmission");
 	System.err.println("     <destPortBase>: network port numbers for the transmission.");
@@ -458,4 +443,5 @@ public class RtpTransmit {
 	System.exit(0);
     }
 }
+
 
