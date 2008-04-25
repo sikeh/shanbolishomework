@@ -132,13 +132,28 @@ public class SIPBean {
         this.contentLength = "Content-Length: " + sdp.length() + "\r\n";
     }
 
+    public String getNotFoundBeann() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(type);
+        sb.append(via);
+        sb.append(to);
+        sb.append(from);
+        sb.append(callId);
+        sb.append(cseq);
+        sb.append(userAgent);
+        sb.append(contentLength);
+        sb.append("\r\n");
+        return sb.toString();
+    }
+
     public String getOkForInventBean() throws ConstructSipFailedException {
         type = "SIP/2.0 200 OK\r\n";
 
         validateSIPContent();
         StringBuilder sb = new StringBuilder();
         sb.append(type);
-        sb.append(via);
+        if (via != null) sb.append(via);
         if (route != null) sb.append(route);
         sb.append(to);
         sb.append(from);
@@ -158,7 +173,6 @@ public class SIPBean {
     }
 
     public String getByeBean() throws ConstructSipFailedException {
-
         validateSIPContent();
         StringBuilder sb = new StringBuilder();
         sb.append(type);
@@ -200,5 +214,20 @@ public class SIPBean {
         if (contact == null) {
             throw new ConstructSipFailedException("Please initial \"contact\" field before getSIP");
         }
+    }
+
+    public String getOkForByeBean() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(type);
+        if (via != null) sb.append(via);
+        if (route != null) sb.append(route);
+        sb.append(to);
+        sb.append(from);
+        sb.append(callId);
+        sb.append(cseq);
+        sb.append(userAgent);
+        sb.append(contentLength);
+        sb.append("\r\n");
+        return sb.toString();
     }
 }

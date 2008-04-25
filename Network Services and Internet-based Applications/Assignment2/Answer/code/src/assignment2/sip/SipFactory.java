@@ -19,16 +19,127 @@ public class SipFactory {
     private String toTag = null;
     private String me;
     private int initialCSeq;
+    private SipParser sipParser;
+    private int remoteSipPort;
+    private String remoteSipIp;
 
 
     /**
-     *
-     * @param lines inComing SIP
-     * @param rtpPort Local Listening RTP port
+     * @param line
+     * @param rtpPort
      */
-    public SipFactory(String[] lines, int rtpPort) {
-        this.lines = lines;
+    public SipFactory(String line, int rtpPort) {
+        lines = line.split("\r\n");
         this.rtpPort = rtpPort;
+        sipParser = new SipParser(line);
+        remoteSipIp = sipParser.getRemoteSIPIp();
+        remoteSipPort = sipParser.getRemoteSIPPort();
+    }
+
+    public String getOkForBye() {
+        String sip;
+        SIPBean sipBean = new SIPBean();
+
+        for (String line : lines) {
+            if (line.startsWith("Via:")) {
+                sipBean.setVia(line + "\r\n");
+            }
+
+            if (line.startsWith("Record-Route:")) {
+                sipBean.setRoute(line + "\r\n");
+            }
+
+            if (line.startsWith("To:")) {
+                if (toTag != null) {
+                    sipBean.setTo(line + ";tag=" + toTag + "\r\n");
+                } else {
+                    sipBean.setTo(line + "\r\n");
+                }
+
+                me = line.split("<")[1].split(">")[0];
+
+                sipBean.setContact("Contact: " + line.substring(4) + "\r\n");
+            }
+
+            if (line.startsWith("From:")) {
+                sipBean.setFrom(line + "\r\n");
+                try {
+                    fromTag = Integer.parseInt(line.substring(line.length() - 4));
+                } catch (NumberFormatException e) {
+                }
+                if (fromTag != -1 && toTag != null) {
+                    toTag = GenerateTag.getTag(fromTag);
+                }
+            }
+
+            if (line.startsWith("Call-ID:")) {
+                sipBean.setCallId(line + "\r\n");
+            }
+
+            if (line.startsWith("CSeq:")) {
+                sipBean.setCseq(line + "\r\n");
+            }
+        }
+
+        sipBean.setType("SIP/2.0 200 OK\r\n");
+        sip = sipBean.getOkForByeBean();
+        return sip;
+    }
+
+    public String getNotFound() throws ConstructSipFailedException {
+        String sip;
+        SIPBean sipBean = new SIPBean();
+        SDPBean sdpBean = new SDPBean();
+
+        for (String line : lines) {
+            if (line.startsWith("Via:")) {
+                sipBean.setVia(line + "\r\n");
+            }
+
+            if (line.startsWith("Record-Route:")) {
+                sipBean.setRoute(line + "\r\n");
+            }
+
+            if (line.startsWith("To:")) {
+                if (toTag != null) {
+                    sipBean.setTo(line + ";tag=" + toTag + "\r\n");
+                } else {
+                    sipBean.setTo(line + "\r\n");
+                }
+
+                me = line.split("<")[1].split(">")[0];
+
+                sipBean.setContact("Contact: " + line.substring(4) + "\r\n");
+            }
+
+            if (line.startsWith("From:")) {
+                sipBean.setFrom(line + "\r\n");
+                try {
+                    fromTag = Integer.parseInt(line.substring(line.length() - 4));
+                } catch (NumberFormatException e) {
+                }
+                if (fromTag != -1 && toTag != null) {
+                    toTag = GenerateTag.getTag(fromTag);
+                }
+            }
+
+            if (line.startsWith("Call-ID:")) {
+                sipBean.setCallId(line + "\r\n");
+            }
+
+            if (line.startsWith("CSeq:")) {
+                sipBean.setCseq(line + "\r\n");
+
+            }
+        }
+
+        sipBean.setType("SIP/2.0 404 Not Found\r\n");
+
+
+        sip = sipBean.getNotFoundBeann();
+
+
+        return sip;
     }
 
     public String getOkForInvite() throws ConstructSdpFailedException, ConstructSipFailedException {
@@ -143,10 +254,12 @@ public class SipFactory {
             }
 
             if (line.startsWith("CSeq:")) {
-                sipBean.setCseq("CSeq: " + (initialCSeq + 1) + " BYE\r\n");
+                sipBean.setCseq("CSeq: " + (initialCSeq + 24) + " BYE\r\n");
             }
 
         }
+
+        sipBean.setType("BYE sip:" + remoteSipIp + ":" + remoteSipPort + " SIP/2.0");
 
         String sip;
         try {

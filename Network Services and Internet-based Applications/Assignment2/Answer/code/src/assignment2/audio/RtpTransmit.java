@@ -12,9 +12,8 @@ import javax.media.control.TrackControl;
 import javax.media.control.QualityControl;
 import javax.media.rtp.*;
 import javax.media.rtp.rtcp.*;
-import com.sun.media.rtp.*;
 
-public class AVTransmit2 {
+public class RtpTransmit {
 
     // Input MediaLocator
     // Can be a file or http or capture source
@@ -26,7 +25,7 @@ public class AVTransmit2 {
     private RTPManager rtpMgrs[];
     private DataSource dataOutput = null;
 
-    public AVTransmit2(MediaLocator locator,
+    public RtpTransmit(MediaLocator locator,
 			 String ipAddress,
 			 String pb,
 			 Format format) {
@@ -199,7 +198,7 @@ public class AVTransmit2 {
 
 		// The local session address will be created on the
 		// same port as the the target port. This is necessary
-		// if you use AVTransmit2 in conjunction with JMStudio.
+		// if you use RtpTransmit in conjunction with JMStudio.
 		// JMStudio assumes -  in a unicast session - that the
 		// transmitter transmits from the same port it is receiving
 		// on and sends RTCP Receiver Reports back to this port of
@@ -389,7 +388,7 @@ public class AVTransmit2 {
     public static void main(String [] args) {
 	// We need three parameters to do the transmission
 	// For example,
-	//   java AVTransmit2 file:/C:/media/test.mov  129.130.131.132 42050
+	//   java RtpTransmit file:/C:/media/test.mov  129.130.131.132 42050
 
 	if (args.length < 3) {
 	    prUsage();
@@ -399,7 +398,7 @@ public class AVTransmit2 {
 	int i = 0;
 
 	// Create a audio transmit object with the specified params.
-	AVTransmit2 at = new AVTransmit2(new MediaLocator(args[i]),
+	RtpTransmit at = new RtpTransmit(new MediaLocator(args[i]),
 					     args[i+1], args[i+2], fmt);
 	// Start the transmission
 	String result = at.start();
@@ -418,7 +417,7 @@ public class AVTransmit2 {
 	// so that the capture device will be properly released
 	// before quitting.
 	// The right thing to do would be to have a GUI with a
-	// "Stop" button that would call stop on AVTransmit2
+	// "Stop" button that would call stop on RtpTransmit
 	try {
 	    Thread.currentThread().sleep(60000);
 	} catch (InterruptedException ie) {
@@ -434,7 +433,7 @@ public class AVTransmit2 {
 
 
     static void prUsage() {
-	System.err.println("Usage: AVTransmit2 <sourceURL> <destIP> <destPortBase>");
+	System.err.println("Usage: RtpTransmit <sourceURL> <destIP> <destPortBase>");
 	System.err.println("     <sourceURL>: input URL or file name");
 	System.err.println("     <destIP>: multicast, broadcast or unicast IP address for the transmission");
 	System.err.println("     <destPortBase>: network port numbers for the transmission.");
