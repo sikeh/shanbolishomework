@@ -259,7 +259,7 @@ public class SipFactory {
 
         }
 
-        sipBean.setType("BYE sip:" + remoteSipIp + ":" + remoteSipPort + " SIP/2.0");
+        sipBean.setType("BYE sip:" + remoteSipIp + ":" + remoteSipPort + " SIP/2.0\r\n");
 
         String sip;
         try {

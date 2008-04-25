@@ -31,7 +31,7 @@ public class SipSpeaker {
     private static String messageWav = "currentmessage.wav";
     private static String messageText = "Welcome to the SIP Speaker this is my own answering machine. You have no new message.";
     private static String sipInterface = "0.0.0.0";
-    private static int sipPort = 1014;
+    private static int sipPort = 8888;
     private static String sipUser = "robot";
     private static String httpInterface = "127.0.0.1";
     private static int httpPort = 8080;

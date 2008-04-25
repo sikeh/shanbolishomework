@@ -14,8 +14,8 @@ import com.sun.speech.freetts.InputMode;
  */
 public class Text2Wav {
     public static void main(String[] args) {
-        String text = "Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck!";
-        String outFile = "works.wav";
+        String text = "Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck!Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck!Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck!Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck! Good Luck!";
+        String outFile = "default.wav";
         text2wav(text, outFile);
     }
 
