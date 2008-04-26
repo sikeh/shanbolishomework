@@ -66,7 +66,7 @@ public class SipServer {
 
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, "SIP listening Address already in use...");
         }
 
     }

@@ -59,13 +59,9 @@ public class ConnectHandler{
         }
         if (responseOkForInvite != null) {
            MediaLocator mediaLocator = new MediaLocator("file:./" + SipSpeaker.getWavToPlay());
-//           MediaLocator mediaLocator = new MediaLocator("file:./works.wav");
             rtpTransmit = new RtpTransmit(mediaLocator, remoteSIPIP, String.valueOf(remoteRTPPort), null);
             rtpTransmit.start();
-
         }
-
-      
     }
 
     public void sendNotFound(){

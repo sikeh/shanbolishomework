@@ -41,14 +41,14 @@ public class RtpTransmit {
      * Starts the transmission. Returns null if transmission started ok.
      * Otherwise it returns a string with the reason why the setup failed.
      */
-    public synchronized Time start() {
+    public synchronized String start() {
         String result;
 
         // Create a processor for the specified media locator
         // and program it to output JPEG/RTP
         result = createProcessor();
         if (result != null)
-            return null;
+            return result;
 
         // Create an RTP session to transmit the output of the
         // processor to the specified IP address and port no.
@@ -56,12 +56,13 @@ public class RtpTransmit {
         if (result != null) {
             processor.close();
             processor = null;
-            return null;
+            return result;
         }
 
         // Start the transmission
         processor.start();
-        return processor.getMediaTime();
+
+        return null;
     }
 
     /**

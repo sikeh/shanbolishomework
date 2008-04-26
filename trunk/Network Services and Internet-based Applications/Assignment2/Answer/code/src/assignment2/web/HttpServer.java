@@ -1,19 +1,15 @@
 package assignment2.web;
 
-import assignment2.sip.SipServer;
 import assignment2.SipSpeaker;
 import assignment2.util.UrlDecoder;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.InetAddress;
 import java.util.logging.Logger;
 
 
@@ -49,67 +45,68 @@ public class HttpServer {
                 BufferedReader instream = new BufferedReader(new InputStreamReader(
                         client.getInputStream()));
                 String inline = instream.readLine(); // read request
+                System.out.println(inline);
 //                logger.info("receive:" + inline);
                 if (isGet(inline)) { // if it is a get request
-                    outstream.print("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n" +
-                            "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
-                            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-                            "<head>\n" +
-                            "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-15\"/>\n" +
-                            "    <title>Message Management for SipSpeaker</title>\n" +
-                            "</head>\n" +
-                            "<body>\n" +
-                            "<h4>Message Management for SipSpeaker</h4>\n" +
-                            "\n" +
-                            "<form action=\"action\" method=\"post\">\n" +
-                            "    <table border=\"1\" cellpadding=\"10\" cellspacing=\"10\">\n" +
-                            "        <tr>\n" +
-                            "            <td width=\"200\"><i>Current Message:</i><br/>");
-                    outstream.print(SipSpeaker.getMessageText());
-                    outstream.print("</td>\n" +
-                            "            <td><input type=\"submit\" value=\"Delete\" name=\"delete\"/></td>\n" +
-                            "        </tr>\n" +
-                            "        <tr>\n" +
-                            "            <td><i>New Message: </i><br/><input type=\"text\" name=\"message\"/></td>\n" +
-                            "            <td><input type=\"submit\" value=\"Change\" name=\"change\"/></td>\n" +
-                            "        </tr>\n" +
-                            "    </table>\n" +
-                            "\n" +
-                            "    <br/>\n" +
-                            "\n" +
-                            "</form>\n" +
-                            "</body>\n" +
-                            "</html>");
-                } else if (isPost(inline)) {
-                    while (true) {
-                        inline = instream.readLine();
-                        if (inline.startsWith("delete=Delete")) {
-                            // delete current message
-                            SipSpeaker.setMessageText("");
-                            returnHTML("Message has been deleted, so the default wav will be played instead!", outstream);
-                            break;
+                    if (inline.startsWith("GET /action?delete=Delete")) {
+                        // delete current message
+                        SipSpeaker.setMessageText("");
+                    } else if (inline.startsWith("GET /action?message=")) {
+                        String[] strs = inline.split("&");
+                        String msg = strs[0].split("=")[1];
+                        if (msg.trim().equals("")) {
+
+//                            returnHTML("Can't input an empty message!", outstream);
+                        } else {
+                            msg = UrlDecoder.decode(msg);
+                            SipSpeaker.setMessageText(msg);
+//                            returnHTML("An new message has been set: " + msg, outstream);
                         }
-                        if (inline.endsWith("change=Change")) {
-                            // change the message
-                            String[] strs = inline.split("&");
-                            String msg = strs[0].split("=")[1];
-                            if (msg.trim().equals("")) {
-                                returnHTML("Can't input an empty message!", outstream);
-                            } else {
-                                msg = UrlDecoder.decode(msg);
-                                SipSpeaker.setMessageText(msg);
-                                returnHTML("An new message has been set: " + msg, outstream);
-                            }
-                            break;
-                        }
+
+                    } else {
                     }
+
                 }
+                initialPage(outstream);
                 client.close();
             }
             catch (IOException e3) {
                 logger.severe(e3.getMessage());
             }
 
+        }
+
+        private void initialPage(PrintStream outstream) {
+            outstream.print("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n" +
+                    "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
+                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                    "<head>\n" +
+                    "<META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">" +
+                    "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-15\"/>\n" +
+                    "    <title>Message Management for SipSpeaker</title>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "<h4>Message Management for SipSpeaker</h4>\n" +
+                    "\n" +
+                    "<form action=\"action\" method=\"get\">\n" +
+                    "    <table border=\"1\" cellpadding=\"10\" cellspacing=\"10\">\n" +
+                    "        <tr>\n" +
+                    "            <td width=\"200\"><i>Current Message:</i><br/>");
+            outstream.print(SipSpeaker.getMessageText());
+            outstream.print("</td>\n" +
+                    "            <td><input type=\"submit\" value=\"Delete\" name=\"delete\"/></td>\n" +
+                    "        </tr>\n" +
+                    "        <tr>\n" +
+                    "            <td><i>New Message: </i><br/><textarea name=\"message\" rows=\"24\" cols=\"62\"></textarea></td>\n" +
+                    "            <td><input type=\"submit\" value=\"Change\" name=\"change\"/></td>\n" +
+                    "        </tr>\n" +
+                    "    </table>\n" +
+                    "\n" +
+                    "    <br/>\n" +
+                    "\n" +
+                    "</form>\n" +
+                    "</body>\n" +
+                    "</html>");
         }
 
 
@@ -188,7 +185,7 @@ public class HttpServer {
                 logger.severe(eee.getMessage());
             }
         }
-
+                  
         public void run() {
             try {
                 server = new ServerSocket(port, 0, InetAddress.getByName(iter));
