@@ -1,6 +1,7 @@
 package sicssim.coolstream.peers;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import sicssim.config.SicsSimConfig;
 import sicssim.coolstream.types.MembershipMessage;
@@ -16,6 +17,7 @@ import sicssim.types.Data;
 import sicssim.types.EventType;
 
 public class OriginNode extends BandwidthPeer {
+    Logger logger = Logger.getLogger(OriginNode.class.getName());
     private Buffer buffer = new Buffer();
     private HashMap<String, Integer> mCache = new HashMap<String, Integer>();
 
@@ -33,6 +35,8 @@ public class OriginNode extends BandwidthPeer {
         for (int i = 0; i < SicsSimConfig.BUFFER_SIZE; i++) {
             this.buffer.addSegment(i);
         }
+
+
         // sikeh: triger event ?
     }
 
@@ -72,7 +76,10 @@ public class OriginNode extends BandwidthPeer {
         //Here the peer should multicast its buffer map and its upload bandwidth to
         //the peers in its partner list.
         PartnerInfo parterInfo = new PartnerInfo(buffer.getBufferMap(), this.getUploadBandwidth());
-        Broadcast.multicast(parterInfo, mCache.keySet(), this);
+        Data msg = new Data();
+        msg.type = EventType.SEND_BUFFER_MAP;
+        msg.data = parterInfo;
+        Broadcast.multicast(msg, mCache.keySet(), this);
     }
 
     //----------------------------------------------------------------------------------
@@ -80,7 +87,10 @@ public class OriginNode extends BandwidthPeer {
         //TODO:
         //Here the peer should broadcast the membership message to all peers in system.
         MembershipMessage memMsg = new MembershipMessage(memberMsgSeqNum, this.getId());
-        Broadcast.broadcast(memMsg, this.network, this);
+        Data msg = new Data();
+        msg.type = EventType.SEND_MEMBERSHIP_MSG;
+        msg.data = memMsg;
+        Broadcast.broadcast(msg, this.network, this);
         memberMsgSeqNum++;
     }
 
@@ -88,7 +98,8 @@ public class OriginNode extends BandwidthPeer {
     private void handleRecvMembershipMsg(Object data) {
         //TODO:
         //This method is called when a peer receives the membership messages of other peers.
-        MembershipMessage memMsg = (MembershipMessage) data;
+        Data msg = (Data) data;
+        MembershipMessage memMsg = (MembershipMessage) msg.data;
         NodeId srcNode = memMsg.id;
         int timeStamp = memMsg.seqNum;
         // sikeh: must store NodeId.toString()
