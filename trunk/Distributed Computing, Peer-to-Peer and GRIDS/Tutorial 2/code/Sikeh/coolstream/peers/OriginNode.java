@@ -1,14 +1,12 @@
 package sicssim.coolstream.peers;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import sicssim.config.SicsSimConfig;
 import sicssim.coolstream.types.MembershipMessage;
 import sicssim.coolstream.types.PartnerInfo;
 import sicssim.coolstream.utils.Broadcast;
 import sicssim.coolstream.utils.Buffer;
-import sicssim.coolstream.utils.DataAvailability;
 import sicssim.links.AbstractLink;
 import sicssim.network.Network;
 import sicssim.network.NodeId;
@@ -17,32 +15,29 @@ import sicssim.peers.PeerEventListener;
 import sicssim.types.Data;
 import sicssim.types.EventType;
 
-public class Peer extends BandwidthPeer {
-
+public class OriginNode extends BandwidthPeer {
     private Buffer buffer = new Buffer();
     private HashMap<String, Integer> mCache = new HashMap<String, Integer>();
-    private DataAvailability dataAvailability = new DataAvailability();
 
-    private long recvDataTime = Long.MAX_VALUE;
     private int memberMsgSeqNum = 0;
-    private boolean firstRecv = false;
 
     //----------------------------------------------------------------------------------
     public void init(NodeId nodeId, AbstractLink link, Network network) {
-        super.init(nodeId, link, network);
+        super.init(SicsSimConfig.ORIGIN_NODEID, link, network, SicsSimConfig.MEDIA_SERVER_UPLOAD_BANDWIDTH, SicsSimConfig.MEDIA_SERVER_DOWNLOAD_BANDWIDTH);
     }
 
     //----------------------------------------------------------------------------------
     public void create(long currentTime) {
+        //TODO:
+        //The origin node is the first node in the system, and this the first method called by simulator for this node.
+        for (int i = 0; i < SicsSimConfig.BUFFER_SIZE; i++) {
+            this.buffer.addSegment(i);
+        }
+        // sikeh: triger event ?
     }
 
     //----------------------------------------------------------------------------------
     public void join(long currentTime) {
-        //TODO:
-        //When the peer joins to the system, this method is called by simulator.
-        Data msg = new Data();
-        msg.type = EventType.SEND_MEMBERSHIP_MSG;
-        this.sendControlData(SicsSimConfig.ORIGIN_NODEID, msg);
     }
 
     //----------------------------------------------------------------------------------
@@ -61,63 +56,14 @@ public class Peer extends BandwidthPeer {
     public void receive(NodeId srcId, Object data, long currentTime) {
         Data msg = (Data) data;
 
-        if (this.firstRecv == false && msg.type == EventType.STOP_RECV_DATA) {
-            this.firstRecv = true;
-            this.recvDataTime = currentTime;
-        }
-
         if (listeners[msg.type.ordinal()] != null)
             ((PeerEventListener) listeners[msg.type.ordinal()]).receivedEvent(srcId, data);
     }
 
     //----------------------------------------------------------------------------------
-    public int getnumOfMissedSegments() {
-        return this.buffer.numOfMissedSegments();
-    }
-
-    //----------------------------------------------------------------------------------
-    public int getPlaybackPoint() {
-        return this.buffer.getPlaybackPoint();
-    }
-
-    //----------------------------------------------------------------------------------
-    public Set<String> getUploadPartnerList() {
-        return this.mCache.keySet();
-    }
-
-    //----------------------------------------------------------------------------------
-    public Set<String> getDownloadPartnerList() {
-        return this.dataAvailability.getSupplier();
-    }
-
-    //----------------------------------------------------------------------------------
     public void updatePeer(Object data, long currentTime) {
-        if (currentTime - this.recvDataTime >= SicsSimConfig.BUFFERING_TIME) {
-            if (this.buffer.updatePlaybackPoint())
-                this.buffer.countNumOfMissedSegments();
-        }
-    }
-
-    //----------------------------------------------------------------------------------
-    public void pullSegment(NodeId partner, int segment) {
-        Data msg = new Data();
-        msg.type = EventType.PULL_SEGMENT;
-        msg.data = new String(this.nodeId + "-" + Integer.toString(segment));
-        this.sendControlData(partner, msg);
-    }
-
-    //----------------------------------------------------------------------------------
-    private void handleScheduling() {
-        //TODO:
-        //You should define from which peer, which segment should be fetched.
-        //Hint: don't forget to call loopback method at the end of this module for this method.
-        //As a sample the loopback method can be as follow:
-
-        
-
-        Data msg = new Data();
-        msg.type = EventType.SCHEDULING;
-        this.loopback(msg, SicsSimConfig.SCHEDULING_PERIOD);
+        if (this.buffer.getLastSegment() < SicsSimConfig.MEDIA_SIZE)
+            this.buffer.update();
     }
 
     //----------------------------------------------------------------------------------
@@ -127,14 +73,6 @@ public class Peer extends BandwidthPeer {
         //the peers in its partner list.
         PartnerInfo parterInfo = new PartnerInfo(buffer.getBufferMap(), this.getUploadBandwidth());
         Broadcast.multicast(parterInfo, mCache.keySet(), this);
-    }
-
-    //----------------------------------------------------------------------------------
-    private void handleRecvBufferMap(NodeId srcId, Object data) {
-        //TODO:
-        //This method is called when a peer receives the buffer map of other peers.
-        PartnerInfo parterInfo = (PartnerInfo) data;
-        dataAvailability.put(srcId.toString(), parterInfo);
     }
 
     //----------------------------------------------------------------------------------
@@ -162,23 +100,6 @@ public class Peer extends BandwidthPeer {
         if (mCache.get(node) < timeStamp) {
             mCache.put(node, timeStamp);
         }
-    }
-
-    //----------------------------------------------------------------------------------
-    private void handleRecvSegment(NodeId srcId, Object data) {
-    }
-
-    //----------------------------------------------------------------------------------
-    private void handleFinishRecvSegment(NodeId srcId, Object data) {
-        Data msg = (Data) data;
-        String segment = (String) msg.data;
-
-        this.buffer.addSegment(Integer.parseInt(segment));
-        //System.out.println(this.nodeId + ", my buffer: " + this.buffer);
-
-        Data bufferMsg = new Data();
-        bufferMsg.type = EventType.SEND_BUFFER_MAP;
-        this.loopback(bufferMsg, SicsSimConfig.BUFFER_MAP_PERIOD);
     }
 
     //----------------------------------------------------------------------------------
@@ -215,34 +136,9 @@ public class Peer extends BandwidthPeer {
 
     //----------------------------------------------------------------------------------
     public void registerEvents() {
-        super.addEventListener(EventType.SCHEDULING, new PeerEventListener() {
-            public void receivedEvent(NodeId srcId, Object data) {
-                handleScheduling();
-            }
-        });
-
-        super.addEventListener(EventType.PULL_SEGMENT, new PeerEventListener() {
-            public void receivedEvent(NodeId srcId, Object data) {
-                handleStartPushSegment(srcId, data);
-            }
-        });
-
-        super.addEventListener(EventType.STOP_PUSH_SEGMENT, new PeerEventListener() {
-            public void receivedEvent(NodeId srcId, Object data) {
-                handleStopPushSegment(srcId, data);
-            }
-        });
-
-
         super.addEventListener(EventType.SEND_BUFFER_MAP, new PeerEventListener() {
             public void receivedEvent(NodeId srcId, Object data) {
                 handleSendBufferMap();
-            }
-        });
-
-        super.addEventListener(EventType.BUFFER_MAP, new PeerEventListener() {
-            public void receivedEvent(NodeId srcId, Object data) {
-                handleRecvBufferMap(srcId, data);
             }
         });
 
@@ -258,17 +154,16 @@ public class Peer extends BandwidthPeer {
             }
         });
 
-        super.addEventListener(EventType.START_RECV_DATA, new PeerEventListener() {
+        super.addEventListener(EventType.PULL_SEGMENT, new PeerEventListener() {
             public void receivedEvent(NodeId srcId, Object data) {
-                handleRecvSegment(srcId, data);
+                handleStartPushSegment(srcId, data);
             }
         });
 
-        super.addEventListener(EventType.STOP_RECV_DATA, new PeerEventListener() {
+        super.addEventListener(EventType.STOP_PUSH_SEGMENT, new PeerEventListener() {
             public void receivedEvent(NodeId srcId, Object data) {
-                handleFinishRecvSegment(srcId, data);
+                handleStopPushSegment(srcId, data);
             }
         });
-
     }
 }
