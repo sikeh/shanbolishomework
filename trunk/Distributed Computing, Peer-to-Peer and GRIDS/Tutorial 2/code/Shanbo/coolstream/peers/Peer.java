@@ -1,7 +1,8 @@
 package sicssim.coolstream.peers;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import sicssim.config.SicsSimConfig;
 import sicssim.coolstream.types.MembershipMessage;
@@ -18,6 +19,7 @@ import sicssim.types.Data;
 import sicssim.types.EventType;
 
 public class Peer extends BandwidthPeer {
+    public static final Logger logger = Logger.getLogger(Peer.class.getName());
 
     private Buffer buffer = new Buffer();
     private HashMap<String, Integer> mCache = new HashMap<String, Integer>();
@@ -26,6 +28,17 @@ public class Peer extends BandwidthPeer {
     private long recvDataTime = Long.MAX_VALUE;
     private int memberMsgSeqNum = 0;
     private boolean firstRecv = false;
+
+
+    static {
+        logger.setLevel(Level.ALL);
+    }
+    //Shanbo: add these fields for scheduling
+    /**
+     * Store partners
+     */
+    private List<NodeId> partners = new LinkedList<NodeId>();
+    private NodeId supplier;
 
     //----------------------------------------------------------------------------------
     public void init(NodeId nodeId, AbstractLink link, Network network) {
@@ -43,6 +56,12 @@ public class Peer extends BandwidthPeer {
         Data msg = new Data();
         msg.type = EventType.SEND_MEMBERSHIP_MSG;
         this.sendControlData(SicsSimConfig.ORIGIN_NODEID, msg);
+
+
+        msg = new Data();
+        msg.type = EventType.SCHEDULING;
+        this.loopback(msg, SicsSimConfig.SCHEDULING_PERIOD);
+
     }
 
     //----------------------------------------------------------------------------------
@@ -113,11 +132,31 @@ public class Peer extends BandwidthPeer {
         //Hint: don't forget to call loopback method at the end of this module for this method.
         //As a sample the loopback method can be as follow:
 
-        
+        //Shanbo: add the Scheduling Algorithm
+        //local field, use for get partner
+        Collection<String> partnerSet = mCache.keySet();
+        for (String nodeInString : partnerSet) {
+            partners.add(new NodeId(nodeInString));
+        }
+
+        logger.info("Play Back Point is " + this.buffer.getPlaybackPoint());
+        double[][] t = new double[1124][1124];
+
+
+        for (int i = this.getPlaybackPoint(); i < SicsSimConfig.BUFFER_SIZE; i++) {
+            if (!this.buffer.containsSegment(i)) {
+                
+            }
+        }
+
 
         Data msg = new Data();
         msg.type = EventType.SCHEDULING;
         this.loopback(msg, SicsSimConfig.SCHEDULING_PERIOD);
+    }
+
+    private int bm(int j, int i) {
+        return -1;
     }
 
     //----------------------------------------------------------------------------------
@@ -126,14 +165,18 @@ public class Peer extends BandwidthPeer {
         //Here the peer should multicast its buffer map and its upload bandwidth to
         //the peers in its partner list.
         PartnerInfo parterInfo = new PartnerInfo(buffer.getBufferMap(), this.getUploadBandwidth());
-        Broadcast.multicast(parterInfo, mCache.keySet(), this);
+        Data msg = new Data();
+        msg.type = EventType.SEND_BUFFER_MAP;
+        msg.data = parterInfo;
+        Broadcast.multicast(msg, mCache.keySet(), this);
     }
 
     //----------------------------------------------------------------------------------
     private void handleRecvBufferMap(NodeId srcId, Object data) {
         //TODO:
         //This method is called when a peer receives the buffer map of other peers.
-        PartnerInfo parterInfo = (PartnerInfo) data;
+        Data msg = (Data) data;
+        PartnerInfo parterInfo = (PartnerInfo) msg.data;
         dataAvailability.put(srcId.toString(), parterInfo);
     }
 
@@ -142,7 +185,11 @@ public class Peer extends BandwidthPeer {
         //TODO:
         //Here the peer should broadcast the membership message to all peers in system.
         MembershipMessage memMsg = new MembershipMessage(memberMsgSeqNum, this.getId());
-        Broadcast.broadcast(memMsg, this.network, this);
+        Data msg = new Data();
+        msg.type = EventType.SEND_MEMBERSHIP_MSG;
+        msg.data = memMsg;
+        //TODO Shanbo: I coment out this
+//        Broadcast.broadcast(msg, this.network, this);
         memberMsgSeqNum++;
     }
 
@@ -150,7 +197,8 @@ public class Peer extends BandwidthPeer {
     private void handleRecvMembershipMsg(Object data) {
         //TODO:
         //This method is called when a peer receives the membership messages of other peers.
-        MembershipMessage memMsg = (MembershipMessage) data;
+        Data msg = (Data) data;
+        MembershipMessage memMsg = (MembershipMessage) msg.data;
         NodeId srcNode = memMsg.id;
         int timeStamp = memMsg.seqNum;
         // sikeh: must store NodeId.toString()
