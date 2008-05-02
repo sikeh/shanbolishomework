@@ -9,6 +9,7 @@ import sicssim.network.NodeId;
 
 public class DataAvailability {
     private Peer me;
+    private static final int SEGMENT_SIZE = SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND;
     private HashMap<String, PartnerInfo> dataAvailability = new HashMap<String, PartnerInfo>();
 
 
@@ -49,7 +50,7 @@ public class DataAvailability {
     }
 
     //----------------------------------------------------------------------------------
-    public NodeId findSupplier(int segment) {
+    public String[] findSupplier() {
         //TODO:
         //You should find a supplier for the segment. Better heuristic better result ;)
 
@@ -60,13 +61,11 @@ public class DataAvailability {
         String[] suppliers = new String[1124];
         Map<NodeSegmentPair, Long> t = new HashMap<NodeSegmentPair, Long>();
         Map<Integer, Set<Integer>> dup_set = new HashMap<Integer, Set<Integer>>(1124);
-        for (Set<Integer> s : dup_set.values()) {
-            s = new HashSet<Integer>();
-        }
+
 
         String k = SicsSimConfig.ORIGIN_NODEID.toString();
 
-        for (int i = this.me.getPlaybackPoint(); i <= SicsSimConfig.BUFFER_SIZE; i++) {
+        for (int i = this.me.getPlaybackPoint(); i <= SicsSimConfig.MEDIA_SIZE; i++) {
             if (!this.me.getBuffer().containsSegment(i)) {
                 int n = 0;
                 String node;
@@ -80,34 +79,49 @@ public class DataAvailability {
                 if (n == 1) {
                     for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
                         PartnerInfo parterInfo = entry.getValue();
-                        if (parterInfo.bufferMap.contains(segment)) {
+                        if (parterInfo.bufferMap.contains(i)) {
                             k = entry.getKey();
                         }
                     }
                     suppliers[i] = k;
-                    for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.BUFFER_SIZE; j++) {
-                        t.put(new NodeSegmentPair(k, j), t.get(new NodeSegmentPair(k, j)) - SicsSimConfig.MEDIA_SIZE / dataAvailability.get(k).uploadBw);
+                    for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
+                        t.put(new NodeSegmentPair(k, j), t.get(new NodeSegmentPair(k, j)) - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
                     }
                 } else {
-                    dup_set.get(n).add(i);
+                    if (dup_set.get(n) == null) {
+                       dup_set.put(n,new HashSet<Integer>());
+                       dup_set.get(n).add(i);
+                    } else {
+                       dup_set.get(n).add(i);
+                    }
                     suppliers[n] = null;
                 }
             }
         }
 
+        List<String> candidates = new ArrayList<String>();
         for (int n = 2; n < dataAvailability.keySet().size(); n++) {
             for (Integer i : dup_set.get(n)) {
                 for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
                     PartnerInfo parterInfo = entry.getValue();
-                    if (parterInfo.bufferMap.contains(segment)) {
-                        k = entry.getKey();
+                    String node = entry.getKey();
+                    if (t.get(new NodeSegmentPair(node, i)) > SEGMENT_SIZE / parterInfo.uploadBw) {
+                        candidates.add(node);
+                    }
+                }
+
+                if (candidates.size() != 0) {
+                    k = Collections.max(candidates);
+                    suppliers[i] = k;
+                    for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
+                        t.put(new NodeSegmentPair(k, j), t.get(new NodeSegmentPair(k, j)) - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
                     }
                 }
             }
         }
 
 
-        return candidate;
+        return suppliers;
     }
 
     /**
@@ -135,17 +149,6 @@ public class DataAvailability {
             return 1;
         } else {
             return 0;
-        }
-    }
-
-    class Candidate extends Peer implements Comparable<Candidate>{
-
-        public int compareTo(Candidate that) {
-            if (this.getUploadBandwidth() > that.getUploadBandwidth()){
-                return 1;
-            }else {
-                return -1;
-            }
         }
     }
 

@@ -161,21 +161,17 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
 
         //Shanbo: add the Scheduling Algorithm
         //local field, use for get partner
-        Collection<String> partnerSet = mCache.keySet();
-        for (String nodeInString : partnerSet) {
-            partners.add(new NodeId(nodeInString));
+        String [] suppliers = this.dataAvailability.findSupplier();
+        for (int i = this.getPlaybackPoint(); i < SicsSimConfig.MEDIA_SIZE ;i++){
+            if (suppliers[i] != null) {
+                pullSegment(new NodeId(suppliers[i]),i );
+                logger.info("pull segment \""+ i+ " from " + suppliers[i]);
+            }
         }
-
-        logger.info("Play Back Point is " + this.buffer.getPlaybackPoint());
-
 
         Data msg = new Data();
         msg.type = EventType.SCHEDULING;
         this.loopback(msg, SicsSimConfig.SCHEDULING_PERIOD);
-    }
-
-    private int bm(int j, int i) {
-        return -1;
     }
 
     //----------------------------------------------------------------------------------
@@ -205,7 +201,7 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         //Here the peer should broadcast the membership message to all peers in system.
         MembershipMessage memMsg = new MembershipMessage(memberMsgSeqNum, this.getId());
         Data msg = new Data();
-        msg.type = EventType.SEND_MEMBERSHIP_MSG;
+        msg.type = EventType.MEMBERSHIP_MSG;
         msg.data = memMsg;
 //        logger.info("Node "+ this.nodeId.id + ": "+ this.network.size()+"");
         Broadcast.broadcast(msg, this.network, this);
