@@ -11,6 +11,8 @@ public class DataAvailability {
     private Peer me;
     private static final int SEGMENT_SIZE = SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND;
     private HashMap<String, PartnerInfo> dataAvailability = new HashMap<String, PartnerInfo>();
+    private Long aLong;
+    private Long aLong2;
 
 
     public DataAvailability(Peer me) {
@@ -85,7 +87,10 @@ public class DataAvailability {
                     }
                     suppliers[i] = k;
                     for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
-                        t.put(new NodeSegmentPair(k, j), t.get(new NodeSegmentPair(k, j)) - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
+                        aLong = t.get(new NodeSegmentPair(k, j));
+                        if (aLong != null) {
+                            t.put(new NodeSegmentPair(k, j), aLong - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
+                        }
                     }
                 } else {
                     if (dup_set.get(n) == null) {
@@ -101,20 +106,25 @@ public class DataAvailability {
 
         List<String> candidates = new ArrayList<String>();
         for (int n = 2; n < dataAvailability.keySet().size(); n++) {
-            for (Integer i : dup_set.get(n)) {
-                for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
-                    PartnerInfo parterInfo = entry.getValue();
-                    String node = entry.getKey();
-                    if (t.get(new NodeSegmentPair(node, i)) > SEGMENT_SIZE / parterInfo.uploadBw) {
-                        candidates.add(node);
+            if (dup_set.get(n)!= null) {
+                for (Integer i : dup_set.get(n)) {
+                    for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
+                        PartnerInfo parterInfo = entry.getValue();
+                        String node = entry.getKey();
+                        if (t.get(new NodeSegmentPair(node, i)) > SEGMENT_SIZE / parterInfo.uploadBw) {
+                            candidates.add(node);
+                        }
                     }
-                }
 
-                if (candidates.size() != 0) {
-                    k = Collections.max(candidates);
-                    suppliers[i] = k;
-                    for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
-                        t.put(new NodeSegmentPair(k, j), t.get(new NodeSegmentPair(k, j)) - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
+                    if (candidates.size() != 0) {
+                        k = Collections.max(candidates);
+                        suppliers[i] = k;
+                        for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
+                            aLong2 = t.get(new NodeSegmentPair(k, j));
+                            if (aLong2 != null) {
+                                t.put(new NodeSegmentPair(k, j), aLong2 - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
+                            }
+                        }
                     }
                 }
             }

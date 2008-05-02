@@ -58,7 +58,7 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
     }
 
     public long getDeadLine(int segment) {
-        return segment * 10 - currentTime;
+        return segment * 10 + currentTime;
     }
 
     //Shanbo: ------------end of new mothod--------------
@@ -67,7 +67,7 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
 
     public void init(NodeId nodeId, AbstractLink link, Network network) {
         super.init(nodeId, link, network);
-
+        mCache.put(SicsSimConfig.ORIGIN_NODEID.toString(),0);
         dataAvailability = new DataAvailability(this);
     }
 
@@ -154,6 +154,8 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
 
     //----------------------------------------------------------------------------------
     private void handleScheduling() {
+
+        logger.info("mCache.size = " + mCache.size());
         //TODO:
         //You should define from which peer, which segment should be fetched.
         //Hint: don't forget to call loopback method at the end of this module for this method.
@@ -165,9 +167,10 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         for (int i = this.getPlaybackPoint(); i < SicsSimConfig.MEDIA_SIZE ;i++){
             if (suppliers[i] != null) {
                 pullSegment(new NodeId(suppliers[i]),i );
-                logger.info("pull segment \""+ i+ " from " + suppliers[i]);
+                logger.info("Node "+ this.nodeId + " : pull segment \""+ i+ " from " + suppliers[i]);
             }
         }
+        handleSendBufferMap();
 
         Data msg = new Data();
         msg.type = EventType.SCHEDULING;
@@ -181,7 +184,7 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         //the peers in its partner list.
         PartnerInfo parterInfo = new PartnerInfo(buffer.getBufferMap(), this.getUploadBandwidth());
         Data msg = new Data();
-        msg.type = EventType.SEND_BUFFER_MAP;
+        msg.type = EventType.BUFFER_MAP;
         msg.data = parterInfo;
         Broadcast.multicast(msg, mCache.keySet(), this);
     }
