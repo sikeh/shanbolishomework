@@ -1,6 +1,6 @@
 package sicssim.coolstream.peers;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.Logger;
 
 import sicssim.config.SicsSimConfig;
@@ -19,9 +19,11 @@ import sicssim.types.EventType;
 public class OriginNode extends BandwidthPeer {
     Logger logger = Logger.getLogger(OriginNode.class.getName());
     private Buffer buffer = new Buffer();
-    private HashMap<String, Integer> mCache = new HashMap<String, Integer>();
+    private Map<String, Integer> mCache = new LinkedHashMap<String, Integer>();
 
     private int memberMsgSeqNum = 0;
+
+   
 
     //----------------------------------------------------------------------------------
     public void init(NodeId nodeId, AbstractLink link, Network network) {
@@ -71,15 +73,34 @@ public class OriginNode extends BandwidthPeer {
     }
 
     //----------------------------------------------------------------------------------
-    private void handleSendBufferMap() {
+    private void handleSendBufferMap(NodeId id) {
         //TODO:
         //Here the peer should multicast its buffer map and its upload bandwidth to
         //the peers in its partner list.
-        PartnerInfo parterInfo = new PartnerInfo(buffer.getBufferMap(), this.getUploadBandwidth());
+        SortedSet<Integer> sortedSet = new TreeSet<Integer>();
+        // if requestion node is in my partnet list
+//        if (mCache.containsKey(id)) {
+            // find out the requesting node is the k-th partnet
+            int k = 0;
+            for (String node : mCache.keySet()) {
+                if (node.equals(id.toString())) {
+                    break;
+                } else {
+                    k++;
+                }
+            }
+            // origin node has M partners will request seqment i from the origin node
+            for (int i = 0; i < SicsSimConfig.BUFFER_SIZE; i++) {
+                if (i % mCache.size() == k) {
+                    sortedSet.add(i);
+                }
+            }
+//        }
+        PartnerInfo parterInfo = new PartnerInfo(sortedSet, this.getUploadBandwidth());
         Data msg = new Data();
         msg.type = EventType.BUFFER_MAP;
         msg.data = parterInfo;
-        Broadcast.multicast(msg, mCache.keySet(), this);
+        sendControlData(id, msg);
     }
 
     //----------------------------------------------------------------------------------
@@ -111,7 +132,7 @@ public class OriginNode extends BandwidthPeer {
         if (mCache.get(node) < timeStamp) {
             mCache.put(node, timeStamp);
         }
-        handleSendBufferMap();
+        handleSendBufferMap(srcNode);
     }
 
     //----------------------------------------------------------------------------------
@@ -150,7 +171,7 @@ public class OriginNode extends BandwidthPeer {
     public void registerEvents() {
         super.addEventListener(EventType.SEND_BUFFER_MAP, new PeerEventListener() {
             public void receivedEvent(NodeId srcId, Object data) {
-                handleSendBufferMap();
+                handleSendBufferMap(srcId);
             }
         });
 

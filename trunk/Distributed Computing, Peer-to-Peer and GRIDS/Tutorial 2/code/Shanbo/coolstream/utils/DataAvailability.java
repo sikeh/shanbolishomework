@@ -13,6 +13,8 @@ public class DataAvailability {
     private HashMap<String, PartnerInfo> dataAvailability = new HashMap<String, PartnerInfo>();
     private Long aLong;
     private Long aLong2;
+    private int anInt;
+    private Long aLong3;
 
 
     public DataAvailability(Peer me) {
@@ -62,7 +64,7 @@ public class DataAvailability {
         NodeId candidate = null;
         String[] suppliers = new String[1124];
         Map<NodeSegmentPair, Long> t = new HashMap<NodeSegmentPair, Long>();
-        Map<Integer, Set<Integer>> dup_set = new HashMap<Integer, Set<Integer>>(1124);
+        Map<Integer, Set<Integer>> dup_set = new LinkedHashMap<Integer, Set<Integer>>(1124);
 
 
         String k = SicsSimConfig.ORIGIN_NODEID.toString();
@@ -94,30 +96,38 @@ public class DataAvailability {
                     }
                 } else {
                     if (dup_set.get(n) == null) {
-                       dup_set.put(n,new HashSet<Integer>());
-                       dup_set.get(n).add(i);
+                        dup_set.put(n, new HashSet<Integer>());
+                        dup_set.get(n).add(i);
                     } else {
-                       dup_set.get(n).add(i);
+                        dup_set.get(n).add(i);
                     }
                     suppliers[n] = null;
                 }
             }
         }
 
-        List<String> candidates = new ArrayList<String>();
+        List<String> candidates = new LinkedList<String>();
         for (int n = 2; n < dataAvailability.keySet().size(); n++) {
-            if (dup_set.get(n)!= null) {
+            if (dup_set.get(n) != null) {
                 for (Integer i : dup_set.get(n)) {
                     for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
                         PartnerInfo parterInfo = entry.getValue();
                         String node = entry.getKey();
-                        if (t.get(new NodeSegmentPair(node, i)) > SEGMENT_SIZE / parterInfo.uploadBw) {
-                            candidates.add(node);
+                        anInt = SEGMENT_SIZE / parterInfo.uploadBw;
+                        aLong3 = t.get(new NodeSegmentPair(node, i));
+                        if (parterInfo.bufferMap.contains(i) && aLong3 > anInt) {
+                            if (!candidates.contains(node)) {
+                                candidates.add(node);
+                            }
                         }
                     }
-
-                    if (candidates.size() != 0) {
-                        k = Collections.max(candidates);
+                    if (candidates.size() > 1) {
+//                        Collections.shuffle(candidates);
+//                        Collections.shuffle(candidates);
+                        Collections.shuffle(candidates);
+                        Collections.shuffle(candidates);
+                        k = candidates.get(1);
+//                        k = Collections.max(candidates);
                         suppliers[i] = k;
                         for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
                             aLong2 = t.get(new NodeSegmentPair(k, j));
@@ -129,7 +139,6 @@ public class DataAvailability {
                 }
             }
         }
-
 
         return suppliers;
     }
