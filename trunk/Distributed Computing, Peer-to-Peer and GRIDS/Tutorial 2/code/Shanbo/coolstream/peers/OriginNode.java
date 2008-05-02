@@ -77,7 +77,7 @@ public class OriginNode extends BandwidthPeer {
         //the peers in its partner list.
         PartnerInfo parterInfo = new PartnerInfo(buffer.getBufferMap(), this.getUploadBandwidth());
         Data msg = new Data();
-        msg.type = EventType.SEND_BUFFER_MAP;
+        msg.type = EventType.BUFFER_MAP;
         msg.data = parterInfo;
         Broadcast.multicast(msg, mCache.keySet(), this);
     }
@@ -111,6 +111,7 @@ public class OriginNode extends BandwidthPeer {
         if (mCache.get(node) < timeStamp) {
             mCache.put(node, timeStamp);
         }
+        handleSendBufferMap();
     }
 
     //----------------------------------------------------------------------------------
