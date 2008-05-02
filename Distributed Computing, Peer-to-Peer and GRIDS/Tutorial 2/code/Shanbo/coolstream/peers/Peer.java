@@ -23,11 +23,13 @@ public class Peer extends BandwidthPeer {
 
     private Buffer buffer = new Buffer();
     private HashMap<String, Integer> mCache = new HashMap<String, Integer>();
-    private DataAvailability dataAvailability = new DataAvailability();
+    private DataAvailability dataAvailability;
 
     private long recvDataTime = Long.MAX_VALUE;
     private int memberMsgSeqNum = 0;
     private boolean firstRecv = false;
+
+    private long currentTime = Long.MAX_VALUE;
 
 
     static {
@@ -40,9 +42,32 @@ public class Peer extends BandwidthPeer {
     private List<NodeId> partners = new LinkedList<NodeId>();
     private NodeId supplier;
 
+    //Shanbo: ------------begin of new method------------
+    /**
+     * Get buffer
+     * @return buffer
+     */
+    public Buffer getBuffer() {
+        return buffer;
+    }
+
+    public long getCurrentTime() {
+        return currentTime;
+    }
+
+    public long getDeadLine(int segment){
+        return segment*10 - currentTime;
+    }
+
+
+
+    //Shanbo: ------------end of new mothod--------------
+
     //----------------------------------------------------------------------------------
     public void init(NodeId nodeId, AbstractLink link, Network network) {
         super.init(nodeId, link, network);
+
+        dataAvailability = new DataAvailability(this);
     }
 
     //----------------------------------------------------------------------------------
@@ -115,6 +140,7 @@ public class Peer extends BandwidthPeer {
             if (this.buffer.updatePlaybackPoint())
                 this.buffer.countNumOfMissedSegments();
         }
+        this.currentTime = currentTime;
     }
 
     //----------------------------------------------------------------------------------
@@ -140,14 +166,10 @@ public class Peer extends BandwidthPeer {
         }
 
         logger.info("Play Back Point is " + this.buffer.getPlaybackPoint());
-        double[][] t = new double[1124][1124];
+        
 
 
-        for (int i = this.getPlaybackPoint(); i < SicsSimConfig.BUFFER_SIZE; i++) {
-            if (!this.buffer.containsSegment(i)) {
-                
-            }
-        }
+
 
 
         Data msg = new Data();
@@ -188,8 +210,8 @@ public class Peer extends BandwidthPeer {
         Data msg = new Data();
         msg.type = EventType.SEND_MEMBERSHIP_MSG;
         msg.data = memMsg;
-        //TODO Shanbo: I coment out this
-//        Broadcast.broadcast(msg, this.network, this);
+//        logger.info("Node "+ this.nodeId.id + ": "+ this.network.size()+"");
+        Broadcast.broadcast(msg, this.network, this);
         memberMsgSeqNum++;
     }
 
