@@ -57,41 +57,56 @@ public class DataAvailability {
          * Among the multiple potential suppliers, the one with the highest bandwidth.
          */
         NodeId candidate = null;
-
+        String[] suppliers = new String[1124];
         Map<NodeSegmentPair, Long> t = new HashMap<NodeSegmentPair, Long>();
+        Map<Integer, Set<Integer>> dup_set = new HashMap<Integer, Set<Integer>>(1124);
+        for (Set<Integer> s : dup_set.values()) {
+            s = new HashSet<Integer>();
+        }
 
-        for (int i = this.me.getPlaybackPoint(); i < SicsSimConfig.BUFFER_SIZE; i++) {
+        String k = SicsSimConfig.ORIGIN_NODEID.toString();
+
+        for (int i = this.me.getPlaybackPoint(); i <= SicsSimConfig.BUFFER_SIZE; i++) {
             if (!this.me.getBuffer().containsSegment(i)) {
                 int n = 0;
                 String node;
                 Iterator<String> nodesIter;
-
                 nodesIter = this.dataAvailability.keySet().iterator();
                 while (nodesIter.hasNext()) {
                     node = nodesIter.next();
                     t.put(new NodeSegmentPair(node, i), me.getDeadLine(i) - me.getCurrentTime());
-                    n = n + bm(node,i);
-
-
+                    n = n + bm(node, i);
                 }
-
+                if (n == 1) {
+                    for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
+                        PartnerInfo parterInfo = entry.getValue();
+                        if (parterInfo.bufferMap.contains(segment)) {
+                            k = entry.getKey();
+                        }
+                    }
+                    suppliers[i] = k;
+                    for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.BUFFER_SIZE; j++) {
+                        t.put(new NodeSegmentPair(k, j), t.get(new NodeSegmentPair(k, j)) - SicsSimConfig.MEDIA_SIZE / dataAvailability.get(k).uploadBw);
+                    }
+                } else {
+                    dup_set.get(n).add(i);
+                    suppliers[n] = null;
+                }
             }
         }
 
-//        int bandwidth = -1;
-//
-//        for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
-//            int n = 0;
-//            String node = entry.getKey();
-//            PartnerInfo parterInfo = entry.getValue();
-//            NodeId aNode = new NodeId(node);
-//            if (parterInfo.bufferMap.contains(segment)) {
-//                if (parterInfo.bufferMap.uploadBw > bandwidth) {
-//                    candidate = aNode;
-//
-//                }
-//            }
-//        }
+        for (int n = 2; n < dataAvailability.keySet().size(); n++) {
+            for (Integer i : dup_set.get(n)) {
+                for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
+                    PartnerInfo parterInfo = entry.getValue();
+                    if (parterInfo.bufferMap.contains(segment)) {
+                        k = entry.getKey();
+                    }
+                }
+            }
+        }
+
+
         return candidate;
     }
 
@@ -120,6 +135,17 @@ public class DataAvailability {
             return 1;
         } else {
             return 0;
+        }
+    }
+
+    class Candidate extends Peer implements Comparable<Candidate>{
+
+        public int compareTo(Candidate that) {
+            if (this.getUploadBandwidth() > that.getUploadBandwidth()){
+                return 1;
+            }else {
+                return -1;
+            }
         }
     }
 

@@ -18,7 +18,7 @@ import sicssim.peers.PeerEventListener;
 import sicssim.types.Data;
 import sicssim.types.EventType;
 
-public class Peer extends BandwidthPeer {
+public class Peer extends BandwidthPeer implements Comparable<Peer> {
     public static final Logger logger = Logger.getLogger(Peer.class.getName());
 
     private Buffer buffer = new Buffer();
@@ -35,6 +35,7 @@ public class Peer extends BandwidthPeer {
     static {
         logger.setLevel(Level.ALL);
     }
+
     //Shanbo: add these fields for scheduling
     /**
      * Store partners
@@ -45,6 +46,7 @@ public class Peer extends BandwidthPeer {
     //Shanbo: ------------begin of new method------------
     /**
      * Get buffer
+     *
      * @return buffer
      */
     public Buffer getBuffer() {
@@ -55,15 +57,14 @@ public class Peer extends BandwidthPeer {
         return currentTime;
     }
 
-    public long getDeadLine(int segment){
-        return segment*10 - currentTime;
+    public long getDeadLine(int segment) {
+        return segment * 10 - currentTime;
     }
-
-
 
     //Shanbo: ------------end of new mothod--------------
 
     //----------------------------------------------------------------------------------
+
     public void init(NodeId nodeId, AbstractLink link, Network network) {
         super.init(nodeId, link, network);
 
@@ -166,10 +167,6 @@ public class Peer extends BandwidthPeer {
         }
 
         logger.info("Play Back Point is " + this.buffer.getPlaybackPoint());
-        
-
-
-
 
 
         Data msg = new Data();
@@ -340,5 +337,13 @@ public class Peer extends BandwidthPeer {
             }
         });
 
+    }
+
+    public int compareTo(Peer that) {
+        if (this.getUploadBandwidth() > that.getUploadBandwidth()) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 }
