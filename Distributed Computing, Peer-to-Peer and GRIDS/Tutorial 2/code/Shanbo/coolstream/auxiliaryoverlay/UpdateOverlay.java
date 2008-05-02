@@ -46,7 +46,8 @@ public class UpdateOverlay extends AuxiliaryOverlay {
 			System.out.println("playback point: " + peer.getPlaybackPoint() + ", missed segments: " + peer.getnumOfMissedSegments());
 			System.out.println("upload partners: " + peer.getUploadPartnerList());
 			System.out.println("download partners: " + peer.getDownloadPartnerList());
-		}
+            System.out.println("Missed segments: " +peer.getBuffer().missedSegmentString());
+        }
 
 	}
 }
