@@ -381,7 +381,7 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
     }
 
     public int compareTo(Peer that) {
-        if (this.getUploadBandwidth() > that.getUploadBandwidth()) {
+        if (this.bandwidth.getTotalUploadBandwidth(this.nodeId) < (this.bandwidth.getTotalUploadBandwidth(that.nodeId))) {
             return 1;
         } else {
             return -1;
