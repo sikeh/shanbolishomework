@@ -13,6 +13,7 @@ import sicssim.coolstream.utils.DataAvailability;
 import sicssim.links.AbstractLink;
 import sicssim.network.Network;
 import sicssim.network.NodeId;
+import sicssim.network.Bandwidth;
 import sicssim.peers.BandwidthPeer;
 import sicssim.peers.PeerEventListener;
 import sicssim.types.Data;
@@ -36,12 +37,14 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         logger.setLevel(Level.ALL);
     }
 
+
     //Shanbo: add these fields for scheduling
     /**
      * Store partners
      */
     private List<NodeId> partners = new LinkedList<NodeId>();
     private NodeId supplier;
+    private int calcDelay;
 
     //Shanbo: ------------begin of new method------------
     /**
@@ -58,7 +61,15 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
     }
 
     public long getDeadLine(int segment) {
-        return (segment + this.getPlaybackPoint()) * 10;
+        return (segment - this.getPlaybackPoint()) * 10;
+    }
+
+    public Network getNetwork() {
+        return this.network;
+    }
+
+    public Bandwidth getBandwidth() {
+        return this.bandwidth;
     }
 
     //Shanbo: ------------end of new mothod--------------
@@ -69,6 +80,8 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         super.init(nodeId, link, network);
         mCache.put(SicsSimConfig.ORIGIN_NODEID.toString(), 0);
         dataAvailability = new DataAvailability(this);
+        System.out.println("### initial node " + nodeId + " bandwidth = " + this.bandwidth + "; uploadBandwidth = " + this.uploadBandwidth);
+
     }
 
     //----------------------------------------------------------------------------------
@@ -175,10 +188,10 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
 //                }
 //            }
 //        } else {
-        for (i = this.getPlaybackPoint()+1; i <= this.getPlaybackPoint() + 40; i++) {
+        for (i = this.getPlaybackPoint() + 1; i <= SicsSimConfig.MEDIA_SIZE; i++) {
             if (suppliers[i] != null && !this.buffer.containsSegment(i)) {
                 pullSegment(new NodeId(suppliers[i]), i);
-//                    System.out.println("Node " + this.nodeId + " : pull segment \"" + i + " from " + suppliers[i]);
+                System.out.println("Node " + this.nodeId + " : pull segment \"" + i + " from " + suppliers[i]);
 
             }
         }
@@ -278,13 +291,17 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
             retryMsg.data = new String(segmentData);
             this.loopback(retryMsg, SicsSimConfig.RETRY);
         } else {
-            int delay = (SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND) / (this.uploadBandwidth - this.bandwidth.getTotalUploadBandwidth(this.nodeId) + SicsSimConfig.SEGMENT_RATE);
+            int delay = calcDelay();
             Data stopPushMsg = new Data();
             stopPushMsg.type = EventType.STOP_PUSH_SEGMENT;
             stopPushMsg.data = new String(segmentData);
             this.loopback(stopPushMsg, delay);
 
         }
+    }
+
+    public int calcDelay() {
+        return (SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND) / (this.uploadBandwidth - this.bandwidth.getTotalUploadBandwidth(this.nodeId) + SicsSimConfig.SEGMENT_RATE);
     }
 
     //----------------------------------------------------------------------------------

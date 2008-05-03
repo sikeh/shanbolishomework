@@ -9,12 +9,13 @@ import sicssim.network.NodeId;
 
 public class DataAvailability {
     private Peer me;
-    private static final int SEGMENT_SIZE = SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND;
+    private static final int SEGMENT_SIZE = SicsSimConfig.SEGMENT_RATE;
     private HashMap<String, PartnerInfo> dataAvailability = new HashMap<String, PartnerInfo>();
     private Long aLong;
     private Long aLong2;
     private int anInt;
     private Long aLong3;
+    private boolean aBoolean;
 
 
     public DataAvailability(Peer me) {
@@ -61,7 +62,6 @@ public class DataAvailability {
         /**
          * Among the multiple potential suppliers, the one with the highest bandwidth.
          */
-        NodeId candidate = null;
         String[] suppliers = new String[1124];
         Map<NodeSegmentPair, Long> t = new HashMap<NodeSegmentPair, Long>();
         Map<Integer, Set<Integer>> dup_set = new LinkedHashMap<Integer, Set<Integer>>(1124);
@@ -77,7 +77,7 @@ public class DataAvailability {
                 nodesIter = this.dataAvailability.keySet().iterator();
                 while (nodesIter.hasNext()) {
                     node = nodesIter.next();
-                    t.put(new NodeSegmentPair(node, i), me.getDeadLine(i) - me.getCurrentTime());
+                    t.put(new NodeSegmentPair(node, i), me.getDeadLine(i));
                     n = n + bm(node, i);
                 }
                 if (n == 1) {
@@ -113,9 +113,10 @@ public class DataAvailability {
                     for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
                         PartnerInfo parterInfo = entry.getValue();
                         String node = entry.getKey();
-                        anInt = SEGMENT_SIZE / parterInfo.uploadBw;
+                        anInt = (SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND) / (this.me.getBandwidth().getTotalUploadBandwidth(new NodeId(node)) + SicsSimConfig.SEGMENT_RATE);
                         aLong3 = t.get(new NodeSegmentPair(node, i));
-                        if (parterInfo.bufferMap.contains(i) && aLong3 > anInt) {
+                        aBoolean = aLong3 > anInt;
+                        if (parterInfo.bufferMap.contains(i) && aBoolean) {
                             if (!candidates.contains(node)) {
                                 candidates.add(node);
                             }
@@ -124,10 +125,10 @@ public class DataAvailability {
                     if (candidates.size() > 1) {
 //                        Collections.shuffle(candidates);
 //                        Collections.shuffle(candidates);
-                        Collections.shuffle(candidates);
-                        Collections.shuffle(candidates);
-                        k = candidates.get(1);
-//                        k = Collections.max(candidates);
+//                        Collections.shuffle(candidates);
+//                        Collections.shuffle(candidates);
+//                        k = candidates.get(1);
+                        k = Collections.max(candidates);
                         suppliers[i] = k;
                         for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
                             aLong2 = t.get(new NodeSegmentPair(k, j));
