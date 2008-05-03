@@ -106,7 +106,8 @@ public class DataAvailability {
             }
         }
 
-        List<String> candidates = new LinkedList<String>();
+        List<Peer> candidates = new LinkedList<Peer>();
+
         for (int n = 2; n < dataAvailability.keySet().size(); n++) {
             if (dup_set.get(n) != null) {
                 for (Integer i : dup_set.get(n)) {
@@ -117,9 +118,10 @@ public class DataAvailability {
                         aLong3 = t.get(new NodeSegmentPair(node, i));
                         aBoolean = aLong3 > anInt;
                         if (parterInfo.bufferMap.contains(i) && aBoolean) {
-                            if (!candidates.contains(node)) {
-                                candidates.add(node);
-                            }
+                            if (new NodeId(node).equals(SicsSimConfig.ORIGIN_NODEID))
+                                continue;
+                            Peer peer = (Peer) this.me.getNetwork().getNode(new NodeId(node));
+                            candidates.add(peer);
                         }
                     }
                     if (candidates.size() > 1) {
@@ -128,7 +130,7 @@ public class DataAvailability {
 //                        Collections.shuffle(candidates);
 //                        Collections.shuffle(candidates);
 //                        k = candidates.get(1);
-                        k = Collections.max(candidates);
+                        k = Collections.max(candidates).getId().toString();
                         suppliers[i] = k;
                         for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
                             aLong2 = t.get(new NodeSegmentPair(k, j));
