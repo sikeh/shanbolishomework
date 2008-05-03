@@ -178,27 +178,28 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         //local field, use for get partner
         String[] suppliers = this.dataAvailability.findSupplier();
 //        for (int i = this.getPlaybackPoint(); i <= this.getPlaybackPoint() + 1;i++){
-        int i = 1;
-//        if (currentTime < 50) {
-//            for (i = 0; i <= 5; i++) {
-//                if (suppliers[i] != null) {
-//                    pullSegment(new NodeId(suppliers[i]), i);
-//                    System.out.println("Node " + this.nodeId + " : pull segment \"" + i + " from " + suppliers[i]);
-//                    System.out.println("Node " + this.nodeId + " : playBackPoint = " +this.getPlaybackPoint());
-//                }
-//            }
-//        } else {
-        for (i = this.getPlaybackPoint() + 1; i <= SicsSimConfig.MEDIA_SIZE; i++) {
+        int end;
+        int start;
+
+        if (currentTime < 200) {
+            start = 0;
+            end = this.getPlaybackPoint() + 24;
+        } else if (currentTime <400) {
+            start = this.getPlaybackPoint();
+            end = this.getPlaybackPoint() + 40;
+        } else {
+            start = this.getPlaybackPoint();
+            end = SicsSimConfig.MEDIA_SIZE;
+        }
+
+
+        for (int i = start; i <= end; i++) {
             if (suppliers[i] != null && !this.buffer.containsSegment(i)) {
                 pullSegment(new NodeId(suppliers[i]), i);
                 System.out.println("Node " + this.nodeId + " : pull segment \"" + i + " from " + suppliers[i]);
-
+                System.out.println("Node " + this.nodeId + " : playBackPoint = " + this.getPlaybackPoint());
             }
         }
-//        }
-
-        System.out.println("Node " + this.nodeId + " : playBackPoint = " + this.getPlaybackPoint());
-        System.out.println("Node " + this.nodeId + " Segments = " + this.buffer.toString());
 
 
         Data msg = new Data();

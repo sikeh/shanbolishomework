@@ -107,7 +107,7 @@ public class DataAvailability {
         }
 
         List<Peer> candidates = new LinkedList<Peer>();
-
+        List<Boolean> bigger  = new ArrayList<Boolean>();
         for (int n = 2; n < dataAvailability.keySet().size(); n++) {
             if (dup_set.get(n) != null) {
                 for (Integer i : dup_set.get(n)) {
@@ -117,6 +117,7 @@ public class DataAvailability {
                         anInt = (SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND) / (this.me.getBandwidth().getTotalUploadBandwidth(new NodeId(node)) + SicsSimConfig.SEGMENT_RATE);
                         aLong3 = t.get(new NodeSegmentPair(node, i));
                         aBoolean = aLong3 > anInt;
+                        bigger.add(aBoolean);
                         if (parterInfo.bufferMap.contains(i) && aBoolean) {
                             if (new NodeId(node).equals(SicsSimConfig.ORIGIN_NODEID))
                                 continue;
