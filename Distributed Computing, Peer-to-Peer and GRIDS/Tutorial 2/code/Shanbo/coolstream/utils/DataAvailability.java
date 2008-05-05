@@ -55,7 +55,11 @@ public class DataAvailability {
             }
         }
         Collections.shuffle(list);
-        return new NodeId(list.get(0));
+        if (list.size() == 0) {
+            return SicsSimConfig.ORIGIN_NODEID;
+        } else {
+            return new NodeId(list.get(0));
+        }
     }
 
     //----------------------------------------------------------------------------------
