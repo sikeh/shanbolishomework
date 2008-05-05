@@ -55,17 +55,18 @@ public class DataAvailability {
     }
 
     //----------------------------------------------------------------------------------
-    public String[] findSupplier() {
+    public String[][] findSupplier() {
         //TODO:
         //You should find a supplier for the segment. Better heuristic better result ;)
 
         /**
          * Among the multiple potential suppliers, the one with the highest bandwidth.
          */
-        String[] suppliers = new String[1124];
+        String[][] suppliers = new String[1124][8];
         Map<NodeSegmentPair, Long> t = new HashMap<NodeSegmentPair, Long>();
         Map<Integer, Set<Integer>> dup_set = new LinkedHashMap<Integer, Set<Integer>>(1124);
 
+        int availableBandwith = 128;
 
         String k = SicsSimConfig.ORIGIN_NODEID.toString();
 
@@ -85,13 +86,16 @@ public class DataAvailability {
                         PartnerInfo parterInfo = entry.getValue();
                         if (parterInfo.bufferMap.contains(i)) {
                             k = entry.getKey();
+                            availableBandwith = entry.getValue().uploadBw;
+                            break;
                         }
                     }
-                    suppliers[i] = k;
+                    suppliers[i][0] = k;
+                    suppliers[i][1] = null;
                     for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
                         aLong = t.get(new NodeSegmentPair(k, j));
                         if (aLong != null) {
-                            t.put(new NodeSegmentPair(k, j), aLong - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
+                            t.put(new NodeSegmentPair(k, j), aLong - (SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND) / (availableBandwith+SicsSimConfig.SEGMENT_RATE));
                         }
                     }
                 } else {
@@ -101,20 +105,21 @@ public class DataAvailability {
                     } else {
                         dup_set.get(n).add(i);
                     }
-                    suppliers[n] = null;
+                    suppliers[n][0] = null;
+                    suppliers[n][1] = null;
                 }
             }
         }
 
         List<Peer> candidates = new LinkedList<Peer>();
-        List<Boolean> bigger  = new ArrayList<Boolean>();
+        List<Boolean> bigger = new ArrayList<Boolean>();
         for (int n = 2; n < dataAvailability.keySet().size(); n++) {
             if (dup_set.get(n) != null) {
                 for (Integer i : dup_set.get(n)) {
                     for (Map.Entry<String, PartnerInfo> entry : dataAvailability.entrySet()) {
                         PartnerInfo parterInfo = entry.getValue();
                         String node = entry.getKey();
-                        anInt = (SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND) / (this.me.getBandwidth().getTotalUploadBandwidth(new NodeId(node)) + SicsSimConfig.SEGMENT_RATE);
+                        anInt = (SicsSimConfig.SEGMENT_RATE * SicsSimConfig.ONE_SECOND) / (parterInfo.uploadBw +SicsSimConfig.SEGMENT_RATE) ;
                         aLong3 = t.get(new NodeSegmentPair(node, i));
                         aBoolean = aLong3 > anInt;
                         bigger.add(aBoolean);
@@ -126,17 +131,20 @@ public class DataAvailability {
                         }
                     }
                     if (candidates.size() > 1) {
-//                        Collections.shuffle(candidates);
-//                        Collections.shuffle(candidates);
-//                        Collections.shuffle(candidates);
-//                        Collections.shuffle(candidates);
+                        Collections.shuffle(candidates);
+                        Collections.shuffle(candidates);
+                        Collections.shuffle(candidates);
+                        Collections.shuffle(candidates);
 //                        k = candidates.get(1);
-                        k = Collections.max(candidates).getId().toString();
-                        suppliers[i] = k;
+                        String k1 = Collections.max(candidates).getId().toString();
+                        String k2 = candidates.get(1).getId().toString();
+                        suppliers[i][0] = k1;
+                        suppliers[i][1] = k2;
+
                         for (int j = this.me.getPlaybackPoint(); j < SicsSimConfig.MEDIA_SIZE; j++) {
                             aLong2 = t.get(new NodeSegmentPair(k, j));
                             if (aLong2 != null) {
-                                t.put(new NodeSegmentPair(k, j), aLong2 - SEGMENT_SIZE / dataAvailability.get(k).uploadBw);
+                                t.put(new NodeSegmentPair(k, j), aLong2 - SEGMENT_SIZE / (dataAvailability.get(k).uploadBw+SicsSimConfig.SEGMENT_RATE));
                             }
                         }
                     }
@@ -168,10 +176,11 @@ public class DataAvailability {
 
     //Shanbo: add follow class/method(s)
     private int bm(String node, int segment) {
-        if (this.dataAvailability.get(node).bufferMap.contains(new Integer(segment))) {
+        if (node.equals(SicsSimConfig.ORIGIN_NODEID.toString())) {
             return 1;
         } else {
-            return 0;
+            Peer p = (Peer) this.me.getNetwork().getNode(new NodeId(node));
+            return p.getBuffer().containsSegment(segment) ? 1 : 0;
         }
     }
 
