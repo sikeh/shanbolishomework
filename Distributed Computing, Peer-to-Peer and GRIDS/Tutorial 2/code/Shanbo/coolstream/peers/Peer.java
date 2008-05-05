@@ -16,75 +16,28 @@ import sicssim.network.NodeId;
 import sicssim.network.Bandwidth;
 import sicssim.peers.BandwidthPeer;
 import sicssim.peers.PeerEventListener;
-import sicssim.peers.AbstractPeer;
 import sicssim.types.Data;
 import sicssim.types.EventType;
 
-public class Peer extends BandwidthPeer implements Comparable<Peer> {
+public class Peer extends BandwidthPeer {
     public static final Logger logger = Logger.getLogger(Peer.class.getName());
 
     private Buffer buffer = new Buffer();
     private HashMap<String, Integer> mCache = new HashMap<String, Integer>();
-    private DataAvailability dataAvailability;
+    private DataAvailability dataAvailability = new DataAvailability();
 
     private long recvDataTime = Long.MAX_VALUE;
     private int memberMsgSeqNum = 0;
     private boolean firstRecv = false;
 
-    private long currentTime = 0;
-
-
     static {
         logger.setLevel(Level.ALL);
     }
-
-
-    //Shanbo: add these fields for scheduling
-    /**
-     * Store partners
-     */
-    private List<NodeId> partners = new LinkedList<NodeId>();
-    private NodeId supplier;
-    private int calcDelay;
-    private String supplier0;
-    private String supplier1;
-    private AbstractPeer abstractPeer;
-    private int index;
-
-    //Shanbo: ------------begin of new method------------
-    /**
-     * Get buffer
-     *
-     * @return buffer
-     */
-    public Buffer getBuffer() {
-        return buffer;
-    }
-
-    public long getCurrentTime() {
-        return currentTime;
-    }
-
-    public long getDeadLine(int segment) {
-        return (segment - this.getPlaybackPoint()) * 10;
-    }
-
-    public Network getNetwork() {
-        return this.network;
-    }
-
-    public Bandwidth getBandwidth() {
-        return this.bandwidth;
-    }
-
-    //Shanbo: ------------end of new mothod--------------
 
     //----------------------------------------------------------------------------------
 
     public void init(NodeId nodeId, AbstractLink link, Network network) {
         super.init(nodeId, link, network);
-//        mCache.put(SicsSimConfig.ORIGIN_NODEID.toString(), 0);
-        dataAvailability = new DataAvailability(this);
 //        System.out.println("### initial node " + nodeId + " bandwidth = " + this.bandwidth + "; uploadBandwidth = " + this.uploadBandwidth);
 
     }
@@ -109,8 +62,6 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         Data msg3 = new Data();
         msg3.type = EventType.SEND_BUFFER_MAP;
         this.loopback(msg3, SicsSimConfig.BUFFER_MAP_PERIOD);
-
-        OriginNode.peers.add(nodeId);
 
     }
 
@@ -164,7 +115,6 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
             if (this.buffer.updatePlaybackPoint())
                 this.buffer.countNumOfMissedSegments();
         }
-        this.currentTime = currentTime;
     }
 
     //----------------------------------------------------------------------------------
@@ -181,95 +131,25 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
         //You should define from which peer, which segment should be fetched.
         //Hint: don't forget to call loopback method at the end of this module for this method.
         //As a sample the loopback method can be as follow:
+        int plackPoint = getPlaybackPoint();
 
-        strategy1();
-
-
+        // find out what segments to ask in paralle
+        for (int i = plackPoint; i <= plackPoint + 5; i++) {
+            if (buffer.containsSegment(i)) {
+                continue;
+            }
+            if (i > SicsSimConfig.MEDIA_SIZE) {
+                break;
+            }
+            if (dataAvailability.containsSegment(i)) {
+                pullSegment(dataAvailability.findSupplier(i), i);
+            }
+        }
 
 
         Data msg = new Data();
         msg.type = EventType.SCHEDULING;
         this.loopback(msg, SicsSimConfig.SCHEDULING_PERIOD);
-    }
-
-    private void strategy2() {
-        int index = OriginNode.peers.indexOf(this.nodeId);
-        abstractPeer = this.network.getNode(OriginNode.peers.get(index - 1));
-        if (abstractPeer instanceof Peer) {
-            Peer peer = (Peer) abstractPeer;
-            for (int i = this.getPlaybackPoint(); i < this.getPlaybackPoint() + 10; i++) {
-//            for (int i = this.getPlaybackPoint(); i < this.getPlaybackPoint() + peer.getUploadBandwidth()/ SicsSimConfig.SEGMENT_RATE; i++) {
-                if (!this.buffer.containsSegment(i)) {
-                    pullSegment(OriginNode.peers.get(index - 1), i);
-                    pullSegment(OriginNode.peers.get(index - 2), i);
-                }
-            }
-        } else {
-            OriginNode originNode = (OriginNode) abstractPeer;
-            for (int i = this.getPlaybackPoint(); i < this.getPlaybackPoint() + 7; i++) {
-                if (!this.buffer.containsSegment(i)) {
-                    pullSegment(OriginNode.peers.get(index - 1), i);
-                }
-            }
-        }
-    }
-
-    private void strategy1() {
-        //Shanbo: add the Scheduling Algorithm
-        //local field, use for get partner
-        String[][] suppliers = this.dataAvailability.findSupplier();
-//        for (int i = this.getPlaybackPoint(); i <= this.getPlaybackPoint() + 1;i++){
-        int end;
-        int start;
-        if (this.getPlaybackPoint() < 5) {
-            start = this.getPlaybackPoint();
-            end = this.getPlaybackPoint() + 3;
-        } else if (this.getPlaybackPoint() < 10) {
-            start =this.getPlaybackPoint();
-            end = this.getPlaybackPoint() + 10;
-        } else if (this.getPlaybackPoint() < 20) {
-            start = this.getPlaybackPoint();
-            end = this.getPlaybackPoint() + 30;
-        }
-
-//        else if (this.getPlaybackPoint() < 10){
-//            start  = 0;
-//            end = this.getPlaybackPoint() + 24;
-//        }
-        else if (this.getPlaybackPoint() < 40) {
-            start = 0;
-            end = this.getPlaybackPoint() + 60;
-        } else {
-            start = this.getPlaybackPoint();
-            end = SicsSimConfig.MEDIA_SIZE;
-        }
-
-        start = this.getPlaybackPoint();
-
-
-        boolean ask = false;
-        for (int j = this.getPlaybackPoint() + 1; j < this.getPlaybackPoint() + 10; j++) {
-            if (!this.buffer.containsSegment(j)) {
-                ask = true;
-            }
-        }
-
-        for (int i = start; i <= end; i++) {
-            if (suppliers[i] != null && !this.buffer.containsSegment(i)) {
-                supplier0 = suppliers[i][0];
-                if (supplier0 != null) {
-                    pullSegment(new NodeId(supplier0), i);
-                    System.out.println("Node " + this.nodeId + " : pull segment \"" + i + " from " + suppliers[i][0]);
-                }
-                supplier1 = suppliers[i][1];
-                if (supplier1 != null) {
-                    pullSegment(new NodeId(supplier1), i);
-                    System.out.println("Node " + this.nodeId + " : pull segment \"" + i + " from " + suppliers[i][1]);
-                }
-//                System.out.println("Node " + this.nodeId + " : pull segment \"" + i + " from " + suppliers[i]);
-                System.out.println("Node " + this.nodeId + " : playBackPoint = " + this.getPlaybackPoint());
-            }
-        }
     }
 
     //----------------------------------------------------------------------------------
@@ -352,8 +232,8 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
 
         Data bufferMsg = new Data();
         bufferMsg.type = EventType.SEND_BUFFER_MAP;
-        this.loopback(bufferMsg, 0);
-//        this.loopback(bufferMsg, SicsSimConfig.BUFFER_MAP_PERIOD);
+//        this.loopback(bufferMsg, 0);
+        this.loopback(bufferMsg, SicsSimConfig.BUFFER_MAP_PERIOD);
     }
 
     //----------------------------------------------------------------------------------
@@ -374,7 +254,6 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
             stopPushMsg.type = EventType.STOP_PUSH_SEGMENT;
             stopPushMsg.data = new String(segmentData);
             this.loopback(stopPushMsg, delay);
-
         }
     }
 
@@ -459,7 +338,7 @@ public class Peer extends BandwidthPeer implements Comparable<Peer> {
     }
 
     public int compareTo(Peer that) {
-        if (this.bandwidth.getTotalUploadBandwidth(this.nodeId) < (this.bandwidth.getTotalUploadBandwidth(that.nodeId))) {
+        if (this.getAvailableUploadBandwidth() < that.getAvailableUploadBandwidth()) {
             return 1;
         } else {
             return -1;
