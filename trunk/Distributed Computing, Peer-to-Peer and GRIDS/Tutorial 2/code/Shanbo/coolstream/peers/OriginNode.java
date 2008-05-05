@@ -23,6 +23,8 @@ public class OriginNode extends BandwidthPeer {
     public static List<NodeId> peers = new LinkedList<NodeId>();
     private int memberMsgSeqNum = 0;
 
+    public static List<Peer> myPeers = new LinkedList<Peer>();
+
     
 
     

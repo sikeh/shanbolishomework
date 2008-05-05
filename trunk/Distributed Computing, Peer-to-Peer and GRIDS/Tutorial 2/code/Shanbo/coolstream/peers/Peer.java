@@ -29,6 +29,9 @@ public class Peer extends BandwidthPeer {
     private long recvDataTime = Long.MAX_VALUE;
     private int memberMsgSeqNum = 0;
     private boolean firstRecv = false;
+    private NodeId supplier;
+    public static boolean firstRoundAsk = true;
+    public static boolean secondRoundAsk = true;
 
     static {
         logger.setLevel(Level.ALL);
@@ -38,6 +41,7 @@ public class Peer extends BandwidthPeer {
 
     public void init(NodeId nodeId, AbstractLink link, Network network) {
         super.init(nodeId, link, network);
+        OriginNode.myPeers.add(this);
 //        System.out.println("### initial node " + nodeId + " bandwidth = " + this.bandwidth + "; uploadBandwidth = " + this.uploadBandwidth);
 
     }
@@ -76,6 +80,7 @@ public class Peer extends BandwidthPeer {
         String node = failedId.toString();
         mCache.remove(node);
         dataAvailability.getSupplier().remove(failedId.toString());
+        OriginNode.myPeers.remove(failedId);
     }
 
     //----------------------------------------------------------------------------------
@@ -135,16 +140,54 @@ public class Peer extends BandwidthPeer {
         int plackPoint = getPlaybackPoint();
 
         // find out what segments to ask in paralle
-        for (int i = plackPoint; i <= plackPoint + 7; i++) {      // tested 5, 6, 7
-            if (buffer.containsSegment(i)) {
-                continue;
+
+        if (firstRoundAsk) {
+            firstRoundAsk = false;
+            for (int i  = 0; i <=4 ; i++){
+                pullSegment(SicsSimConfig.ORIGIN_NODEID,i);
             }
-            if (i > SicsSimConfig.MEDIA_SIZE) {
-                break;
+        } else if (secondRoundAsk&&OriginNode.myPeers.indexOf(this) == 0){
+            secondRoundAsk = false;
+            for (int i  = 5; i <=10 ; i++){
+                pullSegment(SicsSimConfig.ORIGIN_NODEID,i);
             }
-            if (dataAvailability.containsSegment(i)) {
-                pullSegment(dataAvailability.findSupplier(i), i);
+
+
+        }
+
+        else {
+            if (OriginNode.myPeers.indexOf(this) != 0) {
+                for (int i = plackPoint; i <= plackPoint + 7; i++) {      // tested 5, 6, 7
+                    if (buffer.containsSegment(i)) {
+                        continue;
+                    }
+                    if (i > SicsSimConfig.MEDIA_SIZE) {
+                        break;
+                    }
+                    if (dataAvailability.containsSegment(i)) {
+                        pullSegment(dataAvailability.findSupplier(i), i);
+                    }
+                }
+            } else {
+                for (int i = plackPoint; i <= plackPoint + 7; i++) {      // tested 5, 6, 7
+                    if (buffer.containsSegment(i)) {
+                        continue;
+                    }
+                    if (i > SicsSimConfig.MEDIA_SIZE) {
+                        break;
+                    }
+                    if (dataAvailability.containsSegment(i)) {
+                        supplier = dataAvailability.findSupplier(i);
+                        pullSegment(supplier, i);
+                        if (!supplier.equals(SicsSimConfig.ORIGIN_NODEID)) {
+                            pullSegment(SicsSimConfig.ORIGIN_NODEID, i);
+                        } else {
+                            pullSegment(dataAvailability.findSupplier(i), i);
+                        }
+                    }
+                }
             }
+
         }
 
 
