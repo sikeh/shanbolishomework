@@ -94,26 +94,7 @@ public class OriginNode extends BandwidthPeer {
 
         //Here the peer should multicast its buffer map and its upload bandwidth to
         //the peers in its partner list.
-//        SortedSet<Integer> sortedSet = new TreeSet<Integer>();
-//        // if requestion node is in my partnet list
-//        if (mCache.containsKey(id)) {
-//            // find out the requesting node is the k-th partnet
-//            int k = 0;
-//            for (String node : mCache.keySet()) {
-//                if (node.equals(id.toString())) {
-//                    break;
-//                } else {
-//                    k++;
-//                }
-//            }
-//            // origin node has M partners will request seqment i from the origin node
-//            for (int i = 0; i < SicsSimConfig.BUFFER_SIZE; i++) {
-//                if (i % mCache.size() == k) {
-//                    sortedSet.add(i);
-//                }
-//            }
-//        }
-//        PartnerInfo parterInfo = new PartnerInfo(sortedSet, this.getUploadBandwidth());
+
         PartnerInfo parterInfo = new PartnerInfo(buffer.getBufferMap(), this.getAvailableUploadBandwidth());
         Data msg = new Data();
         msg.type = EventType.BUFFER_MAP;
