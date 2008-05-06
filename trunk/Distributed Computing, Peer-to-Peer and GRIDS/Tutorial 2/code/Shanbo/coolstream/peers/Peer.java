@@ -2,8 +2,7 @@ package sicssim.coolstream.peers;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 import sicssim.config.SicsSimConfig;
 import sicssim.coolstream.types.MembershipMessage;
@@ -23,7 +22,7 @@ public class Peer extends BandwidthPeer {
     public static final Logger logger = Logger.getLogger(Peer.class.getName());
 
     private Buffer buffer = new Buffer();
-    private HashMap<String, Integer> mCache = new HashMap<String, Integer>();
+    private Map<String, Integer> mCache = new HashMap<String, Integer>();
     private DataAvailability dataAvailability = new DataAvailability();
 
     private long recvDataTime = Long.MAX_VALUE;
@@ -245,18 +244,24 @@ public class Peer extends BandwidthPeer {
         Data msg = (Data) data;
         MembershipMessage memMsg = (MembershipMessage) msg.data;
         NodeId srcNode = memMsg.id;
-        // ignore memebership message from myself
-        if (srcNode.equals(this.getId())) {
+        // ignore memebership message from myself and original node
+        if (srcNode.equals(this.getId()) || srcNode.equals(SicsSimConfig.ORIGIN_NODEID)) {
             return;
         }
         int timeStamp = memMsg.seqNum;
         // sikeh: must store NodeId.toString()
         String node = srcNode.toString();
-        if (!mCache.containsKey(node)) {
+        if (mCache.containsKey(node) && mCache.get(node) < timeStamp) {
             mCache.put(node, timeStamp);
+            return;
         }
-        // filter out old membership message
-        if (mCache.get(node) < timeStamp) {
+        if (mCache.size() < SicsSimConfig.PARTNER_LIST_SIZE) {
+                mCache.put(node, timeStamp);
+        } else {
+            List<String> list = new ArrayList<String>(mCache.keySet());
+            Collections.shuffle(list);
+            String nodeToRemove = list.get(0);
+            mCache.keySet().remove(nodeToRemove);
             mCache.put(node, timeStamp);
         }
     }
