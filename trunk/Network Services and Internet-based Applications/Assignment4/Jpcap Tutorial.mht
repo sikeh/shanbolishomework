@@ -1,0 +1,595 @@
+From: =?gb2312?B?08kgV2luZG93cyBJbnRlcm5ldCBFeHBsb3JlciA3ILGjtOY=?=
+Subject: Jpcap Tutorial
+Date: Wed, 14 May 2008 17:14:12 +0200
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0017_01C8B5E5.EE254FA0"
+X-MimeOLE: Produced By Microsoft MimeOLE V6.0.6000.16545
+
+这是 MIME 格式的多方邮件。
+
+------=_NextPart_000_0017_01C8B5E5.EE254FA0
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" =
+"http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<HTML xmlns=3D"http://www.w3.org/1999/xhtml"><HEAD><TITLE>Jpcap =
+Tutorial</TITLE>
+<META http-equiv=3Dcontent-type content=3D"text/html; =
+charset=3DISO-8859-1"><LINK=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/style.css" =
+type=3Dtext/css=20
+rel=3Dstylesheet>
+<STYLE type=3Dtext/css>PRE {
+	FONT-FAMILY: monospace,fixed
+}
+PRE.code {
+	BORDER-RIGHT: #cccccc 1px solid; PADDING-RIGHT: 6px; BORDER-TOP: =
+#cccccc 1px solid; PADDING-LEFT: 6px; PADDING-BOTTOM: 4px; MARGIN: 4px =
+8px 4px 2px; OVERFLOW: auto; BORDER-LEFT: #cccccc 1px solid; =
+PADDING-TOP: 4px; BORDER-BOTTOM: #cccccc 1px solid; FONT-FAMILY: =
+monospace,fixed; WHITE-SPACE: pre; BACKGROUND-COLOR: #f5f5f5
+}
+.comment {
+	COLOR: #800000
+}
+</STYLE>
+
+<META content=3D"MSHTML 6.00.6000.16643" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV style=3D"TEXT-ALIGN: center">
+<H1>Jpcap Tutorial</H1>1.0 (for Jpcap 0.7)<BR><BR>
+<DIV style=3D"TEXT-ALIGN: left">Author:<BR>&nbsp;&nbsp;&nbsp; Keita =
+Fujii=20
+(kfujii@uci.edu)<BR>Home page:<BR>&nbsp;&nbsp;&nbsp; <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/index.html">http:=
+//netresearch.ics.uci.edu/kfujii/jpcap/doc/index.html</A><BR>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+<SPAN style=3D"FONT-WEIGHT: bold"><A name=3Dtoc></A><BIG>Table of=20
+Contents</BIG></SPAN><BR>
+<UL>
+  <LI><A=20
+  =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#intro">Introduction</A>=20
+
+  <LI><A=20
+  =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#tutorial">Jpcap=20
+  tutorial: a step by step guide for using Jpcap</A>=20
+  <UL>
+    <LI><A=20
+    =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#obtain">Obtain=20
+    the&nbsp;list of network interfaces</A>=20
+    <LI><A=20
+    =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#open">Open=20
+    a network interface</A>=20
+    <LI><A=20
+    =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#capture">Capture=20
+    packets from the network interface</A>=20
+    <LI><A=20
+    =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#set">Set=20
+    capturing filter</A>=20
+    <LI><A=20
+    =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#save">Save=20
+    captured packets into a file</A>=20
+    <LI><A=20
+    =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#read">Read=20
+    saved packets from a file</A>=20
+    <LI><A=20
+    =
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#send">Send=20
+    packets through a network interface</A> </LI></UL></LI></UL>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+
+<H2><A name=3Dintro></A>Introduction</H2>This document describes how to =
+develop=20
+applications using Jpcap. It explains the functions and classes defined =
+in=20
+Jpcap, and also provides&nbsp;comprehensive descriptions on how to =
+program using=20
+Jpcap by showing some example codes.<BR><BR>The latest version of this =
+document=20
+can be found at: <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml">http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.html</=
+A><BR><BR>
+<H3>What is Jpcap</H3>Jpcap is an open source library for capturing and =
+sending=20
+network packets from Java applications. It provides facilities to:<BR>
+<UL>
+  <LI>capture raw packets live from the wire.&nbsp;=20
+  <LI>save captured packets to an offline file, and read&nbsp;captured =
+packets=20
+  from an offline file.=20
+  <LI>automatically identify packet types and generate corresponding =
+Java=20
+  objects (for Ethernet, IPv4, IPv6, ARP/RARP, TCP, UDP, and ICMPv4 =
+packets).=20
+  <LI>filter the packets according to user-specified rules before =
+dispatching=20
+  them to the application.=20
+  <LI>send raw packets to the network </LI></UL>Jpcap is based =
+on&nbsp;<A=20
+href=3D"http://www.tcpdump.org/" target=3D_blank>libpcap</A><SPAN=20
+style=3D"FONT-WEIGHT: normal">/</SPAN><A =
+href=3D"http://www.winpcap.org/"=20
+target=3D_blank>winpcap</A><SPAN style=3D"FONT-WEIGHT: normal"></SPAN>, =
+and is=20
+implemented in C and Java.<BR><BR>Jpcap has been tested on Microsoft =
+Windows=20
+(98/2000/XP/Vista), Linux (Fedora, Ubuntu), Mac OS X (Darwin), FreeBSD, =
+and=20
+Solaris.<BR>
+<H3>What kind of applications can be developed using Jpcap</H3>Jpcap can =
+be used=20
+to develop&nbsp;many kinds of network applications, including (but not =
+limited=20
+to):=20
+<UL>
+  <LI>network and protocol analyzers=20
+  <LI>network monitors=20
+  <LI>traffic loggers=20
+  <LI>traffic generators=20
+  <LI>user-level bridges and routers=20
+  <LI>network intrusion detection systems (NIDS)=20
+  <LI>network scanners=20
+  <LI>security tools </LI></UL>
+<H3>What Jpcap cannot do</H3>Jpcap captures and sends&nbsp;packets=20
+<I>independently</I> from the host protocols (e.g.,&nbsp;TCP/IP). This =
+means=20
+that Jpcap does not (cannot) block, filter or manipulate the traffic =
+generated=20
+by other programs on the same machine: it simply "sniffs" the packets =
+that=20
+transit on the wire. Therefore, it does not provide the appropriate =
+support for=20
+applications like traffic shapers, QoS schedulers and personal=20
+firewalls.<BR><BR>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A><BR></DIV>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+
+<H2><A name=3Dtutorial></A>Jpcap tutorial: a step by step guide for =
+using=20
+Jpcap</H2>
+<H3><A name=3Dobtain></A>Obtain the&nbsp;list of network =
+interfaces</H3>When you=20
+want to capture packets from a network, the first thing you have to do =
+is to=20
+obtain the list of network interfases on your machine. To do so, Jpcap =
+provides=20
+<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#getDeviceList()">JpcapCaptor.getDeviceList()</A>=20
+method. It returns an array of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Net=
+workInterface.html">NetworkInterface</A>=20
+objects.<BR><BR>A <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Net=
+workInterface.html">NetworkInterface</A>=20
+object contains some information about the corresponding network =
+interface, such=20
+as its name, description, IP and MAC addresses, and datatlink name and=20
+description.<BR><BR>The following sample code obtains the list of =
+network=20
+interfaces and prints out their information.<BR><BR>
+<DIV><PRE class=3Dcode>//Obtain the list of network =
+interfaces<BR>NetworkInterface[] devices =3D =
+JpcapCaptor.getDeviceList();<BR><BR>//for each network interface<BR>for =
+(int i =3D 0; i &lt; devices.length; i++) {<BR>  //print out its name =
+and description<BR>  System.out.println(i+": "+devices[i].name + "(" + =
+devices[i].description+")");<BR><BR>  //print out its datalink name and =
+description<BR>  System.out.println(" datalink: =
+"+devices[i].datalink_name + "(" + =
+devices[i].datalink_description+")");<BR><BR>  //print out its MAC =
+address<BR>  System.out.print(" MAC address:");<BR>  for (byte b : =
+devices[i].mac_address)<BR>    =
+System.out.print(Integer.toHexString(b&amp;0xff) + ":");<BR>  =
+System.out.println();<BR><BR>  //print out its IP address, subnet mask =
+and broadcast address<BR>  for (NetworkInterfaceAddress a : =
+devices[i].addresses)<BR>    System.out.println(" address:"+a.address + =
+" " + a.subnet + " "+ a.broadcast);<BR>}</PRE><BR>This=20
+sample code may show a result like the following (on windows): =
+<BR><PRE>0: \Device\NPF_{C3F5996D-FB82-4311-A205-25B7761897B9}(VMware =
+Virtual Ethernet Adapter)<BR>&nbsp;&nbsp;&nbsp; data =
+link:EN10MB(Ethernet)<BR>&nbsp;&nbsp;&nbsp; MAC =
+address:0:50:56:c0:0:1:<BR>&nbsp;&nbsp;&nbsp; =
+address:/fe80:0:0:0:3451:e274:322a:fd9f null null<BR>&nbsp;&nbsp;&nbsp; =
+address:/172.16.160.1 /255.255.255.0 /255.255.255.255</PRE>or=20
+the following (on Linux/UNIX):<BR><PRE>0 : eth0(null)<BR>&nbsp; &nbsp; =
+datalink: EN10MB(Ethernet)<BR>    MAC address:0:c:29:fb:6c:df:<BR>    =
+address:/172.16.32.129 /255.255.255.0 / 172.16.32.255</PRE>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+</DIV>
+<H3><A name=3Dopen></A>Open a network interface</H3>Once you obtain the =
+list of=20
+network interfaces and choose which network interface to captuer packets =
+from,=20
+you can open the interface by using&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#openDevice(jpcap.NetworkInterface, int, boolean, =
+int)">JpcapCaptor.openDevice()</A>=20
+method. The following piece of code illustrates how to open an network=20
+interface.<BR><BR><PRE class=3Dcode>NetworkInterface[] devices =3D =
+JpcapCaptor.getDeviceList();<BR>int index=3D...;  // set index of the =
+interface that you want to open.<BR><BR>//Open an interface with =
+openDevice(NetworkInterface intrface, int snaplen, boolean promics, int =
+to_ms)<BR>JpcapCaptor captor=3DJpcapCaptor.openDevice(device[index], =
+65535, false, 20);<BR></PRE><BR>When=20
+calling the&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#openDevice(jpcap.NetworkInterface, int, boolean, =
+int)">JpcapCaptor.openDevice()</A>=20
+method, you can specify the following parameters:<BR>&nbsp;
+<TABLE style=3D"WIDTH: 100%; TEXT-ALIGN: left" cellSpacing=3D2 =
+cellPadding=3D2=20
+border=3D0>
+  <TBODY>
+  <TR>
+    <TD style=3D"WIDTH: 20%"><SPAN style=3D"FONT-WEIGHT: =
+bold">Name:</SPAN></TD>
+    <TD><SPAN style=3D"FONT-WEIGHT: bold">Purpose</SPAN></TD></TR>
+  <TR>
+    <TD><SPAN style=3D"FONT-STYLE: italic">NetworkInterface =
+intrface</SPAN></TD>
+    <TD>Network interface that you want to open.</TD></TR>
+  <TR>
+    <TD><SPAN style=3D"FONT-STYLE: italic">int snaplen</SPAN></TD>
+    <TD>Max number of bytes to capture at once.</TD></TR>
+  <TR>
+    <TD style=3D"VERTICAL-ALIGN: top"><SPAN style=3D"FONT-STYLE: =
+italic">boolean=20
+      promics</SPAN></TD>
+    <TD>True if you want to open the interface in promiscuous mode, and=20
+      otherwise&nbsp;false.<BR>
+      <DIV style=3D"MARGIN-LEFT: 40px">In promiscuous mode, you =
+can&nbsp;capture=20
+      packets every packet from the wire, i.e., even if its source or=20
+      destination MAC address is not same as the MAC address of the =
+interface=20
+      you are opening.<BR>In non-promiscuous mode, you can only capture =
+packets=20
+      send and received by your host.</DIV></TD></TR>
+  <TR>
+    <TD><SPAN style=3D"FONT-STYLE: italic">int to_ms</SPAN></TD>
+    <TD>Set a capture timeout value in =
+milliseconds.</TD></TR></TBODY></TABLE><BR><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#openDevice(jpcap.NetworkInterface, int, boolean, =
+int)">JpcapCaptor.openDevice()</A>&nbsp;returns=20
+an instance of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html">JpcapCaptor</A>.=20
+You can then call several methods of the&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html">JpcapCaptor</A>=20
+class to actually capture packets from the network interface.<BR><BR>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+</DIV>
+<H3><A name=3Dcapture></A>Capture packets from the network =
+interface</H3>Once you=20
+obtain an instance of of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html">JpcapCaptor</A>,=20
+you can capture packets from the interface.<BR><BR>There are two major=20
+approaches to capture packets using a <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html">JpcapCaptor</A>=20
+instance: using a callback method, and capturing packets=20
+one-by-one.<BR><BR><SPAN=20
+style=3D"FONT-STYLE: italic; TEXT-DECORATION: underline">Using a =
+callback=20
+method</SPAN><BR><BR>In this approach, you implement a callback method =
+to=20
+process captured packets, and then pass the callback method to Jpcap so =
+that=20
+Jpcap calls it back every time it captures a packet. Let's see how you =
+can do=20
+this approach in detail.<BR><BR>First, you implement a callback method =
+by=20
+defining a new class which implements the <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Pac=
+ketReceiver.html">PacketReceiver</A>=20
+interface. The <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Pac=
+ketReceiver.html">PacketReceiver</A>=20
+interface defines &nbsp;a <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Pac=
+ketReceiver.html#receivePacket(jpcap.packet.Packet)">receivePacket()</A> =
+
+method, so you need to implement a <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Pac=
+ketReceiver.html#receivePacket(jpcap.packet.Packet)">receivePacket()</A> =
+
+method in your class.<BR><BR>The following class implement a <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Pac=
+ketReceiver.html#receivePacket(jpcap.packet.Packet)">receivePacket()</A> =
+
+method which simply prints out a captured packet.<BR><BR><PRE =
+class=3Dcode>class PacketPrinter implements PacketReceiver {<BR>  //this =
+method is called every time Jpcap captures a packet<BR>  public void =
+receivePacket(Packet packet) {<BR>    //just print out a captured =
+packet<BR>    System.out.println(packet);<BR>  }<BR>}</PRE><BR>Then,=20
+you can call either <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#processPacket(int, =
+jpcap.PacketReceiver)">JpcapCaptor.processPacket()</A>=20
+or <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#loopPacket(int, =
+jpcap.PacketReceiver)">JpcapCaptor.loopPacket()</A>=20
+methods to start capturing using the callback method. When =
+calling&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#processPacket(int, =
+jpcap.PacketReceiver)">processPacket()</A>=20
+or&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#loopPacket(int, jpcap.PacketReceiver)">loopPacket()</A>=20
+method, you can also specify the number of packets to capture before the =
+method=20
+returns. You can specify -1 to continue capturing packets infinitely. =
+<BR><BR><PRE class=3Dcode>JpcapCaptor =
+captor=3DJpcapCaptor.openDevice(device[index], 65535, false, =
+20);<BR><BR>//call processPacket() to let Jpcap call =
+PacketPrinter.receivePacket() for every packet =
+capture.<BR>captor.processPacket(10,new =
+PacketPrinter());<BR><BR>captor.close();<BR></PRE><BR>The=20
+two methods for callback,&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#processPacket(int, =
+jpcap.PacketReceiver)">processPacket()</A>=20
+and&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#loopPacket(int, jpcap.PacketReceiver)">loopPacket()</A>,=20
+are very similar. Usually you might want to use&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#processPacket(int, =
+jpcap.PacketReceiver)">processPacket()</A>=20
+because it supports timeout and non_blocking mode, while&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#loopPacket(int, jpcap.PacketReceiver)">loopPacket()</A>=20
+doesn't.<BR><BR><SPAN=20
+style=3D"FONT-STYLE: italic; TEXT-DECORATION: underline">Capturing =
+packets=20
+one-by-one<BR><BR></SPAN>Using a callback method is a little bit tricky =
+because=20
+you don't know when the callback method is called by Jpcap. If you don't =
+want to=20
+use a callback method, you can also capture packets using the <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#getPacket()">JpcapCaptor.getPacket()</A>=20
+method.<BR><BR><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#getPacket()">getPacket()</A>=20
+method simply returns a captured packet. You can (or have to) call <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#getPacket()">getPacket()</A>=20
+method multiple times to capture consecutive packets.<BR><BR>The=20
+following&nbsp;sample code&nbsp;also prints out captured =
+packets.<BR><BR><PRE class=3Dcode>JpcapCaptor =
+captor=3DJpcapCaptor.openDevice(device[index], 65535, false, =
+20);<BR><BR>for(int i=3D0;i&lt;10;i++){<BR>  //capture a single packet =
+and print it out<BR>  =
+System.out.println(captor.getPacket());<BR>}<BR><BR>captor.close();<BR></=
+PRE><BR>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+</DIV><SPAN style=3D"FONT-STYLE: italic; TEXT-DECORATION: =
+underline"></SPAN>
+<H3><A name=3Dset></A>Set capturing filter</H3>In Jpcap, you can set a =
+filter so=20
+that Jpcap doesn't capture unwanted packets. For example, if you only =
+want to=20
+capture TCP/IPv4 packets, you can set a filter as following:<BR><BR><PRE =
+class=3Dcode>JpcapCaptor captor=3DJpcapCaptor.openDevice(device[index], =
+65535, false, 20);<BR>//set a filter to only capture TCP/IPv4 =
+packets<BR>captor.setFilter("ip and tcp", true);</PRE><BR>The=20
+filter expression "ip and tcp" means to to "keep only the packets that =
+are both=20
+IPv4 and TCP and deliver them to the application". <BR><BR>By properly =
+setting a=20
+filter, you can reduce the number of packets to examine, and thus can =
+improve=20
+the performance of your application.<BR><BR>You can check the following =
+homepage=20
+for more details about filter expression.<BR><BR><A=20
+href=3D"http://home.insight.rr.com/procana/">Designing Capture Filters =
+for=20
+Ethereal/Wireshark</A>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+</DIV>
+<H3><SPAN style=3D"FONT-STYLE: italic; TEXT-DECORATION: =
+underline"></SPAN><A=20
+name=3Dsave></A>Save captured packets into a file</H3>You can save =
+captured=20
+packets into a binary file so that you can later retrieve them using =
+Jpcap or=20
+other applications which supports reading a tcpdump format =
+file.<BR><BR>To save=20
+captured packets, you first need to open a file by calling <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apWriter.html#openDumpFile(jpcap.JpcapCaptor, =
+java.lang.String)">JpcapWriter.openDumpFile()</A>=20
+method with an instance of&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html">JpcapCaptor</A>=20
+which was used to capture packets, and a String filename.<BR><BR><PRE =
+class=3Dcode>JpcapCaptor captor=3DJpcapCaptor.openDevice(device[index], =
+65535, false, 20);<BR>//open a file to save captured =
+packets<BR>JpcapWriter =
+writer=3DJpcapWriter.openDumpFile(captor,"yourfilename");</PRE><BR>Once=20
+you obtained an instance of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apWriter.html">JpcapWriter</A>=20
+through&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apWriter.html#openDumpFile(jpcap.JpcapCaptor, =
+java.lang.String)">openDumpFile()</A>=20
+method, you can save captured packets using <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apWriter.html#writePacket(jpcap.packet.Packet)">JpcapWriter.writePacket()=
+</A>=20
+method. After you saved all the packets you want to save, you&nbsp;need =
+to call=20
+<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apWriter.html#close()">JpcapWriter.close()</A>=20
+method to close the opened file.<BR><BR>The following sample code, =
+combined with=20
+the above code, captures and saves first 100 packets =
+captured.<BR><BR><PRE class=3Dcode>for(int i=3D0;i&lt;10;i++){<BR>  =
+//capture a single packet<BR>  Packet packet=3Dcaptor.getPacket();<BR>  =
+//save it into the opened file<BR>  =
+writer.writePacket(packet);<BR>}<BR>writer.close();</PRE><BR>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+</DIV>
+<H3><A name=3Dread></A>Read saved packets from a file</H3>In Jpcap, you =
+can read=20
+the packets you saved using <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apWriter.html">JpcapWriter</A>=20
+by opening the file using <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#openFile(java.lang.String)">JpcapCaptor.openFile()</A>=20
+method. Similar to&nbsp;<A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#openDevice(jpcap.NetworkInterface, int, boolean, =
+int)">JpcapCaptor.openDevice()</A>=20
+method, <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#openFile(java.lang.String)">JpcapCaptor.openFile()</A>=20
+method also returns an instance of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html">JpcapCaptor</A>=20
+class. So you can use the same ways described in <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#capture">Capture=20
+packets from the network interface</A> section to read packets from the =
+file.=20
+For example, you can read and print out saved packets from a file as=20
+follows:<BR><BR><PRE class=3Dcode>//open a file to read saved =
+packets<BR>JpcapCaptor =
+captor=3DJpcapCaptor.openFile("yourfilename");<BR><BR>while(true){<BR>  =
+//read a packet from the opened file<BR>  Packet =
+packet=3Dcaptor.getPacket();<BR>  //if some error occurred or EOF has =
+reached, break the loop<BR>  if(packet=3D=3Dnull || =
+packet=3D=3DPacket.EOF) break;<BR>  //otherwise, print out the =
+packet<BR>  =
+System.out.println(packet);<BR>}<BR><BR>captor.close();</PRE><BR>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+ </DIV>
+<H3><A name=3Dsend></A>Send packets through a network interface</H3>You =
+can also=20
+send packets to the network using Jpcap. &nbsp;To send a packet, you =
+need to=20
+obtain an instance of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apSender.html">JpcapSender</A>=20
+by calling either <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apSender.html#openDevice(jpcap.NetworkInterface)">JpcapSender.openDevice(=
+)</A>=20
+or <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apCaptor.html#getJpcapSenderInstance()">JpcapCaptor.getJpcapSenderInstanc=
+e()</A>=20
+methods.<BR><BR>Once you obtain an instance of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apSender.html">JpcapSender</A>,=20
+you can pass an instance of <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/pac=
+ket/Packet.html">Packet</A>=20
+class to <A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/javadoc/jpcap/Jpc=
+apSender.html#sendPacket(jpcap.packet.Packet)">JpcapSender.sendPacket()</=
+A>=20
+method.<BR><BR>The following sample code sends a TCP/IPv4/Ethernet =
+packet onto a=20
+network interface.<BR><BR><PRE class=3Dcode>//open a network interface =
+to send a packet to<BR>JpcapSender =
+sender=3DJpcapSender.openDevice(devices[index]);<BR><BR>//create a TCP =
+packet with specified port numbers, flags, and other =
+parameters<BR>TCPPacket p=3Dnew =
+TCPPacket(12,34,56,78,false,false,false,false,true,true,true,true,10,10);=
+<BR><BR>//specify IPv4 header =
+parameters<BR>p.setIPv4Parameter(0,false,false,false,0,false,false,false,=
+0,1010101,100,IPPacket.IPPROTO_TCP,<BR>  =
+InetAddress.getByName("www.microsoft.com"),InetAddress.getByName("www.goo=
+gle.com"));<BR><BR>//set the data field of the =
+packet<BR>p.data=3D("data").getBytes();<BR><BR>//create an Ethernet =
+packet (frame)<BR>EthernetPacket ether=3Dnew EthernetPacket();<BR>//set =
+frame type as =
+IP<BR>ether.frametype=3DEthernetPacket.ETHERTYPE_IP;<BR>//set source and =
+destination MAC addresses<BR>ether.src_mac=3Dnew =
+byte[]{(byte)0,(byte)1,(byte)2,(byte)3,(byte)4,(byte)5};<BR>ether.dst_mac=
+=3Dnew =
+byte[]{(byte)0,(byte)6,(byte)7,(byte)8,(byte)9,(byte)10};<BR><BR>//set =
+the datalink frame of the packet p as =
+ether<BR>p.datalink=3Dether;<BR><BR>//send the packet =
+p<BR>sender.sendPacket(p);<BR><BR>sender.close();<BR></PRE><BR>
+<DIV style=3D"TEXT-ALIGN: right"><A=20
+href=3D"http://netresearch.ics.uci.edu/kfujii/jpcap/doc/tutorial/index.ht=
+ml#toc">Back=20
+to Table of Contents</A><BR></DIV>
+<HR style=3D"WIDTH: 100%; HEIGHT: 2px">
+
+<DIV style=3D"TEXT-ALIGN: right">Jpcap documentation. Copyright (c) 2007 =
+Keita=20
+Fujii. All rights reserved. </DIV></DIV></DIV></DIV></BODY></HTML>
+
+------=_NextPart_000_0017_01C8B5E5.EE254FA0
+Content-Type: text/css;
+	charset="gb2312"
+Content-Transfer-Encoding: 7bit
+Content-Location: http://netresearch.ics.uci.edu/kfujii/jpcap/doc/style.css
+
+* {
+	LINE-HEIGHT: 150%; FONT-FAMILY: Arial,Helvetica,sans-serif
+}
+
+------=_NextPart_000_0017_01C8B5E5.EE254FA0--
