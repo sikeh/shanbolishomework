@@ -14,5 +14,4 @@ import tslab.exception.WrongInputPacketException;
 interface PacketFactory {
     public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException;
     public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException;
-
 }

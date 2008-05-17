@@ -22,13 +22,6 @@ public class ICMPFactory implements PacketFactory {
         }   else {
             throw new WrongInputPacketException("Not a ICMP packet");
         }
-
-
-
-
-
-
-
         return outPacket;
     }
 
