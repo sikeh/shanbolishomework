@@ -8,8 +8,7 @@ import tslab.util.ICMPMapping;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,41 +17,24 @@ import java.net.UnknownHostException;
  * Date: May 17, 2008
  * Time: 9:30:16 PM
  */
-public class ICMPFactory implements PacketFactory {
+public class ICMPFactory extends PacketFactory {
 
     List<ICMPMapping> sessions = new ArrayList<ICMPMapping>();
-    private InetAddress bouncerAddress;
-    private byte[] bouncerMac;
-    private InetAddress serverAddress;
-    private byte[] serverMac;
+
 
     private final static ICMPFactory instance = new ICMPFactory();
-    private static boolean isInitialed = false;
+
 
     private ICMPFactory() {
-
     }
 
     /**
      * Get a instance of ICMPFactory, pass serverAddress and serverMac to it
-     *
-     * @param bouncerAddress
-     * @param bouncerMac
-     * @param serverAddress
-     * @param serverMac
-     * @return
-     * @throws UnknownHostException
      */
-    public static ICMPFactory getInstance(String bouncerAddress, byte[] bouncerMac, String serverAddress, byte[] serverMac) throws UnknownHostException {
-        if (!isInitialed) {
-            instance.bouncerAddress = InetAddress.getByName(bouncerAddress);
-            instance.bouncerMac = bouncerMac;
-            instance.serverAddress = InetAddress.getByName(serverAddress);
-            instance.serverMac = serverMac;
-            isInitialed = true;
-        }
+    public static ICMPFactory getInstance(){
         return instance;
     }
+
 
     /**
      * Produce a packet <b>to server</b> according the incoming packet from client.
@@ -75,11 +57,11 @@ public class ICMPFactory implements PacketFactory {
         icmpOut.type = ICMPPacket.ICMP_ECHOREPLY; // 0
         icmpOut.seq = icmpIn.seq;
         icmpOut.id = icmpIn.id;
-        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, instance.bouncerAddress, instance.serverAddress);
+        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, this.bouncerAddress, this.serverAddress);
         EthernetPacket ethOut = new EthernetPacket();
         ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
-        ethOut.src_mac = instance.bouncerMac;
-        ethOut.dst_mac = instance.serverMac;
+        ethOut.src_mac = this.bouncerMac;
+        ethOut.dst_mac = this.serverMac;
         icmpOut.datalink = ethOut;
         icmpOut.data = icmpIn.data;
 
