@@ -9,6 +9,6 @@ package tslab.exception;
  */
 public class WrongInputPacketException extends Exception{
     public WrongInputPacketException(String message) {
-        super(message+"\nPlease check if the incoming packet is the correct type.");
+        super(message);
     }
 }

@@ -11,21 +11,39 @@ import java.net.InetAddress;
  */
 public class ICMPMapping {
     private InetAddress clientAddress;
-    private InetAddress serverAddress;
+    private byte[] clientMac;
+    private InetAddress bouncerAddress;
+    private byte[] bouncerMac;
     private short seq;
     private short id;
 
     /**
      * Initial a instance of ICMPSessionMapping<br/>
      * Use when comes a new packet from client.
-     * @param clientAddress the client address
-     * @param id ICMP packet id
-     * @param seq ICMP packet seq
+     * @param clientAddress
+     * @param clientMac
+     * @param bouncerAddress
+     * @param bouncerMac
+     * @param seq
+     * @param id
      */
-    public ICMPMapping(InetAddress clientAddress, short id, short seq) {
-        this.id = id;
-        this.seq = seq;
+    public ICMPMapping(InetAddress clientAddress, byte[] clientMac, InetAddress bouncerAddress, byte[] bouncerMac, short seq, short id) {
         this.clientAddress = clientAddress;
+        this.clientMac = clientMac;
+        this.bouncerAddress = bouncerAddress;
+        this.bouncerMac = bouncerMac;
+        this.seq = seq;
+        this.id = id;
+    }
+
+    /**
+     * 
+     * @param id
+     * @param seq
+     */
+    public ICMPMapping(short id, short seq) {
+        this.seq = seq;
+        this.id = id;
     }
 
     public InetAddress getClientAddress() {
@@ -36,12 +54,28 @@ public class ICMPMapping {
         this.clientAddress = clientAddress;
     }
 
-    public InetAddress getServerAddress() {
-        return serverAddress;
+    public byte[] getClientMac() {
+        return clientMac;
     }
 
-    public void setServerAddress(InetAddress serverAddress) {
-        this.serverAddress = serverAddress;
+    public void setClientMac(byte[] clientMac) {
+        this.clientMac = clientMac;
+    }
+
+    public InetAddress getBouncerAddress() {
+        return bouncerAddress;
+    }
+
+    public void setBouncerAddress(InetAddress bouncerAddress) {
+        this.bouncerAddress = bouncerAddress;
+    }
+
+    public byte[] getBouncerMac() {
+        return bouncerMac;
+    }
+
+    public void setBouncerMac(byte[] bouncerMac) {
+        this.bouncerMac = bouncerMac;
     }
 
     public short getSeq() {
