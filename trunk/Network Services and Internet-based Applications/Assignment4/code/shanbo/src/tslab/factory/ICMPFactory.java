@@ -4,7 +4,7 @@ import jpcap.packet.ICMPPacket;
 import jpcap.packet.IPPacket;
 import jpcap.packet.EthernetPacket;
 import tslab.exception.WrongInputPacketException;
-import tslab.util.ICMPSessionMapping;
+import tslab.util.ICMPMapping;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
  */
 public class ICMPFactory implements PacketFactory {
 
-    List<ICMPSessionMapping> sessions = new ArrayList<ICMPSessionMapping>();
+    List<ICMPMapping> sessions = new ArrayList<ICMPMapping>();
     private InetAddress bouncerAddress;
     private byte[] bouncerMac;
     private InetAddress serverAddress;
@@ -71,7 +71,7 @@ public class ICMPFactory implements PacketFactory {
         }
 
         //add packet to sesson mapping
-        sessions.add(new ICMPSessionMapping(icmpIn.src_ip, icmpIn.id, icmpIn.seq));
+        sessions.add(new ICMPMapping(icmpIn.src_ip, icmpIn.id, icmpIn.seq));
 
         //produce packet to server
         EthernetPacket ethIn = (EthernetPacket) icmpIn.datalink;
@@ -104,6 +104,7 @@ public class ICMPFactory implements PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet");
         }
         //TODO Find mapping in sessions and get useful infomation
+        
 
         //TODO Produce packet
 
