@@ -67,17 +67,14 @@ public class ICMPFactory implements PacketFactory {
         if (ipPacket instanceof ICMPPacket) {
             icmpIn = (ICMPPacket) ipPacket;
         } else {
-            throw new WrongInputPacketException("Not a ICMP packet");
+            throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
-
-        //add packet to sesson mapping
-        sessions.add(new ICMPMapping(icmpIn.src_ip, icmpIn.id, icmpIn.seq));
 
         //produce packet to server
         EthernetPacket ethIn = (EthernetPacket) icmpIn.datalink;
         icmpOut.type = ICMPPacket.ICMP_ECHOREPLY; // 0
-        icmpOut.id = icmpIn.id;
         icmpOut.seq = icmpIn.seq;
+        icmpOut.id = icmpIn.id;
         icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, instance.bouncerAddress, instance.serverAddress);
         EthernetPacket ethOut = new EthernetPacket();
         ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
@@ -85,6 +82,10 @@ public class ICMPFactory implements PacketFactory {
         ethOut.dst_mac = instance.serverMac;
         icmpOut.datalink = ethOut;
         icmpOut.data = icmpIn.data;
+
+        //add packet to sesson mapping
+        sessions.add(new ICMPMapping(icmpIn.src_ip, ethIn.src_mac, icmpIn.dst_ip, ethIn.dst_mac, icmpIn.seq, icmpIn.id));
+
         return icmpOut;
     }
 
@@ -93,22 +94,36 @@ public class ICMPFactory implements PacketFactory {
      *
      * @param ipPacket the packet which comes from server
      * @return a packet wich will be send <b>to client</b> according the incoming packet from server
-     * @throws WrongInputPacketException incoming packet is not a ICMP packet.
+     * @throws WrongInputPacketException incoming packet is not a ICMP packet.<br/>Or the package infomation is not in the session.
      */
     public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException {
-        ICMPPacket inPacket;
-        ICMPPacket outPacket = null;
+        ICMPPacket icmpIn;
+        ICMPPacket icmpOut = null;
         if (ipPacket instanceof ICMPPacket) {
-            inPacket = (ICMPPacket) ipPacket;
+            icmpIn = (ICMPPacket) ipPacket;
         } else {
-            throw new WrongInputPacketException("Not a ICMP packet");
+            throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
-        //TODO Find mapping in sessions and get useful infomation
-        
+        //Find mapping in sessions and get useful infomation
+        ICMPMapping mapping = new ICMPMapping(icmpIn.id, icmpIn.seq);
+        if (!sessions.contains(mapping)) {
+            throw new WrongInputPacketException("Can not produce a packet according incoming packet.\nNo record found in session.\n");
+        }
+        ICMPMapping record = sessions.get(sessions.indexOf(mapping));
 
-        //TODO Produce packet
+        icmpOut.type = ICMPPacket.ICMP_ECHOREPLY; // 0
+        icmpOut.id = icmpIn.id;
+        icmpOut.seq = icmpIn.seq;
+        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP,record.getBouncerAddress() , record.getClientAddress());
+        EthernetPacket ethOut = new EthernetPacket();
+        ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
+        ethOut.src_mac = record.getBouncerMac();
+        ethOut.dst_mac = record.getClientMac();
+        icmpOut.datalink = ethOut;
+        icmpOut.data = icmpIn.data;
 
-
-        return outPacket;
+        //remove mapping from session
+        sessions.remove(record);
+        return icmpOut;
     }
 }
