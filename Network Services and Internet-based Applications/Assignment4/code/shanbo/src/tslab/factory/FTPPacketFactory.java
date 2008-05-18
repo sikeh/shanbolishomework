@@ -11,7 +11,7 @@ import tslab.exception.WrongInputPacketException;
  * Date: May 17, 2008
  * Time: 9:30:59 PM
  */
-public class FTPPacketFactory implements PacketFactory {
+public class FTPPacketFactory extends PacketFactory {
 
 
     public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException {

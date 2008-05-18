@@ -45,7 +45,7 @@ public class ICMPFactory extends PacketFactory {
      */
     public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException {
         ICMPPacket icmpIn;
-        ICMPPacket icmpOut = null;
+        ICMPPacket icmpOut = new ICMPPacket();
         if (ipPacket instanceof ICMPPacket) {
             icmpIn = (ICMPPacket) ipPacket;
         } else {
