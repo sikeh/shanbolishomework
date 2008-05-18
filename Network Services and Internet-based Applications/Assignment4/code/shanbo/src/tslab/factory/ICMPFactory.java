@@ -35,7 +35,7 @@ public class ICMPFactory implements PacketFactory {
      * @return a packet which will be send <b>to server</b> according the incoming packet from client.
      * @throws WrongInputPacketException incoming packet is not a ICMP packet.
      */
-    public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException {
+    public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException {
         ICMPPacket inPacket;
         ICMPPacket outPacket = null;
         if (ipPacket instanceof ICMPPacket){
@@ -44,7 +44,8 @@ public class ICMPFactory implements PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet");
         }
 
-        sessions.
+        
+
 
         
         return outPacket;
@@ -54,9 +55,9 @@ public class ICMPFactory implements PacketFactory {
      * Produce a packet <b>to client</b> according the incoming packet from server.
      * @param ipPacket the packet which comes from server
      * @return a packet wich will be send <b>to client</b> according the incoming packet from server
-     * @throws WrongInputPacketException
+     * @throws WrongInputPacketException incoming packet is not a ICMP packet.
      */
-    public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException {
+    public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException {
         ICMPPacket inPacket;
         ICMPPacket outPacket = null;
         if (ipPacket instanceof ICMPPacket){

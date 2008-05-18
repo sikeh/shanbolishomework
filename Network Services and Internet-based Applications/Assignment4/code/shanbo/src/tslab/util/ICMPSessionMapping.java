@@ -15,6 +15,13 @@ public class ICMPSessionMapping {
     private short seq;
     private short id;
 
+    /**
+     * Initial a instance of ICMPSessionMapping<br/>
+     * Use when comes a new packet from client.
+     * @param clientAddress the client address
+     * @param id ICMP packet id
+     * @param seq ICMP packet seq
+     */
     public ICMPSessionMapping(InetAddress clientAddress, short id, short seq) {
         this.id = id;
         this.seq = seq;
