@@ -66,6 +66,7 @@ public class TCPFactory extends PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
 
+        //TODO check ack number here
         TCPPacket tcpOut = new TCPPacket(sourcePort, tcpIn.dst_port, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
@@ -100,7 +101,7 @@ public class TCPFactory extends PacketFactory {
         }
         TCPMapping record = sessions.get(sessions.indexOf(mapping));
 
-
+        //TODO check ack number here
         TCPPacket tcpOut = new TCPPacket(record.getClientPort(), record.getBouncerPortToClient(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
