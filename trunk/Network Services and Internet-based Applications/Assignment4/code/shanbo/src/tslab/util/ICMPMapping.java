@@ -108,9 +108,7 @@ public class ICMPMapping {
 
     public int hashCode() {
         int result;
-        result = (clientAddress != null ? clientAddress.hashCode() : 0);
-        result = 31 * result + (serverAddress != null ? serverAddress.hashCode() : 0);
-        result = 31 * result + (int) seq;
+        result = (int) seq;
         result = 31 * result + (int) id;
         return result;
     }
