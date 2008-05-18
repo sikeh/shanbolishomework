@@ -34,6 +34,8 @@ public abstract class PacketFactory {
            this.serverMac = serverMac;
     }
 
+    public abstract IPPacket createPacket(IPPacket ipPacket) throws WrongInputPacketException;
+
 
     /**
      * Produce a packet <b>to server</b> according the incoming packet from client.

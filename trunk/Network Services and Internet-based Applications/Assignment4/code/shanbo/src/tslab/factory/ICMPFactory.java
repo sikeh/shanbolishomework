@@ -30,11 +30,31 @@ public class ICMPFactory extends PacketFactory {
 
     /**
      * Get a instance of ICMPFactory, pass serverAddress and serverMac to it
+     *
+     * @return
      */
-    public static ICMPFactory getInstance(){
+    public static ICMPFactory getInstance() {
         return instance;
     }
 
+
+    public IPPacket createPacket(IPPacket ipPacket) throws WrongInputPacketException {
+        ICMPPacket icmpIn;
+        if (ipPacket instanceof ICMPPacket) {
+            icmpIn = (ICMPPacket) ipPacket;
+            icmpIn = fixICMPid(icmpIn);
+        } else {
+            throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
+        }
+
+        if (icmpIn.type == ICMPPacket.ICMP_ECHO) {
+            return toServer(ipPacket);
+        } else if (icmpIn.type == ICMPPacket.ICMP_ECHOREPLY) {
+            return toClient(ipPacket);
+        } else {
+            throw new WrongInputPacketException("Wrong input packet type\nNot a Ping or Pong.");
+        }
+    }
 
     /**
      * Produce a packet <b>to server</b> according the incoming packet from client.
@@ -83,6 +103,7 @@ public class ICMPFactory extends PacketFactory {
         ICMPPacket icmpOut = new ICMPPacket();
         if (ipPacket instanceof ICMPPacket) {
             icmpIn = (ICMPPacket) ipPacket;
+            icmpIn = fixICMPid(icmpIn);
         } else {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
@@ -97,7 +118,7 @@ public class ICMPFactory extends PacketFactory {
         icmpOut.type = ICMPPacket.ICMP_ECHOREPLY; // 0
         icmpOut.id = icmpIn.id;
         icmpOut.seq = icmpIn.seq;
-        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP,icmpIn.dst_ip , record.getClientAddress());
+        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, icmpIn.dst_ip, record.getClientAddress());
         EthernetPacket ethOut = new EthernetPacket();
         ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
         ethOut.src_mac = ethIn.dst_mac;
@@ -108,5 +129,13 @@ public class ICMPFactory extends PacketFactory {
         //remove mapping from session
         sessions.remove(record);
         return icmpOut;
+    }
+
+    private ICMPPacket fixICMPid(ICMPPacket p) {
+        short correctID = p.header[38];
+        correctID = (short) (correctID << 8);
+        correctID = (short) (correctID + p.header[39]);
+        p.id = correctID;
+        return p;
     }
 }

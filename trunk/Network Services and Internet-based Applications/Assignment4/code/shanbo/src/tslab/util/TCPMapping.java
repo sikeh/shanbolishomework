@@ -29,7 +29,8 @@ public class TCPMapping {
         this.serverAddress = serverAddress;
     }
 
-    public TCPMapping(int bouncerPortToServer, int serverPort) {
+    public TCPMapping(InetAddress serverAddress, int serverPort, int bouncerPortToServer) {
+        this.serverAddress = serverAddress;
         this.bouncerPortToServer = bouncerPortToServer;
         this.serverPort = serverPort;
     }
@@ -94,18 +95,17 @@ public class TCPMapping {
 
         if (bouncerPortToServer != that.bouncerPortToServer) return false;
         if (serverPort != that.serverPort) return false;
+        if (serverAddress != null ? !serverAddress.equals(that.serverAddress) : that.serverAddress != null)
+            return false;
 
         return true;
     }
 
     public int hashCode() {
         int result;
-        result = (clientAddress != null ? clientAddress.hashCode() : 0);
-        result = 31 * result + (serverAddress != null ? serverAddress.hashCode() : 0);
-        result = 31 * result + (int) clientPort;
-        result = 31 * result + (int) serverPort;
-        result = 31 * result + (int) bouncerPortToServer;
-        result = 31 * result + (int) bouncerPortToClient;
+        result = (serverAddress != null ? serverAddress.hashCode() : 0);
+        result = 31 * result + serverPort;
+        result = 31 * result + bouncerPortToServer;
         return result;
     }
 }
