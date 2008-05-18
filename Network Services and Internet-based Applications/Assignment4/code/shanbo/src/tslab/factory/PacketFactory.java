@@ -29,11 +29,19 @@ public abstract class PacketFactory {
      * @throws UnknownHostException
      */
     public void initial(String bouncerAddress, byte[] bouncerMac, String serverAddress, byte[] serverMac) throws UnknownHostException {
-           this.bouncerAddress = InetAddress.getByName(bouncerAddress);
+        this.bouncerAddress = InetAddress.getByName(bouncerAddress);
            this.bouncerMac = bouncerMac;
            this.serverAddress = InetAddress.getByName(serverAddress);
            this.serverMac = serverMac;
     }
+
+    public void initial(InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac) throws UnknownHostException {
+           this.bouncerAddress = bouncerAddress;
+           this.bouncerMac = bouncerMac;
+           this.serverAddress = serverAddress;
+           this.serverMac = serverMac;
+    }
+
 
     /**
      * Produce a packet <b>to server</b> according the incoming packet from client.
