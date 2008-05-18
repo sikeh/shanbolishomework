@@ -77,7 +77,7 @@ class MyPacketRecevier implements PacketReceiver {
 
         if (packet instanceof IPPacket) {
             try {
-                IPPacket ipPacket = factory.toServer((IPPacket) packet);
+                IPPacket ipPacket = factory.createPacket((IPPacket) packet);
                 captor.getJpcapSenderInstance().sendPacket(ipPacket);
             } catch (WrongInputPacketException e) {
                 e.printStackTrace();
