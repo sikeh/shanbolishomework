@@ -12,14 +12,16 @@ import java.net.InetAddress;
  */
 public class TCPMapping {
     private InetAddress clientAddress;
+    private byte[] clientMac;
     private InetAddress serverAddress;
     private int clientPort;
     private int serverPort;
     private int bouncerPortToServer;
     private int bouncerPortToClient;
 
-    public TCPMapping(InetAddress clientAddress, int clientPort, int bouncerPortToClient, int bouncerPortToServer, InetAddress serverAddress, int serverPort) {
+    public TCPMapping(InetAddress clientAddress, byte[] clientMac, int clientPort, int bouncerPortToClient, int bouncerPortToServer, InetAddress serverAddress, int serverPort) {
         this.clientAddress = clientAddress;
+        this.clientMac = clientMac;
         this.clientPort = clientPort;
         this.bouncerPortToServer = bouncerPortToServer;
         this.bouncerPortToClient = bouncerPortToClient;
@@ -78,6 +80,10 @@ public class TCPMapping {
 
     public void setBouncerPortToClient(int bouncerPortToClient) {
         this.bouncerPortToClient = bouncerPortToClient;
+    }
+
+    public byte[] getClientMac() {
+        return clientMac;
     }
 
     public boolean equals(Object o) {
