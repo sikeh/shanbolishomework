@@ -13,15 +13,13 @@ import java.net.InetAddress;
 public class TCPMapping {
     private InetAddress clientAddress;
     private InetAddress serverAddress;
-    private InetAddress bouncerAddress;
-    private short clientPort;
-    private short serverPort;
-    private short bouncerPortToServer;
-    private short bouncerPortToClient;
+    private int clientPort;
+    private int serverPort;
+    private int bouncerPortToServer;
+    private int bouncerPortToClient;
 
-    public TCPMapping(InetAddress clientAddress, InetAddress bouncerAddress, short clientPort, short bouncerPortToServer, short bouncerPortToClient, short serverPort, InetAddress serverAddress) {
+    public TCPMapping(InetAddress clientAddress, int clientPort, int bouncerPortToClient, int bouncerPortToServer, InetAddress serverAddress, int serverPort) {
         this.clientAddress = clientAddress;
-        this.bouncerAddress = bouncerAddress;
         this.clientPort = clientPort;
         this.bouncerPortToServer = bouncerPortToServer;
         this.bouncerPortToClient = bouncerPortToClient;
@@ -29,7 +27,7 @@ public class TCPMapping {
         this.serverAddress = serverAddress;
     }
 
-    public TCPMapping(short bouncerPortToServer, short serverPort) {
+    public TCPMapping(int bouncerPortToServer, int serverPort) {
         this.bouncerPortToServer = bouncerPortToServer;
         this.serverPort = serverPort;
     }
@@ -50,43 +48,35 @@ public class TCPMapping {
         this.serverAddress = serverAddress;
     }
 
-    public InetAddress getBouncerAddress() {
-        return bouncerAddress;
-    }
-
-    public void setBouncerAddress(InetAddress bouncerAddress) {
-        this.bouncerAddress = bouncerAddress;
-    }
-
-    public short getClientPort() {
+    public int getClientPort() {
         return clientPort;
     }
 
-    public void setClientPort(short clientPort) {
+    public void setClientPort(int clientPort) {
         this.clientPort = clientPort;
     }
 
-    public short getServerPort() {
+    public int getServerPort() {
         return serverPort;
     }
 
-    public void setServerPort(short serverPort) {
+    public void setServerPort(int serverPort) {
         this.serverPort = serverPort;
     }
 
-    public short getBouncerPortToServer() {
+    public int getBouncerPortToServer() {
         return bouncerPortToServer;
     }
 
-    public void setBouncerPortToServer(short bouncerPortToServer) {
+    public void setBouncerPortToServer(int bouncerPortToServer) {
         this.bouncerPortToServer = bouncerPortToServer;
     }
 
-    public short getBouncerPortToClient() {
+    public int getBouncerPortToClient() {
         return bouncerPortToClient;
     }
 
-    public void setBouncerPortToClient(short bouncerPortToClient) {
+    public void setBouncerPortToClient(int bouncerPortToClient) {
         this.bouncerPortToClient = bouncerPortToClient;
     }
 
@@ -106,7 +96,6 @@ public class TCPMapping {
         int result;
         result = (clientAddress != null ? clientAddress.hashCode() : 0);
         result = 31 * result + (serverAddress != null ? serverAddress.hashCode() : 0);
-        result = 31 * result + (bouncerAddress != null ? bouncerAddress.hashCode() : 0);
         result = 31 * result + (int) clientPort;
         result = 31 * result + (int) serverPort;
         result = 31 * result + (int) bouncerPortToServer;

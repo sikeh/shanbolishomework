@@ -54,19 +54,19 @@ public class ICMPFactory extends PacketFactory {
 
         //produce packet to server
         EthernetPacket ethIn = (EthernetPacket) icmpIn.datalink;
-        icmpOut.type = ICMPPacket.ICMP_ECHOREPLY; // 0
+        icmpOut.type = ICMPPacket.ICMP_ECHO; // 0
         icmpOut.seq = icmpIn.seq;
         icmpOut.id = icmpIn.id;
-        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, this.bouncerAddress, this.serverAddress);
+        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, icmpIn.dst_ip, this.serverAddress);
         EthernetPacket ethOut = new EthernetPacket();
         ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
-        ethOut.src_mac = this.bouncerMac;
+        ethOut.src_mac = ethIn.dst_mac;
         ethOut.dst_mac = this.serverMac;
         icmpOut.datalink = ethOut;
         icmpOut.data = icmpIn.data;
 
         //add packet to sesson mapping
-        sessions.add(new ICMPMapping(icmpIn.src_ip, ethIn.src_mac, icmpIn.dst_ip, ethIn.dst_mac, icmpIn.seq, icmpIn.id));
+        sessions.add(new ICMPMapping(icmpIn.src_ip, ethIn.src_mac, icmpIn.seq, icmpIn.id));
 
         return icmpOut;
     }
@@ -80,7 +80,7 @@ public class ICMPFactory extends PacketFactory {
      */
     public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException {
         ICMPPacket icmpIn;
-        ICMPPacket icmpOut = null;
+        ICMPPacket icmpOut = new ICMPPacket();
         if (ipPacket instanceof ICMPPacket) {
             icmpIn = (ICMPPacket) ipPacket;
         } else {
@@ -93,13 +93,14 @@ public class ICMPFactory extends PacketFactory {
         }
         ICMPMapping record = sessions.get(sessions.indexOf(mapping));
 
+        EthernetPacket ethIn = (EthernetPacket) icmpIn.datalink;
         icmpOut.type = ICMPPacket.ICMP_ECHOREPLY; // 0
         icmpOut.id = icmpIn.id;
         icmpOut.seq = icmpIn.seq;
-        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP,record.getBouncerAddress() , record.getClientAddress());
+        icmpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP,icmpIn.dst_ip , record.getClientAddress());
         EthernetPacket ethOut = new EthernetPacket();
         ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
-        ethOut.src_mac = record.getBouncerMac();
+        ethOut.src_mac = ethIn.dst_mac;
         ethOut.dst_mac = record.getClientMac();
         icmpOut.datalink = ethOut;
         icmpOut.data = icmpIn.data;

@@ -6,6 +6,10 @@ import jpcap.NetworkInterfaceAddress;
 
 import java.util.Scanner;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import tslab.util.Tools;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +21,12 @@ import java.io.IOException;
  */
 public class Bouncer {
     private static JpcapCaptor captor;
+    // used by factory
+    private static InetAddress bouncerAddress;
+    private static byte[] bouncerMac;
+    private static InetAddress serverAddress;
+    private static byte[] serverMac;
+
     private static String listenIp;
     private static String listenPort;
     private static String serverIp;
@@ -31,10 +41,7 @@ public class Bouncer {
         NetworkInterface[] devices = JpcapCaptor.getDeviceList();
         for (int i = 0; i < devices.length; i++) {
             System.out.print(i + ": " + devices[i].name);
-            for (NetworkInterfaceAddress a : devices[i].addresses) {
-                if (a.address.toString().split(":").length >= 4) continue;
-                System.out.print(" [ip=" + a.address + "] ");
-            }
+            System.out.print(" [ip=" + getIpv4(devices[i]) + "] ");
             System.out.println("");
         }
         System.out.print("Select one: ");
@@ -44,6 +51,16 @@ public class Bouncer {
             return null;
         }
         return devices[index];
+    }
+
+    private static InetAddress getIpv4(NetworkInterface networkInterface) {
+        for (NetworkInterfaceAddress a : networkInterface.addresses) {
+            if (a.address.toString().split(":").length >= 4) {
+                continue;
+            }
+            return a.address;
+        }
+        return null;
     }
 
     private NetworkInterface selectDevice(String nameOfDevice) {
@@ -82,18 +99,41 @@ public class Bouncer {
             System.out.println("Invalid interface!");
             System.exit(1);
         }
-
         try {
             captor = JpcapCaptor.openDevice(device, 65535, false, 20);
             captor.setFilter("ip", true);
-            captor.setFilter("host " + listenIp, true);
+            captor.setFilter("dst host " + listenIp, true);
         } catch (IOException e) {
             System.out.println("Can't open device: " + e.toString());
             System.exit(1);
         }
 
+        System.out.println("Resolving bouncer IP and MAC...");
+        try {
+            bouncerAddress = getIpv4(device);
+            bouncerMac = Tools.arp(bouncerAddress);
+        } catch (UnknownHostException e) {
+            System.out.println("Failed in resolving IP!");
+            System.exit(1);
+        } catch (IOException e) {
+            System.out.println("Failed in resolving MAC!");
+            System.exit(1);
+        }
+
+        System.out.println("Resolving server IP and MAC...");
+        try {
+            serverAddress = InetAddress.getByName(serverIp);
+            serverMac = Tools.arp(serverIp);
+        } catch (UnknownHostException e) {
+            System.out.println("Failed in resolving IP!");
+            System.exit(1);
+        } catch (IOException e) {
+            System.out.println("Failed in resolving MAC!");
+            System.exit(1);
+        }
+
         System.out.println("Start listenning...");
-        PacketListener listner = new PacketListener(captor, listenIp, listenPort);
+        PacketListener listner = new PacketListener(captor, bouncerAddress, bouncerMac, serverAddress, serverMac);
         listner.receive();
     }
 

@@ -10,62 +10,90 @@ import jpcap.packet.EthernetPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import tslab.factory.ICMPFactory;
+import tslab.exception.WrongInputPacketException;
+
 /**
  * Created by IntelliJ IDEA.
  * Develop with pleasure.
  * Date: May 17, 2008
  * Time: 4:08:34 PM
+ *
  * @author Sike Huang and Shanbo Li
  */
 public class PacketListener {
     private JpcapCaptor captor;
-    private String listenIp;
-    private String listenPort;
+    private String serverIp;
+    private String serverPort;
+    private InetAddress bouncerAddress;
+    private byte[] bouncerMac;
+    private InetAddress serverAddress;
+    private byte[] serverMac;
+    private ICMPFactory icmpFactory;
 
-    public PacketListener(JpcapCaptor captor, String listenIp, String listenPort) {
+    public PacketListener(JpcapCaptor captor, String serverIp, String serverPort) {
         this.captor = captor;
-        this.listenIp = listenIp;
-        this.listenPort = listenPort;
+        this.serverIp = serverIp;
+        this.serverPort = serverPort;
+        icmpFactory = ICMPFactory.getInstance();
+    }
+
+    public PacketListener(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac) {
+        this.captor = captor;
+        this.bouncerAddress = bouncerAddress;
+        this.bouncerMac = bouncerMac;
+        this.serverAddress = serverAddress;
+        this.serverMac = serverMac;
+        icmpFactory = ICMPFactory.getInstance();
+        icmpFactory.initial(serverAddress, serverMac);
     }
 
     public void receive() {
-        captor.loopPacket(-1, new MyPacketRecevier(captor));
+        captor.loopPacket(-1, new MyPacketRecevier(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, icmpFactory));
     }
 }
 
 class MyPacketRecevier implements PacketReceiver {
     private JpcapCaptor captor;
+    private InetAddress bouncerAddress;
+    private byte[] bouncerMac;
+    private InetAddress serverAddress;
+    private byte[] serverMac;
+    private ICMPFactory icmpFactory;
 
-    public MyPacketRecevier(JpcapCaptor captor) {
+    MyPacketRecevier(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, ICMPFactory icmpFactory) {
         this.captor = captor;
+        this.bouncerAddress = bouncerAddress;
+        this.bouncerMac = bouncerMac;
+        this.serverAddress = serverAddress;
+        this.serverMac = serverMac;
+        this.icmpFactory = icmpFactory;
     }
 
     public void receivePacket(Packet packet) {
 //        System.out.println(packet);
         if (packet instanceof ICMPPacket) {
             ICMPPacket icmpIn = (ICMPPacket) packet;
-            try {
-                if (icmpIn.src_ip.equals(InetAddress.getByName("10.8.0.50"))) {
-                    return;
-                }
-            } catch (UnknownHostException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println("icmp_echo -> " + icmpIn);
+            switch (icmpIn.type) {
+                case ICMPPacket.ICMP_ECHO:
+                    // coming from client
+                    try {
+                        captor.getJpcapSenderInstance().sendPacket(icmpFactory.toServer(icmpIn));
+                    } catch (WrongInputPacketException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                    break;
+                case ICMPPacket.ICMP_ECHOREPLY:
+                    // coming from server
+                    try {
+                        IPPacket ipPacket = icmpFactory.toClient(icmpIn);
+                        captor.getJpcapSenderInstance().sendPacket(ipPacket);
+                    } catch (WrongInputPacketException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                    break;
             }
-            System.out.println(icmpIn);
-            EthernetPacket ethIn = (EthernetPacket) icmpIn.datalink;
-
-            ICMPPacket icmpOut = new ICMPPacket();
-            icmpOut.type = ICMPPacket.ICMP_ECHOREPLY; // 0
-            icmpOut.seq = icmpIn.seq;
-            icmpOut.id = icmpIn.id;
-            icmpOut.setIPv4Parameter(0,false,false,false,0,false,false,false,0,1010101,100, IPPacket.IPPROTO_ICMP, icmpIn.dst_ip, icmpIn.src_ip);
-            EthernetPacket ethOut = new EthernetPacket();
-            ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
-            ethOut.src_mac = ethIn.dst_mac;
-            ethOut.dst_mac = ethIn.src_mac;
-            icmpOut.datalink = ethOut;
-            icmpOut.data = icmpIn.data;
-            captor.getJpcapSenderInstance().sendPacket(icmpOut);
         }
     }
 }
