@@ -2,10 +2,8 @@ package tslab.factory;
 
 import jpcap.packet.*;
 import tslab.exception.WrongInputPacketException;
-import tslab.util.ICMPMapping;
 import tslab.util.TCPMapping;
 
-import java.net.InetAddress;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -17,6 +15,8 @@ import java.util.ArrayList;
  * Time: 9:30:36 PM
  */
 public class TCPFactory extends PacketFactory {
+
+    //TODO: create package
 
     private static int sourcePort = 11240;
     List<TCPMapping> sessions = new ArrayList<TCPMapping>();
@@ -49,7 +49,7 @@ public class TCPFactory extends PacketFactory {
 
         //produce packet to server
         EthernetPacket ethIn = (EthernetPacket) tcpIn.datalink;
-        tcpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, tcpIn.dst_ip, this.serverAddress);
+        tcpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_TCP, tcpIn.dst_ip, this.serverAddress);
         EthernetPacket ethOut = new EthernetPacket();
         ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
         ethOut.src_mac = ethIn.dst_mac;
@@ -57,16 +57,47 @@ public class TCPFactory extends PacketFactory {
         tcpOut.datalink = ethOut;
         tcpOut.data = tcpIn.data;
 
-        sessions.add(new TCPMapping(tcpIn.src_ip,tcpIn.src_port,tcpIn.dst_port,tcpOut.src_port,tcpOut.dst_ip,tcpOut.dst_port));
+        sessions.add(new TCPMapping(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port,tcpIn.dst_port,tcpOut.src_port,tcpOut.dst_ip,tcpOut.dst_port));
         
         return tcpOut;
     }
 
 
     public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException {
-        //TODO: complete this method.
-        throw new UnsupportedOperationException("To be completed.");
+        TCPPacket tcpIn;
+        if (ipPacket instanceof TCPPacket) {
+            tcpIn = (TCPPacket) ipPacket;
+        } else {
+            throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
+        }
+
+
+        TCPMapping mapping = new TCPMapping(tcpIn.dst_port, tcpIn.src_port);
+            if (!sessions.contains(mapping)) {
+                throw new WrongInputPacketException("Can not produce a packet according incoming packet.\nNo record found in session.\n");
+            }
+        TCPMapping record = sessions.get(sessions.indexOf(mapping));
+
+
+        TCPPacket tcpOut = new TCPPacket(record.getClientPort(), record.getBouncerPortToClient(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+                tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
+
+        //produce packet to server
+        EthernetPacket ethIn = (EthernetPacket) tcpIn.datalink;
+        tcpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_TCP, tcpIn.dst_ip, record.getClientAddress());
+        EthernetPacket ethOut = new EthernetPacket();
+        ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
+        ethOut.src_mac = ethIn.dst_mac;
+        ethOut.dst_mac = record.getClientMac();
+        tcpOut.datalink = ethOut;
+        tcpOut.data = tcpIn.data;
+
+        sessions.remove(record);
+
+        return tcpOut;
     }
+
+    
 
 
 }
