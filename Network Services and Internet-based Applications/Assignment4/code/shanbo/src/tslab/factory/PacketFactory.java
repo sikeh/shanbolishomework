@@ -14,30 +14,22 @@ import java.net.InetAddress;
  * Time: 11:24:14 PM
  */
 public abstract class PacketFactory {
-    protected InetAddress bouncerAddress;
-    protected byte[] bouncerMac;
     protected InetAddress serverAddress;
     protected byte[] serverMac;
 
 
     /**
      * use this initial factory
-     * @param bouncerAddress
-     * @param bouncerMac
      * @param serverAddress
      * @param serverMac
      * @throws UnknownHostException
      */
-    public void initial(String bouncerAddress, byte[] bouncerMac, String serverAddress, byte[] serverMac) throws UnknownHostException {
-        this.bouncerAddress = InetAddress.getByName(bouncerAddress);
-           this.bouncerMac = bouncerMac;
+    public void initial(String serverAddress, byte[] serverMac) throws UnknownHostException {
            this.serverAddress = InetAddress.getByName(serverAddress);
            this.serverMac = serverMac;
     }
 
-    public void initial(InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac) throws UnknownHostException {
-           this.bouncerAddress = bouncerAddress;
-           this.bouncerMac = bouncerMac;
+    public void initial(InetAddress serverAddress, byte[] serverMac){
            this.serverAddress = serverAddress;
            this.serverMac = serverMac;
     }

@@ -48,14 +48,16 @@ public class TCPFactory extends PacketFactory {
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
-        tcpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, this.bouncerAddress, this.serverAddress);
+        EthernetPacket ethIn = (EthernetPacket) tcpIn.datalink;
+        tcpOut.setIPv4Parameter(0, false, false, false, 0, false, false, false, 0, 1010101, 100, IPPacket.IPPROTO_ICMP, tcpIn.dst_ip, this.serverAddress);
         EthernetPacket ethOut = new EthernetPacket();
         ethOut.frametype = EthernetPacket.ETHERTYPE_IP;
-        ethOut.src_mac = this.bouncerMac;
+        ethOut.src_mac = ethIn.dst_mac;
         ethOut.dst_mac = this.serverMac;
         tcpOut.datalink = ethOut;
         tcpOut.data = tcpIn.data;
 
+        sessions.add(new TCPMapping(tcpIn.src_ip,tcpIn.src_port,tcpIn.dst_port,tcpOut.src_port,tcpOut.dst_ip,tcpOut.dst_port));
         
         return tcpOut;
     }

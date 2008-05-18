@@ -12,8 +12,6 @@ import java.net.InetAddress;
 public class ICMPMapping {
     private InetAddress clientAddress;
     private byte[] clientMac;
-    private InetAddress bouncerAddress;
-    private byte[] bouncerMac;
     private short seq;
     private short id;
 
@@ -22,16 +20,12 @@ public class ICMPMapping {
      * Use when comes a new packet from client.
      * @param clientAddress
      * @param clientMac
-     * @param bouncerAddress
-     * @param bouncerMac
      * @param seq
      * @param id
      */
-    public ICMPMapping(InetAddress clientAddress, byte[] clientMac, InetAddress bouncerAddress, byte[] bouncerMac, short seq, short id) {
+    public ICMPMapping(InetAddress clientAddress, byte[] clientMac, short seq, short id) {
         this.clientAddress = clientAddress;
         this.clientMac = clientMac;
-        this.bouncerAddress = bouncerAddress;
-        this.bouncerMac = bouncerMac;
         this.seq = seq;
         this.id = id;
     }
@@ -60,22 +54,6 @@ public class ICMPMapping {
 
     public void setClientMac(byte[] clientMac) {
         this.clientMac = clientMac;
-    }
-
-    public InetAddress getBouncerAddress() {
-        return bouncerAddress;
-    }
-
-    public void setBouncerAddress(InetAddress bouncerAddress) {
-        this.bouncerAddress = bouncerAddress;
-    }
-
-    public byte[] getBouncerMac() {
-        return bouncerMac;
-    }
-
-    public void setBouncerMac(byte[] bouncerMac) {
-        this.bouncerMac = bouncerMac;
     }
 
     public short getSeq() {
