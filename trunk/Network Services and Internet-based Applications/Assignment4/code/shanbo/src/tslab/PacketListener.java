@@ -67,9 +67,12 @@ class MyPacketRecevier implements PacketReceiver {
     public void receivePacket(Packet packet) {
 //        System.out.println(packet);
         PacketFactory factory = null;
+        String packetType = null;
         if (packet instanceof ICMPPacket) {
+            packetType = "icmp -> ";
             factory = icmpFactory;
         } else if (packet instanceof TCPPacket) {
+            packetType = "tcp -> ";
             factory = tcpFactory;
         } else {
 
@@ -77,7 +80,9 @@ class MyPacketRecevier implements PacketReceiver {
 
         if (packet instanceof IPPacket) {
             try {
+                System.out.println(packetType + packet);
                 IPPacket ipPacket = factory.createPacket((IPPacket) packet);
+                System.out.println(packetType + ipPacket);
                 captor.getJpcapSenderInstance().sendPacket(ipPacket);
             } catch (WrongInputPacketException e) {
                 e.printStackTrace();
