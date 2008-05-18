@@ -1,6 +1,5 @@
 package tslab.factory;
 
-import jpcap.packet.Packet;
 import jpcap.packet.IPPacket;
 import tslab.exception.WrongInputPacketException;
 
@@ -12,6 +11,12 @@ import tslab.exception.WrongInputPacketException;
  * Time: 9:30:59 PM
  */
 public class FTPPacketFactory extends PacketFactory {
+
+
+    public IPPacket createPacket(IPPacket ipPacket) throws WrongInputPacketException {
+        //TODO: complete this method.
+        throw new UnsupportedOperationException("To be completed.");
+    }
 
 
     public IPPacket toClient(IPPacket ipPacket) throws WrongInputPacketException {

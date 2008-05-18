@@ -33,6 +33,28 @@ public class TCPFactory extends PacketFactory {
         return instance;
     }
 
+    /**
+     * Create a packet according incomming packet
+     *
+     * @param ipPacket
+     * @return new packet for sending
+     * @throws WrongInputPacketException
+     */
+    public IPPacket createPacket(IPPacket ipPacket) throws WrongInputPacketException {
+        TCPPacket tcpIn;
+        if (ipPacket instanceof TCPPacket) {
+            tcpIn = (TCPPacket) ipPacket;
+        } else {
+            throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
+        }
+        TCPMapping checkMapping = new TCPMapping(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
+        if (sessions.contains(checkMapping)){
+            return toClient(ipPacket);
+        }   else{
+            return toServer(ipPacket);
+        }
+    }
+
     public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException {
         //bouncer's source port for server
         sourcePort++;
@@ -57,8 +79,8 @@ public class TCPFactory extends PacketFactory {
         tcpOut.datalink = ethOut;
         tcpOut.data = tcpIn.data;
 
-        sessions.add(new TCPMapping(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port,tcpIn.dst_port,tcpOut.src_port,tcpOut.dst_ip,tcpOut.dst_port));
-        
+        sessions.add(new TCPMapping(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
+
         return tcpOut;
     }
 
@@ -72,10 +94,10 @@ public class TCPFactory extends PacketFactory {
         }
 
 
-        TCPMapping mapping = new TCPMapping(tcpIn.dst_port, tcpIn.src_port);
-            if (!sessions.contains(mapping)) {
-                throw new WrongInputPacketException("Can not produce a packet according incoming packet.\nNo record found in session.\n");
-            }
+        TCPMapping mapping = new TCPMapping(tcpIn.src_ip,tcpIn.src_port, tcpIn.dst_port);
+        if (!sessions.contains(mapping)) {
+            throw new WrongInputPacketException("Can not produce a packet according incoming packet.\nNo record found in session.\n");
+        }
         TCPMapping record = sessions.get(sessions.indexOf(mapping));
 
 
@@ -96,8 +118,6 @@ public class TCPFactory extends PacketFactory {
 
         return tcpOut;
     }
-
-    
 
 
 }
