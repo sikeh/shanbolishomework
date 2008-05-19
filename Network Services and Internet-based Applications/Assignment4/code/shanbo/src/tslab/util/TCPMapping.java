@@ -11,13 +11,13 @@ import java.net.InetAddress;
  * Time: 11:03:18 PM
  */
 public class TCPMapping {
-    private InetAddress clientAddress;
-    private byte[] clientMac;
-    private InetAddress serverAddress;
-    private int clientPort;
-    private int serverPort;
-    private int bouncerPortToServer;
-    private int bouncerPortToClient;
+    protected InetAddress clientAddress;
+    protected byte[] clientMac;
+    protected InetAddress serverAddress;
+    protected int clientPort;
+    protected int serverPort;
+    protected int bouncerPortToServer;
+    protected int bouncerPortToClient;
 
     public TCPMapping(InetAddress clientAddress, byte[] clientMac, int clientPort, int bouncerPortToClient, int bouncerPortToServer, InetAddress serverAddress, int serverPort) {
         this.clientAddress = clientAddress;
@@ -29,10 +29,14 @@ public class TCPMapping {
         this.serverAddress = serverAddress;
     }
 
-    public TCPMapping(InetAddress serverAddress, int serverPort, int bouncerPortToServer) {
-        this.serverAddress = serverAddress;
-        this.bouncerPortToServer = bouncerPortToServer;
+    public TCPMapping(InetAddress clientAddress, int clientPort, int serverPort) {
+        this.clientAddress = clientAddress;
+        this.clientPort = clientPort;
         this.serverPort = serverPort;
+    }
+
+    public TCPMapping(int bouncerPortToServer) {
+        this.bouncerPortToServer = bouncerPortToServer;
     }
 
     public InetAddress getClientAddress() {
@@ -87,25 +91,5 @@ public class TCPMapping {
         return clientMac;
     }
 
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        TCPMapping that = (TCPMapping) o;
-
-        if (bouncerPortToServer != that.bouncerPortToServer) return false;
-        if (serverPort != that.serverPort) return false;
-        if (serverAddress != null ? !serverAddress.equals(that.serverAddress) : that.serverAddress != null)
-            return false;
-
-        return true;
-    }
-
-    public int hashCode() {
-        int result;
-        result = (serverAddress != null ? serverAddress.hashCode() : 0);
-        result = 31 * result + serverPort;
-        result = 31 * result + bouncerPortToServer;
-        return result;
-    }
 }
