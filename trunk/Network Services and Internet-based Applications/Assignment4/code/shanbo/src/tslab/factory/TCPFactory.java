@@ -20,10 +20,11 @@ public class TCPFactory extends PacketFactory {
 
     //TODO: create package
     private static final int INITIAL_SOURCE_PORT = 11240;
-    private static int bouncerToServerPort = 11240;
+    private static int bouncerToServerPortCounter = 11240;
     List<TCPMapping1> sessions1 = new ArrayList<TCPMapping1>();
     List<TCPMapping3> sessions3 = new ArrayList<TCPMapping3>();
     private final static TCPFactory instance = new TCPFactory();
+
 
 
     private TCPFactory() {
@@ -51,12 +52,9 @@ public class TCPFactory extends PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
 
-        if (tcpIn.dst_port >= INITIAL_SOURCE_PORT && tcpIn.dst_port <= bouncerToServerPort) {
+        if (tcpIn.dst_port >= INITIAL_SOURCE_PORT && tcpIn.dst_port <= bouncerToServerPortCounter) {
             return toClient(ipPacket);
         } else {
-            if (!sessions1.contains(new TCPMapping1(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port))) {
-                bouncerToServerPort++;
-            }
             return toServer(ipPacket);
         }
     }
@@ -72,7 +70,14 @@ public class TCPFactory extends PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
 
-        //TODO check ack number here
+        int bouncerToServerPort;
+        TCPMapping1 mapping = new TCPMapping1(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
+        if (!sessions1.contains(mapping)){
+            bouncerToServerPort = bouncerToServerPortCounter++;
+        }   else {
+            bouncerToServerPort = sessions1.get(sessions1.indexOf(mapping)).getBouncerPortToServer();
+        }
+
         TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, tcpIn.dst_port, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 

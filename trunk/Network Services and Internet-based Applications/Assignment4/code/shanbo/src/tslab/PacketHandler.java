@@ -19,7 +19,7 @@ import tslab.exception.WrongInputPacketException;
  *
  * @author Sike Huang and Shanbo Li
  */
-public class PacketListener {
+public class PacketHandler {
     private JpcapCaptor captor;
     private InetAddress bouncerAddress;
     private byte[] bouncerMac;
@@ -28,7 +28,7 @@ public class PacketListener {
     private ICMPFactory icmpFactory;
     private TCPFactory tcpFactory;
 
-    public PacketListener(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac) {
+    public PacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac) {
         this.captor = captor;
         this.bouncerAddress = bouncerAddress;
         this.bouncerMac = bouncerMac;
@@ -41,11 +41,11 @@ public class PacketListener {
     }
 
     public void receive() {
-        captor.loopPacket(-1, new MyPacketRecevier(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, icmpFactory, tcpFactory));
+        captor.loopPacket(-1, new MyPacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, icmpFactory, tcpFactory));
     }
 }
 
-class MyPacketRecevier implements PacketReceiver {
+class MyPacketHandler implements PacketReceiver {
     private JpcapCaptor captor;
     private InetAddress bouncerAddress;
     private byte[] bouncerMac;
@@ -54,7 +54,7 @@ class MyPacketRecevier implements PacketReceiver {
     private ICMPFactory icmpFactory;
     private TCPFactory tcpFactory;
 
-    MyPacketRecevier(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, ICMPFactory icmpFactory, TCPFactory tcpFactory) {
+    MyPacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, ICMPFactory icmpFactory, TCPFactory tcpFactory) {
         this.captor = captor;
         this.bouncerAddress = bouncerAddress;
         this.bouncerMac = bouncerMac;
