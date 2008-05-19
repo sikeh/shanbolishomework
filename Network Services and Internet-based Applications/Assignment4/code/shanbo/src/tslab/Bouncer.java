@@ -101,8 +101,22 @@ public class Bouncer {
         }
         try {
             captor = JpcapCaptor.openDevice(device, 65535, false, 20);
-            captor.setFilter("ip", true);
-            captor.setFilter("dst host " + listenIp, true);
+//            captor.setFilter("ip", true);
+//            captor.setFilter("host " + listenIp, true);
+            StringBuilder sb = new StringBuilder();
+            sb.append("ip and host " + listenIp + " and ");
+            sb.append("((dst host " + listenIp);
+            if (listenPort != null) {
+                sb.append(" and dst port " + listenPort);
+            }
+            sb.append(") or ");
+            sb.append("(src host " + serverIp);
+            if (serverPort != null) {
+                sb.append(" and src port " + serverPort);
+            }
+            sb.append("))");
+            captor.setFilter(sb.toString(), true);
+            System.out.println("Filter -> " + sb.toString());
         } catch (IOException e) {
             System.out.println("Can't open device: " + e.toString());
             System.exit(1);
@@ -133,10 +147,15 @@ public class Bouncer {
         }
 
         System.out.println("Start listenning...");
-        PacketListener listner = new PacketListener(captor, bouncerAddress, bouncerMac, serverAddress, serverMac);
+        PacketHandler listner = new PacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac);
         listner.receive();
     }
 
+    /**
+     * @param listen
+     * @param server
+     * @return true - Ping, false- TCP
+     */
     private static void validateParameters(String[] listen, String[] server) {
         try {
             listenIp = listen[0];
