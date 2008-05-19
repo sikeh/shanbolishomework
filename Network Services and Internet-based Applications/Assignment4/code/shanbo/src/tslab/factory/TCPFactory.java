@@ -48,9 +48,9 @@ public class TCPFactory extends PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
         TCPMapping checkMapping = new TCPMapping(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
-        if (sessions.contains(checkMapping)){
+        if (sessions.contains(checkMapping)) {
             return toClient(ipPacket);
-        }   else{
+        } else {
             return toServer(ipPacket);
         }
     }
@@ -95,14 +95,14 @@ public class TCPFactory extends PacketFactory {
         }
 
 
-        TCPMapping mapping = new TCPMapping(tcpIn.src_ip,tcpIn.src_port, tcpIn.dst_port);
+        TCPMapping mapping = new TCPMapping(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
         if (!sessions.contains(mapping)) {
             throw new WrongInputPacketException("Can not produce a packet according incoming packet.\nNo record found in session.\n");
         }
         TCPMapping record = sessions.get(sessions.indexOf(mapping));
 
         //TODO check ack number here
-        TCPPacket tcpOut = new TCPPacket(record.getClientPort(), record.getBouncerPortToClient(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+        TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToClient(), record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
