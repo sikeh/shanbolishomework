@@ -10,7 +10,7 @@ import java.net.InetAddress;
  * Date: May 17, 2008
  * Time: 11:03:18 PM
  */
-public class TCPMapping {
+public abstract class TCPMapping {
     protected InetAddress clientAddress;
     protected byte[] clientMac;
     protected InetAddress serverAddress;
