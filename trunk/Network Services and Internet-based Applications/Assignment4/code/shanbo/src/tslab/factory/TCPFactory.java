@@ -3,6 +3,8 @@ package tslab.factory;
 import jpcap.packet.*;
 import tslab.exception.WrongInputPacketException;
 import tslab.util.TCPMapping;
+import tslab.util.TCPMapping1;
+import tslab.util.TCPMapping3;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,9 +19,10 @@ import java.util.ArrayList;
 public class TCPFactory extends PacketFactory {
 
     //TODO: create package
-
-    private static int sourcePort = 11240;
-    List<TCPMapping> sessions = new ArrayList<TCPMapping>();
+    private static final int INITIAL_SOURCE_PORT = 11240;
+    private static int bouncerToServerPort = 11240;
+    List<TCPMapping1> sessions1 = new ArrayList<TCPMapping1>();
+    List<TCPMapping3> sessions3 = new ArrayList<TCPMapping3>();
     private final static TCPFactory instance = new TCPFactory();
 
 
@@ -47,17 +50,20 @@ public class TCPFactory extends PacketFactory {
         } else {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
-        TCPMapping checkMapping = new TCPMapping(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
-        if (sessions.contains(checkMapping)) {
+
+        if (tcpIn.dst_port >= INITIAL_SOURCE_PORT && tcpIn.dst_port <= bouncerToServerPort) {
             return toClient(ipPacket);
         } else {
+            if (!sessions1.contains(new TCPMapping1(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port))) {
+                bouncerToServerPort++;
+            }
             return toServer(ipPacket);
         }
     }
 
     public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException {
         //bouncer's source port for server
-        sourcePort++;
+
         TCPPacket tcpIn;
 
         if (ipPacket instanceof TCPPacket) {
@@ -67,7 +73,7 @@ public class TCPFactory extends PacketFactory {
         }
 
         //TODO check ack number here
-        TCPPacket tcpOut = new TCPPacket(sourcePort, tcpIn.dst_port, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+        TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, tcpIn.dst_port, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
@@ -80,7 +86,8 @@ public class TCPFactory extends PacketFactory {
         tcpOut.datalink = ethOut;
         tcpOut.data = tcpIn.data;
 
-        sessions.add(new TCPMapping(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
+        sessions1.add(new TCPMapping1(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
+        sessions3.add(new TCPMapping3(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
 
         return tcpOut;
     }
@@ -95,11 +102,11 @@ public class TCPFactory extends PacketFactory {
         }
 
 
-        TCPMapping mapping = new TCPMapping(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
-        if (!sessions.contains(mapping)) {
+        TCPMapping3 mapping3 = new TCPMapping3(tcpIn.dst_port);
+        if (!sessions3.contains(mapping3)) {
             throw new WrongInputPacketException("Can not produce a packet according incoming packet.\nNo record found in session.\n");
         }
-        TCPMapping record = sessions.get(sessions.indexOf(mapping));
+        TCPMapping record = sessions3.get(sessions3.indexOf(mapping3));
 
         //TODO check ack number here
         TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToClient(), record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
@@ -114,9 +121,6 @@ public class TCPFactory extends PacketFactory {
         ethOut.dst_mac = record.getClientMac();
         tcpOut.datalink = ethOut;
         tcpOut.data = tcpIn.data;
-
-        sessions.remove(record);
-
         return tcpOut;
     }
 
