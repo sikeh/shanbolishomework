@@ -78,7 +78,7 @@ public class TCPFactory extends PacketFactory {
         }
 
 
-
+        
         int serverPortInPractice = (serverPort < 0)?tcpIn.dst_port:serverPort;
 
         TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, serverPortInPractice, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
@@ -116,7 +116,6 @@ public class TCPFactory extends PacketFactory {
         }
         TCPMapping record = sessions3.get(sessions3.indexOf(mapping3));
 
-        //TODO check ack number here
         TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToClient(), record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
