@@ -6,10 +6,13 @@ import jpcap.NetworkInterfaceAddress;
 import jpcap.JpcapSender;
 import jpcap.packet.ARPPacket;
 import jpcap.packet.EthernetPacket;
+import jpcap.packet.IPPacket;
+import jpcap.packet.TCPPacket;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.util.Arrays;
+import sun.misc.CRC16;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,18 +23,35 @@ import java.util.Arrays;
  */
 public class Tools {
 
+
+    public static boolean validateIPPacket(IPPacket ipPacket) {
+//        The packet length reported by the Link Layer must be large enough to hold the minimum length legal IP datagram (20 bytes).
+        if (ipPacket.length < 20) return false;
+//        The IP version number must be 4. If the version number is not 4 then the packet may be another version of IP, such as IPng or ST-II.
+        if (ipPacket.version != ((byte) 4)) return false;
+        return true;
+    }
+
+    public static boolean validateTCPPacket(TCPPacket tcpPacket) {
+        byte[] header = tcpPacket.header;
+        
+        return false;
+    }
+
     /**
      * ARP , use this find server mac
+     *
      * @param ip
      * @return MAC
      * @throws java.io.IOException
      */
     public static byte[] arp(String ip) throws java.io.IOException {
-       return arp(InetAddress.getByName(ip));
+        return arp(InetAddress.getByName(ip));
     }
 
     /**
      * ARP, use this find server mac
+     *
      * @param ip
      * @return MAC
      * @throws java.io.IOException

@@ -36,6 +36,12 @@ public abstract class PacketFactory {
         this.serverMac = serverMac;
     }
 
+    /**
+     *
+     * @param serverAddress
+     * @param serverPort the server port, -1 means use original packet's dst port.
+     * @param serverMac
+     */
     public void initial(InetAddress serverAddress, int serverPort, byte[] serverMac) {
         this.serverAddress = serverAddress;
         this.serverMac = serverMac;
