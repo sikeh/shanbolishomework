@@ -13,6 +13,8 @@ import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.util.Arrays;
 import sun.misc.CRC16;
+import com.sun.snoop.TCPHeader;
+import com.sun.snoop.SnoopException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -33,8 +35,15 @@ public class Tools {
     }
 
     public static boolean validateTCPPacket(TCPPacket tcpPacket) {
-        byte[] header = tcpPacket.header;
-        
+        TCPHeader tcpHeader = null;
+        try {
+            tcpHeader = TCPHeader.decodeTCPHeader(tcpPacket.header,0);
+        } catch (SnoopException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        int chksum = tcpHeader.getChecksum();
+
+
         return false;
     }
 
