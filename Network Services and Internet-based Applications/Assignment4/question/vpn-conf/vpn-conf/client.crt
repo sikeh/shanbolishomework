@@ -1,0 +1,67 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 3 (0x3)
+        Signature Algorithm: md5WithRSAEncryption
+        Issuer: C=SE, ST=Stockholm, L=Kista, O=KTH, OU=ICT/ECS/TSLAB, CN=ik2213.ssvl.kth.se/emailAddress=voravit@kth.se
+        Validity
+            Not Before: May 14 14:54:09 2008 GMT
+            Not After : May 12 14:54:09 2018 GMT
+        Subject: C=SE, ST=Stockholm, O=KTH, CN=client/emailAddress=voravit@kth.se
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (1024 bit)
+                Modulus (1024 bit):
+                    00:e8:68:ef:d3:70:c3:65:52:c1:44:77:d5:c8:4b:
+                    78:d3:46:5d:e4:e2:99:e3:85:5d:68:cb:83:26:00:
+                    ba:c8:26:2d:41:8c:d2:0e:ac:52:60:01:9f:16:4f:
+                    4d:b8:79:04:63:dc:d1:17:94:55:98:c5:a1:01:fc:
+                    8e:77:b4:f7:99:8d:8a:4a:22:d4:b1:65:53:53:d3:
+                    c6:5d:5d:29:30:61:c8:6a:b8:78:63:fe:73:ee:cb:
+                    66:9a:55:c1:e2:e2:84:1d:d1:47:f4:9f:12:65:06:
+                    de:21:86:e2:3e:be:49:41:25:04:a7:bb:01:50:de:
+                    9d:33:e6:77:0c:f6:67:de:65
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Comment: 
+                OpenSSL Generated Certificate
+            X509v3 Subject Key Identifier: 
+                DC:AE:09:E9:98:7E:46:F2:D1:46:18:34:56:29:8D:59:23:63:97:C0
+            X509v3 Authority Key Identifier: 
+                keyid:42:6D:98:81:29:7B:45:C4:95:A9:9E:18:BA:AF:79:48:21:5C:F2:59
+                DirName:/C=SE/ST=Stockholm/L=Kista/O=KTH/OU=ICT/ECS/TSLAB/CN=ik2213.ssvl.kth.se/emailAddress=voravit@kth.se
+                serial:AA:CF:1D:73:93:1A:6C:01
+
+    Signature Algorithm: md5WithRSAEncryption
+        8e:5e:a0:c6:f3:7b:c5:ca:f3:75:55:84:c0:f7:3a:72:ad:03:
+        63:5d:12:ae:fa:e5:30:55:65:3d:20:d4:ec:90:fd:82:b6:dd:
+        7d:a1:e6:89:69:63:71:2b:ac:ee:bf:32:77:52:c6:f9:1b:e3:
+        a4:ca:c8:00:e7:44:48:56:ec:9d:44:59:6a:aa:2e:e1:01:29:
+        30:79:d0:0c:91:f5:39:ab:a5:4d:57:53:4e:c9:f1:07:18:3a:
+        a7:a2:56:2c:1c:03:92:63:95:d9:85:ac:ab:bd:ce:c6:25:da:
+        a0:71:35:db:9d:57:82:d6:11:82:4b:89:0d:83:26:d7:12:56:
+        ff:db
+-----BEGIN CERTIFICATE-----
+MIIDkjCCAvugAwIBAgIBAzANBgkqhkiG9w0BAQQFADCBkzELMAkGA1UEBhMCU0Ux
+EjAQBgNVBAgTCVN0b2NraG9sbTEOMAwGA1UEBxMFS2lzdGExDDAKBgNVBAoTA0tU
+SDEWMBQGA1UECxMNSUNUL0VDUy9UU0xBQjEbMBkGA1UEAxMSaWsyMjEzLnNzdmwu
+a3RoLnNlMR0wGwYJKoZIhvcNAQkBFg52b3Jhdml0QGt0aC5zZTAeFw0wODA1MTQx
+NDU0MDlaFw0xODA1MTIxNDU0MDlaMF8xCzAJBgNVBAYTAlNFMRIwEAYDVQQIEwlT
+dG9ja2hvbG0xDDAKBgNVBAoTA0tUSDEPMA0GA1UEAxMGY2xpZW50MR0wGwYJKoZI
+hvcNAQkBFg52b3Jhdml0QGt0aC5zZTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkC
+gYEA6Gjv03DDZVLBRHfVyEt400Zd5OKZ44VdaMuDJgC6yCYtQYzSDqxSYAGfFk9N
+uHkEY9zRF5RVmMWhAfyOd7T3mY2KSiLUsWVTU9PGXV0pMGHIarh4Y/5z7stmmlXB
+4uKEHdFH9J8SZQbeIYbiPr5JQSUEp7sBUN6dM+Z3DPZn3mUCAwEAAaOCAScwggEj
+MAkGA1UdEwQCMAAwLAYJYIZIAYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENl
+cnRpZmljYXRlMB0GA1UdDgQWBBTcrgnpmH5G8tFGGDRWKY1ZI2OXwDCByAYDVR0j
+BIHAMIG9gBRCbZiBKXtFxJWpnhi6r3lIIVzyWaGBmaSBljCBkzELMAkGA1UEBhMC
+U0UxEjAQBgNVBAgTCVN0b2NraG9sbTEOMAwGA1UEBxMFS2lzdGExDDAKBgNVBAoT
+A0tUSDEWMBQGA1UECxMNSUNUL0VDUy9UU0xBQjEbMBkGA1UEAxMSaWsyMjEzLnNz
+dmwua3RoLnNlMR0wGwYJKoZIhvcNAQkBFg52b3Jhdml0QGt0aC5zZYIJAKrPHXOT
+GmwBMA0GCSqGSIb3DQEBBAUAA4GBAI5eoMbze8XK83VVhMD3OnKtA2NdEq765TBV
+ZT0g1OyQ/YK23X2h5olpY3ErrO6/MndSxvkb46TKyADnREhW7J1EWWqqLuEBKTB5
+0AyR9TmrpU1XU07J8QcYOqeiViwcA5JjldmFrKu9zsYl2qBxNdudV4LWEYJLiQ2D
+JtcSVv/b
+-----END CERTIFICATE-----
