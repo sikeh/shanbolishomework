@@ -8,6 +8,7 @@ import tslab.util.TCPMapping3;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.net.InetAddress;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,14 +19,12 @@ import java.util.ArrayList;
  */
 public class TCPFactory extends PacketFactory {
 
-    //TODO: create package
+
     private static final int INITIAL_SOURCE_PORT = 11240;
     private static int bouncerToServerPortCounter = 11240;
     List<TCPMapping1> sessions1 = new ArrayList<TCPMapping1>();
     List<TCPMapping3> sessions3 = new ArrayList<TCPMapping3>();
     private final static TCPFactory instance = new TCPFactory();
-
-
 
     private TCPFactory() {
     }
@@ -78,7 +77,11 @@ public class TCPFactory extends PacketFactory {
             bouncerToServerPort = sessions1.get(sessions1.indexOf(mapping)).getBouncerPortToServer();
         }
 
-        TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, tcpIn.dst_port, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+
+
+        int serverPortInPractice = (serverPort < 0)?tcpIn.dst_port:serverPort;
+
+        TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, serverPortInPractice, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server

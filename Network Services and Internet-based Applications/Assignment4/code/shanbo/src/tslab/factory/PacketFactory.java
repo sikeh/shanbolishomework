@@ -16,22 +16,30 @@ import java.net.InetAddress;
 public abstract class PacketFactory {
     protected InetAddress serverAddress;
     protected byte[] serverMac;
+    protected int serverPort = -1;
 
 
     /**
      * use this initial factory
+     *
      * @param serverAddress
      * @param serverMac
      * @throws UnknownHostException
      */
     public void initial(String serverAddress, byte[] serverMac) throws UnknownHostException {
-           this.serverAddress = InetAddress.getByName(serverAddress);
-           this.serverMac = serverMac;
+        this.serverAddress = InetAddress.getByName(serverAddress);
+        this.serverMac = serverMac;
     }
 
-    public void initial(InetAddress serverAddress, byte[] serverMac){
-           this.serverAddress = serverAddress;
-           this.serverMac = serverMac;
+    public void initial(InetAddress serverAddress, byte[] serverMac) {
+        this.serverAddress = serverAddress;
+        this.serverMac = serverMac;
+    }
+
+    public void initial(InetAddress serverAddress, int serverPort, byte[] serverMac) {
+        this.serverAddress = serverAddress;
+        this.serverMac = serverMac;
+        this.serverPort = serverPort;
     }
 
     public abstract IPPacket createPacket(IPPacket ipPacket) throws WrongInputPacketException;
