@@ -16,61 +16,52 @@
 package com.sun.snoop;
 
 
-
 /**
  * This class defines an exception that may be thrown if a problem occurs while
  * attempting to decode snoop data.
  *
- *
- * @author   Neil A. Wilson
+ * @author Neil A. Wilson
  */
 public class SnoopException
-       extends Exception
-{
-  // The parent exception that triggered this snoop exception.
-  Exception parentException;
+        extends Exception {
+    // The parent exception that triggered this snoop exception.
+    Exception parentException;
 
 
+    /**
+     * Creates a new snoop exception with the provided message.
+     *
+     * @param message The message explaining the reason for this exception.
+     */
+    public SnoopException(String message) {
+        super(message);
 
-  /**
-   * Creates a new snoop exception with the provided message.
-   *
-   * @param  message  The message explaining the reason for this exception.
-   */
-  public SnoopException(String message)
-  {
-    super(message);
-
-    this.parentException = null;
-  }
+        this.parentException = null;
+    }
 
 
+    /**
+     * Creates a new snoop exception with the provided message.
+     *
+     * @param message         The message explaining the reason for this
+     *                        exception.
+     * @param parentException The parent exception that triggered this snoop
+     *                        exception.
+     */
+    public SnoopException(String message, Exception parentException) {
+        super(message);
 
-  /**
-   * Creates a new snoop exception with the provided message.
-   *
-   * @param  message          The message explaining the reason for this
-   *                          exception.
-   * @param  parentException  The parent exception that triggered this snoop
-   *                          exception.
-   */
-  public SnoopException(String message, Exception parentException)
-  {
-    super(message);
-
-    this.parentException = parentException;
-  }
+        this.parentException = parentException;
+    }
 
 
-
-  /**
-   * Retrieves the parent exception that triggered this snoop exception.
-   *
-   * @return  The parent exception that triggered this snoop exception, or
-   *          <CODE>null</CODE> if no parent exception is available.
-   */
-  public Exception getParentException()
-  {
-    return parentException;
-  }
+    /**
+     * Retrieves the parent exception that triggered this snoop exception.
+     *
+     * @return The parent exception that triggered this snoop exception, or
+     *         <CODE>null</CODE> if no parent exception is available.
+     */
+    public Exception getParentException() {
+        return parentException;
+    }
 }
