@@ -12,9 +12,11 @@ import jpcap.packet.TCPPacket;
 import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.util.Arrays;
+
 import sun.misc.CRC16;
 import com.sun.snoop.TCPHeader;
 import com.sun.snoop.SnoopException;
+import com.sun.snoop.IPv4Header;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +26,7 @@ import com.sun.snoop.SnoopException;
  * Time: 11:07:52 PM
  */
 public class Tools {
+    private static byte[] header;
 
 
     public static boolean validateIPPacket(IPPacket ipPacket) {
@@ -31,20 +34,31 @@ public class Tools {
         if (ipPacket.length < 20) return false;
 //        The IP version number must be 4. If the version number is not 4 then the packet may be another version of IP, such as IPng or ST-II.
         if (ipPacket.version != ((byte) 4)) return false;
+
+        header = ipPacket.header;
+//        IPv4Header ipv4Header = IPv4Header.decodeIPv4Header(header, 0);
+
+        int originalChecksum1 = header[10];
+        int originalChecksum2 = header[11];
+        header[10] = 0x0;
+        header[11] = 0x0;
+        CRC16 crc = new CRC16();
+        for (byte b : header) {
+            crc.update(b);
+        }
         return true;
     }
 
     public static boolean validateTCPPacket(TCPPacket tcpPacket) {
         TCPHeader tcpHeader = null;
         try {
-            tcpHeader = TCPHeader.decodeTCPHeader(tcpPacket.header,0);
+            tcpHeader = TCPHeader.decodeTCPHeader(tcpPacket.header, 43);
         } catch (SnoopException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        int chksum = tcpHeader.getChecksum();
 
-
-        return false;
+        CRC16 crc = new CRC16();
+        for (byte b : header) { crc.update(b); } return true;
     }
 
     /**
