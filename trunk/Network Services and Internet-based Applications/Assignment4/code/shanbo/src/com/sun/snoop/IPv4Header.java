@@ -141,9 +141,9 @@ public class IPv4Header {
 
 
         byte ipVersion = (byte) ((headerBytes[offset] >>> 4) & 0xFF);
-        if (ipVersion != 0x04) {
-            throw new SnoopException("IP version is not 4");
-        }
+//        if (ipVersion != 0x04) {
+//            throw new SnoopException("IP version is not 4");
+//        }
 
 
         int ipHeaderWords = (headerBytes[offset] & 0x0F);

@@ -25,6 +25,7 @@ public class TCPFactory extends PacketFactory {
     List<TCPMapping1> sessions1 = new ArrayList<TCPMapping1>();
     List<TCPMapping3> sessions3 = new ArrayList<TCPMapping3>();
     private final static TCPFactory instance = new TCPFactory();
+    private String ipInString;
 
     private TCPFactory() {
     }
@@ -93,6 +94,13 @@ public class TCPFactory extends PacketFactory {
         ethOut.dst_mac = this.serverMac;
         tcpOut.datalink = ethOut;
         tcpOut.data = tcpIn.data;
+
+        byte[] data = tcpOut.data;
+
+        if (data[0] == 0x50 && data[1] == 0x4f&& data [2] ==0x52 && data[3] ==0x54){
+            ipInString = tcpIn.dst_ip.toString().split("/")[1];
+            tcpOut.data = new String("PORT"+ ipInString.replaceAll(".",",")+"\r\n").getBytes();
+        }
 
         sessions1.add(new TCPMapping1(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
         sessions3.add(new TCPMapping3(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
