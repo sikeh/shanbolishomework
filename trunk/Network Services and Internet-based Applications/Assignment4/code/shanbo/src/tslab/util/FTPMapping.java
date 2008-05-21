@@ -8,5 +8,38 @@ package tslab.util;
  * Time: 11:03:36 PM
  */
 public class FTPMapping {
-    
+    private long wrongAck;
+    private long correctAck;
+
+    public FTPMapping(long wrongAck, long correctAck) {
+        this.wrongAck = wrongAck;
+        this.correctAck = correctAck;
+    }
+
+    public FTPMapping(long wrongAck) {
+        this.wrongAck = wrongAck;
+    }
+
+    public long getWrongAck() {
+        return wrongAck;
+    }
+
+    public long getCorrectAck() {
+        return correctAck;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FTPMapping)) return false;
+
+        FTPMapping that = (FTPMapping) o;
+
+        if (wrongAck != that.wrongAck) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return (int) (wrongAck ^ (wrongAck >>> 32));
+    }
 }
