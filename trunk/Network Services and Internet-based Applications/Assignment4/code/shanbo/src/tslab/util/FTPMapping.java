@@ -1,5 +1,7 @@
 package tslab.util;
 
+import java.net.InetAddress;
+
 /**
  * Created by IntelliJ IDEA.
  * Develop with pleasure.
@@ -8,24 +10,36 @@ package tslab.util;
  * Time: 11:03:36 PM
  */
 public class FTPMapping {
-    private long wrongAck;
-    private long correctAck;
+    private int clientPort;
+    private InetAddress clientIP;
+    private byte[] clientMac;
+    private int bouncerPortToFTP;
 
-    public FTPMapping(long wrongAck, long correctAck) {
-        this.wrongAck = wrongAck;
-        this.correctAck = correctAck;
+    public FTPMapping(int clientPort, InetAddress clientIP, byte[] clientMac, int bouncerPortToFTP) {
+        this.clientPort = clientPort;
+        this.clientIP = clientIP;
+        this.clientMac = clientMac;
+        this.bouncerPortToFTP = bouncerPortToFTP;
     }
 
-    public FTPMapping(long wrongAck) {
-        this.wrongAck = wrongAck;
+    public FTPMapping(int bouncerPortToFTP) {
+        this.bouncerPortToFTP = bouncerPortToFTP;
     }
 
-    public long getWrongAck() {
-        return wrongAck;
+    public int getClientPort() {
+        return clientPort;
     }
 
-    public long getCorrectAck() {
-        return correctAck;
+    public InetAddress getClientIP() {
+        return clientIP;
+    }
+
+    public byte[] getClientMac() {
+        return clientMac;
+    }
+
+    public int getBouncerPortToFTP() {
+        return bouncerPortToFTP;
     }
 
     public boolean equals(Object o) {
@@ -34,12 +48,12 @@ public class FTPMapping {
 
         FTPMapping that = (FTPMapping) o;
 
-        if (wrongAck != that.wrongAck) return false;
+        if (bouncerPortToFTP != that.bouncerPortToFTP) return false;
 
         return true;
     }
 
     public int hashCode() {
-        return (int) (wrongAck ^ (wrongAck >>> 32));
+        return bouncerPortToFTP;
     }
 }
