@@ -18,6 +18,9 @@ public abstract class TCPMapping {
     protected int serverPort;
     protected int bouncerPortToServer;
     protected int bouncerPortToClient;
+    protected boolean needAdjust;
+    protected int interval;
+
 
     public TCPMapping(InetAddress clientAddress, byte[] clientMac, int clientPort, int bouncerPortToClient, int bouncerPortToServer, InetAddress serverAddress, int serverPort) {
         this.clientAddress = clientAddress;
@@ -33,6 +36,22 @@ public abstract class TCPMapping {
         this.clientAddress = clientAddress;
         this.clientPort = clientPort;
         this.serverPort = serverPort;
+    }
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+
+    public boolean isNeedAdjust() {
+        return needAdjust;
+    }
+
+    public void setNeedAdjust(boolean needAdjust) {
+        this.needAdjust = needAdjust;
     }
 
     public TCPMapping(int bouncerPortToServer) {
