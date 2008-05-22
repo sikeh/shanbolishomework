@@ -9,7 +9,6 @@ import tslab.util.FTPMapping;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.net.InetAddress;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +29,8 @@ public class TCPFactory extends PacketFactory {
     private String ipInString;
     private String portCommand;
     private FTPMapping ftpMapping;
+    private TCPMapping1 newMapping1;
+    private TCPMapping3 newMapping3;
 
     private TCPFactory() {
     }
@@ -77,17 +78,24 @@ public class TCPFactory extends PacketFactory {
         }
 
         int bouncerToServerPort;
+        long newSeq = tcpIn.sequence;
         TCPMapping1 mapping = new TCPMapping1(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
         if (!sessions1.contains(mapping)) {
             bouncerToServerPort = bouncerToServerPortCounter++;
+
         } else {
             bouncerToServerPort = sessions1.get(sessions1.indexOf(mapping)).getBouncerPortToServer();
+            TCPMapping1 mapInDatabase = sessions1.get(sessions1.indexOf(mapping));
+            if (mapInDatabase.isNeedAdjust()){
+                //TODO    +/-
+                newSeq = newSeq + mapInDatabase.getInterval();
+            }
         }
 
 
         int serverPortInPractice = (serverPort < 0) ? tcpIn.dst_port : serverPort;
 
-        TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, serverPortInPractice, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+        TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, serverPortInPractice, newSeq, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
@@ -102,6 +110,8 @@ public class TCPFactory extends PacketFactory {
 
         byte[] data = tcpOut.data;
 
+        newMapping1 = new TCPMapping1(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port);
+        newMapping3 = new TCPMapping3(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port);
 
         if (data != null && data.length >= 4) {
             if (data[0] == 0x50 && data[1] == 0x4f && data[2] == 0x52 && data[3] == 0x54) {
@@ -111,14 +121,24 @@ public class TCPFactory extends PacketFactory {
                 System.out.println("Port Command = " + portCommand);
                 tcpOut.data = portCommand.getBytes();
                 long wrongAck = tcpOut.data.length + tcpOut.sequence;
+                int interval = tcpOut.data.length - data.length;
                 ftpMapping = new FTPMapping(wrongAck, correctAck);
                 if (!ftpPortSession.contains(ftpMapping)) {
                     ftpPortSession.add(ftpMapping);
+                    TCPMapping1 record1 = sessions1.get(sessions1.indexOf(newMapping1));
+                    TCPMapping3 record3 = sessions3.get(sessions3.indexOf(newMapping3));
+                    record1.setNeedAdjust(true);
+                    record1.setInterval(interval);
+                    record3.setNeedAdjust(true);
+                    record3.setInterval(interval);
                 }
             }
         }
-        sessions1.add(new TCPMapping1(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
-        sessions3.add(new TCPMapping3(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port));
+
+        if (!sessions1.contains(newMapping1)) {
+            sessions1.add(newMapping1);
+            sessions3.add(newMapping3);
+        }
 
         return tcpOut;
     }
@@ -139,7 +159,12 @@ public class TCPFactory extends PacketFactory {
         }
         TCPMapping record = sessions3.get(sessions3.indexOf(mapping3));
 
-        TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToClient(), record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+        long newAck = tcpIn.ack_num;
+        if (record.isNeedAdjust()){
+             newAck = newAck - record.getInterval();
+        }
+
+        TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToClient(), record.getClientPort(), tcpIn.sequence, newAck, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
@@ -151,14 +176,6 @@ public class TCPFactory extends PacketFactory {
         ethOut.dst_mac = record.getClientMac();
         tcpOut.datalink = ethOut;
         tcpOut.data = tcpIn.data;
-        byte[] data = tcpOut.data;
-        if (data != null && data.length >= 3) {
-            if (data[0] == 0x32 && data[1] == 0x30 && data[2] == 0x30) {
-                FTPMapping correctMapping = ftpPortSession.get(ftpPortSession.indexOf(new FTPMapping(tcpOut.ack_num)));
-                tcpOut.ack_num = correctMapping.getCorrectAck();
-                ftpPortSession.remove(correctMapping);
-            }
-        }
         return tcpOut;
     }
 
