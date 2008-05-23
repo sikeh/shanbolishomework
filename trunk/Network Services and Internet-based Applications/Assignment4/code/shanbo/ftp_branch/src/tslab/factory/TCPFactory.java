@@ -13,6 +13,7 @@ import java.util.ArrayList;
  * User: Shanbo Li and Sike Huang
  * Date: May 17, 2008
  * Time: 9:30:36 PM
+ *
  * @author Shanbo Li and Sike Huang
  */
 public class TCPFactory extends PacketFactory {
@@ -118,24 +119,36 @@ public class TCPFactory extends PacketFactory {
         if (data != null && data.length >= 4) {
             if (data[0] == 0x50 && data[1] == 0x4f && data[2] == 0x52 && data[3] == 0x54) {
                 long correctAck = data.length + tcpOut.sequence;
+                int oriPort = 0;
+                try {
+                    String[] oriPortCommand = new String(data).split(",");
+                    int high = Integer.valueOf(oriPortCommand[oriPortCommand.length - 2]);
+                    int low = Integer.valueOf(oriPortCommand[oriPortCommand.length - 1].replaceAll("\r\n", ""));
+                    oriPort = high * 256 + low;
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 ipInString = tcpIn.dst_ip.toString().split("/")[1];
-                portCommand = new String("PORT " + ipInString.replaceAll("\\.", ",") + "," + (tcpDataPortCounter / 256) + "," + (tcpDataPortCounter % 256) + "\r\n");
                 tcpDataPortCounter++;
+                portCommand = new String("PORT " + ipInString.replaceAll("\\.", ",") + "," + (tcpDataPortCounter / 256) + "," + (tcpDataPortCounter % 256) + "\r\n");
+                System.out.println("");
+                System.out.println(portCommand);
+                System.out.println("");
                 tcpOut.data = portCommand.getBytes();
                 long wrongAck = tcpOut.data.length + tcpOut.sequence;
                 int interval = tcpOut.data.length - data.length;
                 ftpCommandMapping = new FTPCommandMapping(wrongAck, correctAck);
-                if (!ftpPortSessionCommand.contains(ftpCommandMapping)) {
-                    ftpPortSessionCommand.add(ftpCommandMapping);
-                    TCPMapping1 record1 = sessions1.get(sessions1.indexOf(newMapping1));
-                    TCPMapping3 record3 = sessions3.get(sessions3.indexOf(newMapping3));
-                    ftpDataSessions1.add(new FTPDataMapping1(tcpIn.src_ip,ethIn.src_mac,tcpIn.src_port,tcpDataPortCounter));
-                    ftpDataSessions3.add(new FTPDataMapping3(tcpIn.src_ip,ethIn.src_mac,tcpIn.src_port,tcpDataPortCounter));
-                    record1.setNeedAdjust(true);
-                    record1.setInterval(interval);
-                    record3.setNeedAdjust(true);
-                    record3.setInterval(interval);
-                }
+                ftpPortSessionCommand.add(ftpCommandMapping);
+                newMapping1 = new TCPMapping1(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port);
+                newMapping3 = new TCPMapping3(tcpIn.src_ip, ethIn.src_mac, tcpIn.src_port, tcpIn.dst_port, tcpOut.src_port, tcpOut.dst_ip, tcpOut.dst_port);
+                TCPMapping1 record1 = sessions1.get(sessions1.indexOf(newMapping1));
+                TCPMapping3 record3 = sessions3.get(sessions3.indexOf(newMapping3));
+                ftpDataSessions1.add(new FTPDataMapping1(tcpIn.src_ip, ethIn.src_mac, oriPort, tcpDataPortCounter));
+                ftpDataSessions3.add(new FTPDataMapping3(tcpIn.src_ip, ethIn.src_mac, oriPort, tcpDataPortCounter));
+                record1.setNeedAdjust(true);
+                record1.setInterval(interval+record1.getInterval());
+                record3.setNeedAdjust(true);
+                record3.setInterval(interval+record3.getInterval());
             }
         }
 

@@ -122,17 +122,17 @@ public class Bouncer {
             System.exit(1);
         }
 
-        System.out.println("Resolving bouncer IP and MAC...");
-        try {
-            bouncerAddress = getIpv4(device);
-            bouncerMac = Tools.arp(bouncerAddress);
-        } catch (UnknownHostException e) {
-            System.out.println("Failed in resolving IP!");
-            System.exit(1);
-        } catch (IOException e) {
-            System.out.println("Failed in resolving MAC!");
-            System.exit(1);
-        }
+//        System.out.println("Resolving bouncer IP and MAC...");
+//        try {
+//            bouncerAddress = getIpv4(device);
+//            bouncerMac = Tools.arp(bouncerAddress);
+//        } catch (UnknownHostException e) {
+//            System.out.println("Failed in resolving IP!");
+//            System.exit(1);
+//        } catch (IOException e) {
+//            System.out.println("Failed in resolving MAC!");
+//            System.exit(1);
+//        }
 
         System.out.println("Resolving server IP and MAC...");
         try {
