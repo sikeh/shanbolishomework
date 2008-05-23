@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import tslab.factory.ICMPFactory;
 import tslab.factory.PacketFactory;
 import tslab.factory.TCPFactory;
+import tslab.factory.FTPDataPacketFactory;
 import tslab.exception.WrongInputPacketException;
 
 /**
@@ -27,6 +28,7 @@ public class PacketHandler {
     private byte[] serverMac;
     private ICMPFactory icmpFactory;
     private TCPFactory tcpFactory;
+    private FTPDataPacketFactory ftpFactory;
 
     public PacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac) {
         this.captor = captor;
@@ -38,10 +40,14 @@ public class PacketHandler {
         icmpFactory.initial(serverAddress, serverMac);
         tcpFactory = TCPFactory.getInstance();
         tcpFactory.initial(serverAddress, serverMac);
+        ftpFactory = FTPDataPacketFactory.getInstance();
+        ftpFactory.initial(serverAddress, serverMac);
+
+
     }
 
     public void receive() {
-        captor.loopPacket(-1, new MyPacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, icmpFactory, tcpFactory));
+        captor.loopPacket(-1, new MyPacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, icmpFactory, tcpFactory, ftpFactory));
     }
 }
 
@@ -53,8 +59,10 @@ class MyPacketHandler implements PacketReceiver {
     private byte[] serverMac;
     private ICMPFactory icmpFactory;
     private TCPFactory tcpFactory;
+    private FTPDataPacketFactory ftpFactory;
+    private int tcpDstPort;
 
-    MyPacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, ICMPFactory icmpFactory, TCPFactory tcpFactory) {
+    MyPacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, ICMPFactory icmpFactory, TCPFactory tcpFactory, FTPDataPacketFactory ftpFactory) {
         this.captor = captor;
         this.bouncerAddress = bouncerAddress;
         this.bouncerMac = bouncerMac;
@@ -62,6 +70,7 @@ class MyPacketHandler implements PacketReceiver {
         this.serverMac = serverMac;
         this.icmpFactory = icmpFactory;
         this.tcpFactory = tcpFactory;
+        this.ftpFactory = ftpFactory;
     }
 
     public void receivePacket(Packet packet) {
@@ -73,9 +82,14 @@ class MyPacketHandler implements PacketReceiver {
             factory = icmpFactory;
         } else if (packet instanceof TCPPacket) {
             packetType = "tcp -> ";
-            factory = tcpFactory;
+            tcpDstPort = ((TCPPacket) packet).dst_port;
+            if ((tcpDstPort >= TCPFactory.INITIAL_TCP_PORT && tcpDstPort <= TCPFactory.tcpDataPortCounter) || tcpDstPort == 20) {
+                factory = ftpFactory;
+            } else {
+                factory = tcpFactory;
+            }
         } else {
-
+            return;
         }
 
         if (packet instanceof IPPacket) {

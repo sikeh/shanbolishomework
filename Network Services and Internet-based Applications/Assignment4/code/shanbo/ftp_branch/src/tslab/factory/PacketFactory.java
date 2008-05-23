@@ -9,9 +9,10 @@ import java.net.InetAddress;
 /**
  * Created by IntelliJ IDEA.
  * Develop with pleasure.
- * User: Shanbo Li
+ * User: Shanbo Li and Sike Huang
  * Date: May 17, 2008
  * Time: 11:24:14 PM
+ * @author Shanbo Li and Sike Huang
  */
 public abstract class PacketFactory {
     protected InetAddress serverAddress;

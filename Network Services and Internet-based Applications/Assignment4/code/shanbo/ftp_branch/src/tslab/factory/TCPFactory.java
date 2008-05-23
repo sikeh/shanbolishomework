@@ -2,10 +2,7 @@ package tslab.factory;
 
 import jpcap.packet.*;
 import tslab.exception.WrongInputPacketException;
-import tslab.util.TCPMapping;
-import tslab.util.TCPMapping1;
-import tslab.util.TCPMapping3;
-import tslab.util.FTPMapping;
+import tslab.util.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -13,22 +10,27 @@ import java.util.ArrayList;
 /**
  * Created by IntelliJ IDEA.
  * Develop with pleasure.
- * User: Shanbo Li
+ * User: Shanbo Li and Sike Huang
  * Date: May 17, 2008
  * Time: 9:30:36 PM
+ * @author Shanbo Li and Sike Huang
  */
 public class TCPFactory extends PacketFactory {
 
+    public static List<FTPDataMapping1> ftpDataSessions1 = new ArrayList<FTPDataMapping1>();
+    public static List<FTPDataMapping3> ftpDataSessions3 = new ArrayList<FTPDataMapping3>();
 
     private static final int INITIAL_SOURCE_PORT = 11240;
     private static int bouncerToServerPortCounter = 11240;
+    public static final int INITIAL_TCP_PORT = 8598;
+    public static int tcpDataPortCounter = 8598;
     List<TCPMapping1> sessions1 = new ArrayList<TCPMapping1>();
     List<TCPMapping3> sessions3 = new ArrayList<TCPMapping3>();
-    List<FTPMapping> ftpPortSession = new ArrayList<FTPMapping>();
+    List<FTPCommandMapping> ftpPortSessionCommand = new ArrayList<FTPCommandMapping>();
     private final static TCPFactory instance = new TCPFactory();
     private String ipInString;
     private String portCommand;
-    private FTPMapping ftpMapping;
+    private FTPCommandMapping ftpCommandMapping;
     private TCPMapping1 newMapping1;
     private TCPMapping3 newMapping3;
 
@@ -74,7 +76,7 @@ public class TCPFactory extends PacketFactory {
         if (ipPacket instanceof TCPPacket) {
             tcpIn = (TCPPacket) ipPacket;
         } else {
-            throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
+            throw new WrongInputPacketException("Not a TCP packet.\nPlease check if the incoming packet is the correct type.");
         }
 
         int bouncerToServerPort;
@@ -86,7 +88,7 @@ public class TCPFactory extends PacketFactory {
         } else {
             bouncerToServerPort = sessions1.get(sessions1.indexOf(mapping)).getBouncerPortToServer();
             TCPMapping1 mapInDatabase = sessions1.get(sessions1.indexOf(mapping));
-            if (mapInDatabase.isNeedAdjust()){
+            if (mapInDatabase.isNeedAdjust()) {
                 //TODO    +/-
                 newSeq = newSeq + mapInDatabase.getInterval();
             }
@@ -117,16 +119,18 @@ public class TCPFactory extends PacketFactory {
             if (data[0] == 0x50 && data[1] == 0x4f && data[2] == 0x52 && data[3] == 0x54) {
                 long correctAck = data.length + tcpOut.sequence;
                 ipInString = tcpIn.dst_ip.toString().split("/")[1];
-                portCommand = new String("PORT " + ipInString.replaceAll("\\.", ",") + "," + (tcpOut.src_port / 256) + "," + (tcpOut.src_port % 256) + "\r\n");
-                System.out.println("Port Command = " + portCommand);
+                portCommand = new String("PORT " + ipInString.replaceAll("\\.", ",") + "," + (tcpDataPortCounter / 256) + "," + (tcpDataPortCounter % 256) + "\r\n");
+                tcpDataPortCounter++;
                 tcpOut.data = portCommand.getBytes();
                 long wrongAck = tcpOut.data.length + tcpOut.sequence;
                 int interval = tcpOut.data.length - data.length;
-                ftpMapping = new FTPMapping(wrongAck, correctAck);
-                if (!ftpPortSession.contains(ftpMapping)) {
-                    ftpPortSession.add(ftpMapping);
+                ftpCommandMapping = new FTPCommandMapping(wrongAck, correctAck);
+                if (!ftpPortSessionCommand.contains(ftpCommandMapping)) {
+                    ftpPortSessionCommand.add(ftpCommandMapping);
                     TCPMapping1 record1 = sessions1.get(sessions1.indexOf(newMapping1));
                     TCPMapping3 record3 = sessions3.get(sessions3.indexOf(newMapping3));
+                    ftpDataSessions1.add(new FTPDataMapping1(tcpIn.src_ip,ethIn.src_mac,tcpIn.src_port,tcpDataPortCounter));
+                    ftpDataSessions3.add(new FTPDataMapping3(tcpIn.src_ip,ethIn.src_mac,tcpIn.src_port,tcpDataPortCounter));
                     record1.setNeedAdjust(true);
                     record1.setInterval(interval);
                     record3.setNeedAdjust(true);
@@ -149,7 +153,7 @@ public class TCPFactory extends PacketFactory {
         if (ipPacket instanceof TCPPacket) {
             tcpIn = (TCPPacket) ipPacket;
         } else {
-            throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
+            throw new WrongInputPacketException("Not a TCP packet.\nPlease check if the incoming packet is the correct type.");
         }
 
 
@@ -160,8 +164,8 @@ public class TCPFactory extends PacketFactory {
         TCPMapping record = sessions3.get(sessions3.indexOf(mapping3));
 
         long newAck = tcpIn.ack_num;
-        if (record.isNeedAdjust()){
-             newAck = newAck - record.getInterval();
+        if (record.isNeedAdjust()) {
+            newAck = newAck - record.getInterval();
         }
 
         TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToClient(), record.getClientPort(), tcpIn.sequence, newAck, tcpIn.urg,

@@ -13,9 +13,10 @@ import java.util.ArrayList;
 /**
  * Created by IntelliJ IDEA.
  * Develop with pleasure.
- * User: Shanbo Li
+ * User: Shanbo Li and Sike Huang
  * Date: May 17, 2008
  * Time: 9:30:16 PM
+ * @author Shanbo Li and Sike Huang
  */
 public class ICMPFactory extends PacketFactory {
 
