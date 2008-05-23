@@ -1,6 +1,0 @@
-For the T-Man reading assignment, apart from the instructions/sections mentioned in the general instructions document (available here), you have to answer the following: 
-
-
-1. How would you construct the Chord topology using T-Man? Write your solution clearly and mention all the assumptions, advantages and disadvantages of your solution. 
-
-2. Optional question: Can you think of any other interesting topology that you would like to create using T-Man? How would you create it? 
