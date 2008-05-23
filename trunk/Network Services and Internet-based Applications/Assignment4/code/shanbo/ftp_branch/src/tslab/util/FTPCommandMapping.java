@@ -1,22 +1,24 @@
 package tslab.util;
 
 /**
+ * Use for command mapping (port = 21 at Ftp Server)
+ *
  * Created by IntelliJ IDEA.
  * Develop with pleasure.
- * User: Shanbo Li
+ * User: Shanbo Li and Sike Huang
  * Date: May 17, 2008
  * Time: 11:03:36 PM
  */
-public class FTPMapping {
+public class FTPCommandMapping {
     private long wrongAck;
     private long correctAck;
 
-    public FTPMapping(long wrongAck, long correctAck) {
+    public FTPCommandMapping(long wrongAck, long correctAck) {
         this.wrongAck = wrongAck;
         this.correctAck = correctAck;
     }
 
-    public FTPMapping(long wrongAck) {
+    public FTPCommandMapping(long wrongAck) {
         this.wrongAck = wrongAck;
     }
 
@@ -30,9 +32,9 @@ public class FTPMapping {
 
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FTPMapping)) return false;
+        if (!(o instanceof FTPCommandMapping)) return false;
 
-        FTPMapping that = (FTPMapping) o;
+        FTPCommandMapping that = (FTPCommandMapping) o;
 
         if (wrongAck != that.wrongAck) return false;
 
