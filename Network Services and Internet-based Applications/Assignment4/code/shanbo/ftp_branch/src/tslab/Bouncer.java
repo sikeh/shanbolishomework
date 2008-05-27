@@ -42,7 +42,8 @@ public class Bouncer {
             System.out.print(" [ip=" + getIpv4(devices[i]) + "] ");
             System.out.println("");
         }
-        System.out.print("Select one: ");
+        System.out.println(" ******************************************");
+        System.out.println(" -> Select one of the interface above (0,1,2 ...) ? ");
         Scanner scanner = new Scanner(System.in);
         int index = scanner.nextInt();
         if (index < 0 || index > devices.length - 1) {
@@ -139,10 +140,10 @@ public class Bouncer {
             serverAddress = InetAddress.getByName(serverIp);
             serverMac = Tools.arp(serverIp);
         } catch (UnknownHostException e) {
-            System.out.println("Failed in resolving IP!");
+            System.out.println("Failed in resolving server IP!");
             System.exit(1);
         } catch (IOException e) {
-            System.out.println("Failed in resolving MAC!");
+            System.out.println("Failed in resolving server MAC!");
             System.exit(1);
         }
 

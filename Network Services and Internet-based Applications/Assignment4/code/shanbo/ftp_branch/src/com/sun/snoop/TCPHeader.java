@@ -100,6 +100,7 @@ public class TCPHeader {
 
     // The window for this TCP header.
     int window;
+    private byte[] header;
 
 
     /**
@@ -310,5 +311,9 @@ public class TCPHeader {
      */
     public byte[] getOptionBytes() {
         return optionBytes;
+    }
+
+    public byte[] getHeader() {
+       return this.header;
     }
 }
