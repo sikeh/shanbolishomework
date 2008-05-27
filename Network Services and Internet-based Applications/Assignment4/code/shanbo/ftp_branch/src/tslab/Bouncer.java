@@ -28,9 +28,9 @@ public class Bouncer {
     private static byte[] serverMac;
 
     private static String listenIp;
-    private static String listenPort;
+    private static int listenPort = -1;
     private static String serverIp;
-    private static String serverPort;
+    private static int serverPort = -1;
 
     public Bouncer() {
         //
@@ -104,17 +104,44 @@ public class Bouncer {
 //            captor.setFilter("ip", true);
 //            captor.setFilter("host " + listenIp, true);
             StringBuilder sb = new StringBuilder();
-            sb.append("ip and host " + listenIp + " and ");
-            sb.append("((dst host " + listenIp);
-            if (listenPort != null) {
-                sb.append(" and dst port " + listenPort);
+
+            if (listenPort == -1 && serverPort == -1) {
+                sb.append("dst host " + listenIp);
             }
-            sb.append(") or ");
-            sb.append("(src host " + serverIp);
-            if (serverPort != null) {
-                sb.append(" and src port " + serverPort);
+            if (listenPort != -1 && serverPort != -1) {
+                sb.append("(");
+                sb.append("dst host " + listenIp + " and dst port " + listenPort);
+                sb.append(")");
+                sb.append(" or ");
+                sb.append("(");
+                sb.append("dst host " + listenIp + " and dst port " + String.valueOf(listenPort - 1));
+                sb.append(")");
             }
-            sb.append("))");
+            if (listenPort != -1 && serverPort == -1) {
+                sb.append("(");
+                sb.append("dst host " + listenIp + " and dst port " + listenPort);
+                sb.append(") or (");
+                sb.append("dst host " + listenIp + " and dst port " + String.valueOf(listenPort - 1));
+                sb.append(")");
+            }
+            if (listenPort == -1 && serverPort != -1) {
+                sb.append("dst host " + listenIp);
+            }
+            sb.append(" or ");
+            sb.append("src host " + serverIp);
+
+
+//            sb.append("ip and host " + listenIp + " and ");
+//            sb.append("((dst host " + listenIp);
+//            if (listenPort != -1) {
+//                sb.append(" and dst port " + listenPort);
+//            }
+//            sb.append(") or ");
+//            sb.append("(src host " + serverIp);
+//            if (serverPort != -1) {
+//                sb.append(" and src port " + serverPort);
+//            }
+//            sb.append("))");
             captor.setFilter(sb.toString(), true);
             System.out.println("Filter -> " + sb.toString());
         } catch (IOException e) {
@@ -147,7 +174,7 @@ public class Bouncer {
         }
 
         System.out.println("Start listenning...");
-        PacketHandler listner = new PacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac);
+        PacketHandler listner = new PacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, serverPort);
         listner.receive();
     }
 
@@ -160,11 +187,11 @@ public class Bouncer {
         try {
             listenIp = listen[0];
             if (listen.length > 1) {
-                listenPort = listen[1];
+                listenPort = Integer.parseInt(listen[1]);
             }
             serverIp = server[0];
             if (server.length > 1) {
-                serverPort = server[1];
+                serverPort = Integer.parseInt(server[1]);
             }
         } catch (Exception e) {
             e.printStackTrace();

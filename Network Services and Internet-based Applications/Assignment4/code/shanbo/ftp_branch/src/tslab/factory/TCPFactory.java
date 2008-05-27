@@ -21,9 +21,10 @@ public class TCPFactory extends PacketFactory {
     public static List<FTPDataMapping1> ftpDataSessions1 = new ArrayList<FTPDataMapping1>();
     public static List<FTPDataMapping3> ftpDataSessions3 = new ArrayList<FTPDataMapping3>();
 
-    private static final int INITIAL_SOURCE_PORT = 11240;
+    //TODO change the fields name there
+    private static final int INITIAL_BOUNCER_TO_SERVER_TCP_PORT = 11240;
     private static int bouncerToServerPortCounter = 11240;
-    public static final int INITIAL_TCP_PORT = 8598;
+    public static final int INITIAL_BOUNCER_TO_SERVER_FTP_DATA_PORT = 8598;
     public static int tcpDataPortCounter = 8598;
     List<TCPMapping1> sessions1 = new ArrayList<TCPMapping1>();
     List<TCPMapping3> sessions3 = new ArrayList<TCPMapping3>();
@@ -60,7 +61,7 @@ public class TCPFactory extends PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
 
-        if (tcpIn.dst_port >= INITIAL_SOURCE_PORT && tcpIn.dst_port <= bouncerToServerPortCounter) {
+        if (tcpIn.dst_port >= INITIAL_BOUNCER_TO_SERVER_TCP_PORT && tcpIn.dst_port <= bouncerToServerPortCounter) {
             return toClient(ipPacket);
         } else {
             return toServer(ipPacket);
@@ -82,21 +83,20 @@ public class TCPFactory extends PacketFactory {
 
         int bouncerToServerPort;
         long newSeq = tcpIn.sequence;
-        TCPMapping1 mapping = new TCPMapping1(tcpIn.src_ip, tcpIn.src_port, tcpIn.dst_port);
+
+        int serverPortInPractice = (serverPort < 0) ? tcpIn.dst_port : serverPort;
+
+        TCPMapping1 mapping = new TCPMapping1(tcpIn.src_ip, tcpIn.src_port, serverPortInPractice);
         if (!sessions1.contains(mapping)) {
             bouncerToServerPort = bouncerToServerPortCounter++;
-
         } else {
             bouncerToServerPort = sessions1.get(sessions1.indexOf(mapping)).getBouncerPortToServer();
             TCPMapping1 mapInDatabase = sessions1.get(sessions1.indexOf(mapping));
             if (mapInDatabase.isNeedAdjust()) {
-                //TODO    +/-
                 newSeq = newSeq + mapInDatabase.getInterval();
             }
         }
 
-
-        int serverPortInPractice = (serverPort < 0) ? tcpIn.dst_port : serverPort;
 
         TCPPacket tcpOut = new TCPPacket(bouncerToServerPort, serverPortInPractice, newSeq, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
@@ -146,9 +146,9 @@ public class TCPFactory extends PacketFactory {
                 ftpDataSessions1.add(new FTPDataMapping1(tcpIn.src_ip, ethIn.src_mac, oriPort, tcpDataPortCounter));
                 ftpDataSessions3.add(new FTPDataMapping3(tcpIn.src_ip, ethIn.src_mac, oriPort, tcpDataPortCounter));
                 record1.setNeedAdjust(true);
-                record1.setInterval(interval+record1.getInterval());
+                record1.setInterval(interval + record1.getInterval());
                 record3.setNeedAdjust(true);
-                record3.setInterval(interval+record3.getInterval());
+                record3.setInterval(interval + record3.getInterval());
             }
         }
 

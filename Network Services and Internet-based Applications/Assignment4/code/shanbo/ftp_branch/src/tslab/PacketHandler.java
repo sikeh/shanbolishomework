@@ -30,18 +30,21 @@ public class PacketHandler {
     private TCPFactory tcpFactory;
     private FTPDataPacketFactory ftpFactory;
 
-    public PacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac) {
+    public PacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, int serverPort) {
         this.captor = captor;
         this.bouncerAddress = bouncerAddress;
         this.bouncerMac = bouncerMac;
         this.serverAddress = serverAddress;
         this.serverMac = serverMac;
         icmpFactory = ICMPFactory.getInstance();
+        // the initial value of serverPort is -1
+        // which means it has not be set
+        // the factory will check it upon
         icmpFactory.initial(serverAddress, serverMac);
         tcpFactory = TCPFactory.getInstance();
-        tcpFactory.initial(serverAddress, serverMac);
+        tcpFactory.initial(serverAddress, serverPort, serverMac);
         ftpFactory = FTPDataPacketFactory.getInstance();
-        ftpFactory.initial(serverAddress, serverMac);
+        ftpFactory.initial(serverAddress, serverPort, serverMac);
 
 
     }
@@ -82,8 +85,7 @@ class MyPacketHandler implements PacketReceiver {
             factory = icmpFactory;
         } else if (packet instanceof TCPPacket) {
             packetType = "tcp -> ";
-            tcpDstPort = ((TCPPacket) packet).dst_port;
-            if ((tcpDstPort >= TCPFactory.INITIAL_TCP_PORT && tcpDstPort <= TCPFactory.tcpDataPortCounter) || tcpDstPort == 20) {
+            if (isFtpData(packet)) {
                 factory = ftpFactory;
             } else {
                 factory = tcpFactory;
@@ -105,4 +107,10 @@ class MyPacketHandler implements PacketReceiver {
 
 
     }
+
+    private boolean isFtpData(Packet packet) {
+        return FTPDataPacketFactory.isFtpDataPacket((TCPPacket) packet);
+    }
+
+
 }
