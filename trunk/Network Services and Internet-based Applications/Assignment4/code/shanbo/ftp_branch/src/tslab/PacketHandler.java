@@ -11,6 +11,7 @@ import tslab.factory.PacketFactory;
 import tslab.factory.TCPFactory;
 import tslab.factory.FTPDataPacketFactory;
 import tslab.exception.WrongInputPacketException;
+import tslab.util.Tools;
 
 /**
  * Created by IntelliJ IDEA.
@@ -63,9 +64,13 @@ class MyPacketHandler implements PacketReceiver {
         PacketFactory factory = null;
         String packetType = null;
         if (packet instanceof ICMPPacket) {
+            //validate IP packet
+            Tools.validateIPPacket((IPPacket) packet);
             packetType = "icmp -> ";
             factory = icmpFactory;
         } else if (packet instanceof TCPPacket) {
+            //validate TCP packet
+            Tools.validateTCPPacket((TCPPacket) packet);
             packetType = "tcp -> ";
             if (isFtpData(packet)) {
                 factory = ftpFactory;
