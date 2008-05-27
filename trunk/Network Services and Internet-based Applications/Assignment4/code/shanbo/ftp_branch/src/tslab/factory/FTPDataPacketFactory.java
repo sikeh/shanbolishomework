@@ -5,8 +5,6 @@ import jpcap.packet.TCPPacket;
 import jpcap.packet.EthernetPacket;
 import tslab.exception.WrongInputPacketException;
 import static tslab.factory.TCPFactory.*;
-import tslab.util.TCPMapping3;
-import tslab.util.TCPMapping;
 import tslab.util.FTPDataMapping1;
 import tslab.util.FTPDataMapping3;
 
@@ -16,6 +14,7 @@ import tslab.util.FTPDataMapping3;
  * User: Shanbo Li and Sike Huang
  * Date: May 17, 2008
  * Time: 9:30:59 PM
+ *
  * @author Shanbo Li and Sike Huang
  */
 public class FTPDataPacketFactory extends PacketFactory {
@@ -33,6 +32,12 @@ public class FTPDataPacketFactory extends PacketFactory {
         return instance;
     }
 
+    public static boolean isFtpDataPacket(TCPPacket packet) {
+        FTPDataMapping1 mapping1 = new FTPDataMapping1(packet.dst_port);
+        FTPDataMapping3 mapping3 = new FTPDataMapping3(packet.src_ip, packet.src_port);
+        return ((ftpDataSessions1.contains(mapping1) || ftpDataSessions3.contains(mapping3)));
+    }
+
 
     public IPPacket createPacket(IPPacket ipPacket) throws WrongInputPacketException {
         TCPPacket tcpIn = null;
@@ -42,7 +47,7 @@ public class FTPDataPacketFactory extends PacketFactory {
             throw new WrongInputPacketException("Not a ICMP packet.\nPlease check if the incoming packet is the correct type.");
         }
         int tcpDstPort = tcpIn.dst_port;
-        if ((tcpDstPort >= INITIAL_TCP_PORT && tcpDstPort <= tcpDataPortCounter)) {
+        if ((tcpDstPort >= INITIAL_BOUNCER_TO_SERVER_FTP_DATA_PORT && tcpDstPort <= tcpDataPortCounter)) {
             return toClient(ipPacket);
         } else {
             return toServer(ipPacket);
@@ -51,6 +56,7 @@ public class FTPDataPacketFactory extends PacketFactory {
 
     /**
      * FTP Server to client
+     *
      * @param ipPacket
      * @return
      * @throws WrongInputPacketException
@@ -70,7 +76,7 @@ public class FTPDataPacketFactory extends PacketFactory {
         }
         FTPDataMapping1 record = ftpDataSessions1.get(ftpDataSessions1.indexOf(mapping1));
 
-        TCPPacket tcpOut = new TCPPacket(20, record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+        TCPPacket tcpOut = new TCPPacket(tcpIn.src_port, record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
@@ -86,21 +92,21 @@ public class FTPDataPacketFactory extends PacketFactory {
     }
 
     public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException {
-    TCPPacket tcpIn;
+        TCPPacket tcpIn;
         if (ipPacket instanceof TCPPacket) {
             tcpIn = (TCPPacket) ipPacket;
         } else {
             throw new WrongInputPacketException("Not a TCP packet.\nPlease check if the incoming packet is the correct type.");
         }
 
-        FTPDataMapping3 mapping3 = new FTPDataMapping3(tcpIn.src_ip,tcpIn.src_port);
+        FTPDataMapping3 mapping3 = new FTPDataMapping3(tcpIn.src_ip, tcpIn.src_port);
 
         if (!ftpDataSessions3.contains(mapping3)) {
             throw new WrongInputPacketException("I got a ftp data packate, but it is not in the database!");
         }
         FTPDataMapping3 record = ftpDataSessions3.get(ftpDataSessions3.indexOf(mapping3));
 
-        TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToFTPServer(), 20, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+        TCPPacket tcpOut = new TCPPacket(record.getBouncerPortToFTPServer(), tcpIn.dst_port, tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
