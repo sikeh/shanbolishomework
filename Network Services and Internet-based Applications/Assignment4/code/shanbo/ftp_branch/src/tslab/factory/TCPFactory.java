@@ -21,7 +21,6 @@ public class TCPFactory extends PacketFactory {
     public static List<FTPDataMapping1> ftpDataSessions1 = new ArrayList<FTPDataMapping1>();
     public static List<FTPDataMapping3> ftpDataSessions3 = new ArrayList<FTPDataMapping3>();
 
-    //TODO change the fields name there
     private static final int INITIAL_BOUNCER_TO_SERVER_TCP_PORT = 11240;
     private static int bouncerToServerPortCounter = 11240;
     public static final int INITIAL_BOUNCER_TO_SERVER_FTP_DATA_PORT = 8598;
@@ -126,14 +125,11 @@ public class TCPFactory extends PacketFactory {
                     int low = Integer.valueOf(oriPortCommand[oriPortCommand.length - 1].replaceAll("\r\n", ""));
                     oriPort = high * 256 + low;
                 } catch (NumberFormatException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    System.out.println(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
                 }
                 ipInString = tcpIn.dst_ip.toString().split("/")[1];
                 tcpDataPortCounter++;
                 portCommand = new String("PORT " + ipInString.replaceAll("\\.", ",") + "," + (tcpDataPortCounter / 256) + "," + (tcpDataPortCounter % 256) + "\r\n");
-                System.out.println("");
-                System.out.println(portCommand);
-                System.out.println("");
                 tcpOut.data = portCommand.getBytes();
                 long wrongAck = tcpOut.data.length + tcpOut.sequence;
                 int interval = tcpOut.data.length - data.length;

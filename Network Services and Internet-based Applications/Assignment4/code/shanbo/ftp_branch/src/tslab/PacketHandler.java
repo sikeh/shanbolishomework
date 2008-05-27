@@ -22,20 +22,12 @@ import tslab.exception.WrongInputPacketException;
  */
 public class PacketHandler {
     private JpcapCaptor captor;
-    private InetAddress bouncerAddress;
-    private byte[] bouncerMac;
-    private InetAddress serverAddress;
-    private byte[] serverMac;
     private ICMPFactory icmpFactory;
     private TCPFactory tcpFactory;
     private FTPDataPacketFactory ftpFactory;
 
-    public PacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, int serverPort) {
+    public PacketHandler(JpcapCaptor captor, InetAddress serverAddress, byte[] serverMac, int serverPort) {
         this.captor = captor;
-        this.bouncerAddress = bouncerAddress;
-        this.bouncerMac = bouncerMac;
-        this.serverAddress = serverAddress;
-        this.serverMac = serverMac;
         icmpFactory = ICMPFactory.getInstance();
         // the initial value of serverPort is -1
         // which means it has not be set
@@ -50,34 +42,24 @@ public class PacketHandler {
     }
 
     public void receive() {
-        captor.loopPacket(-1, new MyPacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, icmpFactory, tcpFactory, ftpFactory));
+        captor.loopPacket(-1, new MyPacketHandler(captor, icmpFactory, tcpFactory, ftpFactory));
     }
 }
 
 class MyPacketHandler implements PacketReceiver {
     private JpcapCaptor captor;
-    private InetAddress bouncerAddress;
-    private byte[] bouncerMac;
-    private InetAddress serverAddress;
-    private byte[] serverMac;
     private ICMPFactory icmpFactory;
     private TCPFactory tcpFactory;
     private FTPDataPacketFactory ftpFactory;
-    private int tcpDstPort;
 
-    MyPacketHandler(JpcapCaptor captor, InetAddress bouncerAddress, byte[] bouncerMac, InetAddress serverAddress, byte[] serverMac, ICMPFactory icmpFactory, TCPFactory tcpFactory, FTPDataPacketFactory ftpFactory) {
+    MyPacketHandler(JpcapCaptor captor, ICMPFactory icmpFactory, TCPFactory tcpFactory, FTPDataPacketFactory ftpFactory) {
         this.captor = captor;
-        this.bouncerAddress = bouncerAddress;
-        this.bouncerMac = bouncerMac;
-        this.serverAddress = serverAddress;
-        this.serverMac = serverMac;
         this.icmpFactory = icmpFactory;
         this.tcpFactory = tcpFactory;
         this.ftpFactory = ftpFactory;
     }
 
     public void receivePacket(Packet packet) {
-//        System.out.println(packet);
         PacketFactory factory = null;
         String packetType = null;
         if (packet instanceof ICMPPacket) {
@@ -101,7 +83,7 @@ class MyPacketHandler implements PacketReceiver {
                 System.out.println(packetType + ipPacket);
                 captor.getJpcapSenderInstance().sendPacket(ipPacket);
             } catch (WrongInputPacketException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
 
