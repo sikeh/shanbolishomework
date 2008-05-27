@@ -76,8 +76,11 @@ public class FTPDataPacketFactory extends PacketFactory {
         }
         FTPDataMapping1 record = ftpDataSessions1.get(ftpDataSessions1.indexOf(mapping1));
 
-        TCPPacket tcpOut = new TCPPacket(tcpIn.src_port, record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+        TCPPacket tcpOut = new TCPPacket(20, record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
                 tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
+
+//        TCPPacket tcpOut = new TCPPacket(tcpIn.src_port, record.getClientPort(), tcpIn.sequence, tcpIn.ack_num, tcpIn.urg,
+//                      tcpIn.ack, tcpIn.psh, tcpIn.rst, tcpIn.syn, tcpIn.fin, tcpIn.rsv1, tcpIn.rsv2, tcpIn.window, tcpIn.urgent_pointer);
 
         //produce packet to server
         EthernetPacket ethIn = (EthernetPacket) tcpIn.datalink;

@@ -54,7 +54,7 @@ public class Tools {
         try {
             tcpHeader = TCPHeader.decodeTCPHeader(tcpPacket.header, 43);
         } catch (SnoopException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         CRC16 crc = new CRC16();

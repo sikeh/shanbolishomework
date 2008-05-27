@@ -22,8 +22,6 @@ import tslab.util.Tools;
 public class Bouncer {
     private static JpcapCaptor captor;
     // used by factory
-    private static InetAddress bouncerAddress;
-    private static byte[] bouncerMac;
     private static InetAddress serverAddress;
     private static byte[] serverMac;
 
@@ -101,8 +99,6 @@ public class Bouncer {
         }
         try {
             captor = JpcapCaptor.openDevice(device, 65535, false, 20);
-//            captor.setFilter("ip", true);
-//            captor.setFilter("host " + listenIp, true);
             StringBuilder sb = new StringBuilder();
 
             if (listenPort == -1 && serverPort == -1) {
@@ -114,14 +110,14 @@ public class Bouncer {
                 sb.append(")");
                 sb.append(" or ");
                 sb.append("(");
-                sb.append("dst host " + listenIp + " and dst port " + String.valueOf(listenPort - 1));
+                sb.append("dst host " + listenIp + " and dst port 20");
                 sb.append(")");
             }
             if (listenPort != -1 && serverPort == -1) {
                 sb.append("(");
                 sb.append("dst host " + listenIp + " and dst port " + listenPort);
                 sb.append(") or (");
-                sb.append("dst host " + listenIp + " and dst port " + String.valueOf(listenPort - 1));
+                sb.append("dst host " + listenIp + " and dst port 20");
                 sb.append(")");
             }
             if (listenPort == -1 && serverPort != -1) {
@@ -130,18 +126,6 @@ public class Bouncer {
             sb.append(" or ");
             sb.append("src host " + serverIp);
 
-
-//            sb.append("ip and host " + listenIp + " and ");
-//            sb.append("((dst host " + listenIp);
-//            if (listenPort != -1) {
-//                sb.append(" and dst port " + listenPort);
-//            }
-//            sb.append(") or ");
-//            sb.append("(src host " + serverIp);
-//            if (serverPort != -1) {
-//                sb.append(" and src port " + serverPort);
-//            }
-//            sb.append("))");
             captor.setFilter(sb.toString(), true);
             System.out.println("Filter -> " + sb.toString());
         } catch (IOException e) {
@@ -149,17 +133,6 @@ public class Bouncer {
             System.exit(1);
         }
 
-//        System.out.println("Resolving bouncer IP and MAC...");
-//        try {
-//            bouncerAddress = getIpv4(device);
-//            bouncerMac = Tools.arp(bouncerAddress);
-//        } catch (UnknownHostException e) {
-//            System.out.println("Failed in resolving IP!");
-//            System.exit(1);
-//        } catch (IOException e) {
-//            System.out.println("Failed in resolving MAC!");
-//            System.exit(1);
-//        }
 
         System.out.println("Resolving server IP and MAC...");
         try {
@@ -174,7 +147,7 @@ public class Bouncer {
         }
 
         System.out.println("Start listenning...");
-        PacketHandler listner = new PacketHandler(captor, bouncerAddress, bouncerMac, serverAddress, serverMac, serverPort);
+        PacketHandler listner = new PacketHandler(captor,  serverAddress, serverMac, serverPort);
         listner.receive();
     }
 
@@ -194,7 +167,6 @@ public class Bouncer {
                 serverPort = Integer.parseInt(server[1]);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             String message = "Invalid Parameters";
             exit(message);
         }
