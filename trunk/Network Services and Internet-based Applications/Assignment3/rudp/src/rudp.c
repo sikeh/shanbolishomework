@@ -11,6 +11,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <time.h>
 
 #include "event.h"
 #include "rudp.h"
@@ -18,7 +19,7 @@
 
 #define RUDP_SUCCESS 1;
 #define RUDP_FAILURE -1;
-test
+
 int current_port = 0;
 
 // --- method signature
@@ -49,14 +50,12 @@ struct r_socket* r_sock = NULL;
 int receiver_side_recv(int fd, void *arg) {
     rudp_socket_t rsocket = (rudp_socket_t) arg;
     char in_data[sizeof (struct r_datagram) ];
-    int sock_len;
-    int bytesrcvd;
-    sock_len = sizeof (struct sockaddr_in);
-    struct r_datagram* in_datagram = (struct r_datagram*) in_data;
+    unsigned int sock_len = sizeof (struct sockaddr_in);
 
+    struct r_datagram* in_datagram = (struct r_datagram*) in_data;
     struct sockaddr_in remote_addr;
 
-    bytesrcvd = recvfrom(rsocket->sd, in_data, sizeof (struct r_datagram), 0,
+    int bytesrcvd = recvfrom(rsocket->sd, in_data, sizeof (struct r_datagram), 0,
             (struct sockaddr*) & remote_addr, &sock_len);
     if (bytesrcvd < -1) {
         perror("recvfrom:");
@@ -71,7 +70,6 @@ int receiver_side_recv(int fd, void *arg) {
                     = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, remote_addr);
             send_datagram(ack_datagram);
             rsocket->socket_type = RSOCKET_RECIEVER;
-            rsocket->session_state = RSESSION_RECIEVE;
             rsocket->last_send_seq = in_datagram->header.seqno + 1;
             rsocket->last_recv_seq = in_datagram->header.seqno;
             break;
@@ -99,7 +97,7 @@ int receiver_side_recv(int fd, void *arg) {
             send_datagram(ack_datagram);
             break;
     }
-
+    return 1;
 }
 
 // ---- call back functions ( sender side), use for receiving ACK
@@ -108,7 +106,7 @@ int handle_rudp_recv(int fd, void *arg) {
 
     rudp_socket_t rsocket = (rudp_socket_t) arg;
     char in_data[sizeof (struct r_datagram) ];
-    int sock_len;
+    unsigned int sock_len;
     int bytesrcvd;
     sock_len = sizeof (struct sockaddr_in);
     struct r_datagram* in_datagram = (struct r_datagram*) in_data;
@@ -157,7 +155,6 @@ int handle_rudp_recv(int fd, void *arg) {
                         rsocket->fin_seq = rsocket->last_send_seq;
                         send_data(ack_datagram);
                         printf("\n^^^^^^^^^^^^^ send out a fin");
-                        rsocket->session_state = RSESSION_WAIT_FOR_ACK_FIN;
                     } else {
                         //buffer is not empty, send buffer dates
                         send_buffer_data(rsocket);
@@ -167,6 +164,7 @@ int handle_rudp_recv(int fd, void *arg) {
             }
             break;
     }
+    return 1;
 }
 
 /*
@@ -211,12 +209,8 @@ int remove_allsessions(rudp_socket_t rsocket) {
 int handle_timeout(int fd, void* arg) {
     struct r_datagram* datagram = (struct r_datagram*) arg;
     struct r_socket* rsocket = datagram->rsocket;
-    /*
-        rsocket->event_handler(rsocket, RUDP_EVENT_TIMEOUT, datagram->addr);
-     */
-    /*
-        send_datagram(datagram);
-     */
+    rsocket->super_event_handler(rsocket, RUDP_EVENT_TIMEOUT, &(datagram->remote_addr));
+    return 1;
 }
 // --- call back functions
 
@@ -241,7 +235,7 @@ rudp_socket_t rudp_socket(int port) {
     socket_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (port == 0) {
-        srand(time(NULL));
+        srand( time(NULL));
         if (0 == current_port) {
             current_port = rand() % 90 + 11240;
         }
@@ -451,9 +445,6 @@ void send_datagram(struct r_datagram* datagram) {
     }
     if (datagram->header.type != RUDP_ACK) {
         struct timeval time_val = calc_next_timeout();
-        if (datagram->header.seqno == 24) {
-            printf("");
-        }
         //TODO use a counter to record timeout time and throw a TIME_OUT_EVENT
         event_timeout(time_val, handle_timeout, datagram, "handle_time_out");
     }
