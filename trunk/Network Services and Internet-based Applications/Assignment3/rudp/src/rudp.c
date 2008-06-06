@@ -43,7 +43,6 @@ int send_buffer_data(rudp_socket_t rsocket);
 void send_data(struct r_datagram* datagram);
 void send_datagram(struct r_datagram* datagram);
 
-struct r_socket* r_sock = NULL;
 
 // --- method signature
 
@@ -261,13 +260,13 @@ rudp_socket_t rudp_socket(int port) {
 
     if (0 == port) {
         // this is sander side
-        if (event_fd(sd, handle_rudp_recv, r_sock, "handle_rudp_revv") < 0) {
+        if (event_fd(sd, handle_rudp_recv, session, "handle_rudp_revv") < 0) {
             printf("fail to register handle_rudp_recv");
             return NULL;
         }
     }else {
         // this is receiver side
-        if (event_fd(sd, receiver_side_recv, r_sock, "receiver_side_recv") < 0) {
+        if (event_fd(sd, receiver_side_recv, session, "receiver_side_recv") < 0) {
             printf("fail to register handle_rudp_recv");
             return NULL;
         }
