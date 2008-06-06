@@ -39,6 +39,18 @@ struct r_datagram* free_buffer_header(struct r_datagram* buffer, int in_seq);
  */
 int is_buffer_empty(rudp_socket_t rsocket);
 
+/**
+ * check whether remote socket is in database
+ *
+ * return database from socket
+ */
+r_database_t get_database(rudp_socket_t r_socket, struct sockaddr_in* remote_addr);
+
+// check whether incoming packet is acceptable
+// if acceptable, then throw to upper layer, and return an ACK
+// otherwise ignore
+void handle_package(struct r_socket* rsocket, r_database_t database, struct r_datagram* in_datagram, struct sockaddr_in* remote_addr);
+
 int send_buffer_data(rudp_socket_t rsocket);
 void send_data(struct r_datagram* datagram);
 void send_datagram(struct r_datagram* datagram);
@@ -62,32 +74,21 @@ int receiver_side_recv(int fd, void *arg) {
 
     struct r_datagram* ack_datagram;
 
+    r_database_t db = get_database(rsocket, &remote_addr);
+
     switch (in_datagram->header.type) {
         case RUDP_SYN:
             printf("RECV RUDP_SYN, seq:%d \n", in_datagram->header.seqno);
             ack_datagram
                     = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, remote_addr);
             send_datagram(ack_datagram);
-            rsocket->socket_type = RSOCKET_RECIEVER;
-            rsocket->last_send_seq = in_datagram->header.seqno + 1;
-            rsocket->last_recv_seq = in_datagram->header.seqno;
+            db->last_recv_seq = in_datagram->header.seqno;
             break;
         case RUDP_DATA:
             printf("RECV RUDP_DATA, seq:%d\n", in_datagram->header.seqno);
             printf("SOCK_ADDR: %s\n", inet_ntoa(remote_addr.sin_addr));
             printf("SOCK_PORT: %u\n", ntohs(remote_addr.sin_port));
-            if ((rsocket->last_recv_seq + 1) == in_datagram->header.seqno) {
-                rsocket->super_rudp_receiver(rsocket, &remote_addr, in_datagram->data,
-                        in_datagram->len);
-                rsocket->last_recv_seq++;
-                ack_datagram
-                        = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, remote_addr);
-                send_datagram(ack_datagram);
-            } else if ((rsocket->last_recv_seq + 1) > in_datagram->header.seqno) {
-                ack_datagram
-                        = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, remote_addr);
-                send_datagram(ack_datagram);
-            }
+            handle_package(rsocket, db, in_datagram, &remote_addr);
             break;
         case RUDP_FIN:
             ;
@@ -99,7 +100,69 @@ int receiver_side_recv(int fd, void *arg) {
     return 1;
 }
 
+/**
+ * check whether remote socket is in database
+ *
+ * return database from socket
+ */
+r_database_t get_database(rudp_socket_t r_socket, struct sockaddr_in* remote_addr) {
+
+    r_database_t iter_database = r_socket->database;
+    if (iter_database == NULL) {
+        // add remote to database
+        iter_database = (struct r_database*) malloc(sizeof (struct r_database));
+        memset(iter_database, 0, sizeof (struct r_database));
+        iter_database->remote = (struct sockaddr_in*) malloc(sizeof (struct sockaddr_in));
+        memcpy(iter_database->remote, remote_addr, sizeof (struct sockaddr_in));
+        r_socket->database = iter_database;
+        printf("\n--------------new a database 1\n");
+        return iter_database;
+    }
+
+    r_database_t last_valid = NULL;
+    while (iter_database != NULL) {
+        if (iter_database->remote->sin_addr.s_addr == remote_addr->sin_addr.s_addr &&
+                iter_database->remote->sin_port == remote_addr->sin_port) {
+            return iter_database;
+        }
+        r_database_t last_valid = iter_database;
+        iter_database = iter_database->next;
+    }
+
+    iter_database = (struct r_database*) malloc(sizeof (struct r_database));
+    memset(iter_database, 0, sizeof (struct r_database));
+    iter_database->remote = (struct sockaddr_in*) malloc(sizeof (struct sockaddr_in));
+    memcpy(iter_database->remote, remote_addr, sizeof (struct sockaddr_in));
+    last_valid->next = iter_database;
+    printf("\n--------------new a database 2\n");
+    return iter_database;
+
+}
+
+
+// check whether incoming packet is acceptable
+// if acceptable, then throw to upper layer, and return an ACK
+// otherwise ignore
+
+void handle_package(struct r_socket* rsocket, r_database_t database, struct r_datagram* in_datagram, struct sockaddr_in* remote_addr) {
+    struct r_datagram* ack_datagram;
+    if ((database->last_recv_seq + 1) == in_datagram->header.seqno) {
+        rsocket->super_rudp_receiver(rsocket, remote_addr, in_datagram->data,
+                in_datagram->len);
+        database->last_recv_seq++;
+        ack_datagram
+                = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, *remote_addr);
+        send_datagram(ack_datagram);
+    } else if ((rsocket->last_recv_seq + 1) > in_datagram->header.seqno) {
+        ack_datagram
+                = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, *remote_addr);
+        send_datagram(ack_datagram);
+    }
+};
+
+
 // ---- call back functions ( sender side), use for receiving ACK
+
 int handle_rudp_recv(int fd, void *arg) {
 
     rudp_socket_t rsocket = (rudp_socket_t) arg;
