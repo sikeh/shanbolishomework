@@ -41,6 +41,13 @@ struct r_datagram {
     struct r_socket* rsocket;
 };
 
+struct r_database{
+    struct sockaddr_in *remote;
+    int last_recv_seq;
+    struct r_database* next;
+};
+typedef struct r_database* r_database_t;
+
 struct r_socket {
     ;
     int (*super_rudp_receiver)(struct r_socket*, struct sockaddr_in*, char*, int);
@@ -57,9 +64,14 @@ struct r_socket {
     int tail_pkt_seq;
     int fin_seq; // the last packet seq
     
+    
+    
     struct r_datagram* datagram_buffer;
 
     struct sockaddr_in* local_socket_addr;
+    
+    // used by recevier to filter incoming file (identified by remote_socket and seq)
+    struct r_database* database;
 };
 typedef struct r_socket* rudp_socket_t;
 
