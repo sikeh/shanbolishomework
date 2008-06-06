@@ -100,7 +100,6 @@ int receiver_side_recv(int fd, void *arg) {
 }
 
 // ---- call back functions ( sender side), use for receiving ACK
-
 int handle_rudp_recv(int fd, void *arg) {
 
     rudp_socket_t rsocket = (rudp_socket_t) arg;
@@ -126,6 +125,8 @@ int handle_rudp_recv(int fd, void *arg) {
                 // receive available ACK, free buffer, record new ACK seq which is used for forwarding window 
                 rsocket->datagram_buffer = free_buffer_header(rsocket->datagram_buffer, in_datagram->header.seqno);
                 rsocket->last_recv_seq = in_datagram->header.seqno;
+            } else {
+                return 0;
             }
             // sender
             switch (rsocket->session_state) {
@@ -135,16 +136,6 @@ int handle_rudp_recv(int fd, void *arg) {
                     send_buffer_data(rsocket);
                     break;
                 case RSESSION_CLOSED:
-                    if (rsocket->fin_seq + 1 == in_datagram->header.seqno) {
-                        // get the reply for FIN, make a RUDP_EVENT_CLOSE event.
-                        rsocket->super_event_handler(rsocket, RUDP_EVENT_CLOSED, NULL);
-                        /* TODO: discuss if need free the resource,
-                         *  it is find to free the resource (rsocket)
-                         *  but what if upper layer get another ACK (a very late and slow one), 
-                         *  and this rsocket has been freed --------> Segment fault?
-                         */
-                    }
-
                     //check if the buffer is empty
                     if (is_buffer_empty(rsocket) == 1) {
                         //buffer is empty, creat a FIN package and send
@@ -153,11 +144,22 @@ int handle_rudp_recv(int fd, void *arg) {
                                 = create_datagram(NULL, 0, RUDP_FIN, rsocket->last_send_seq, rsocket, remote_addr);
                         rsocket->fin_seq = rsocket->last_send_seq;
                         send_data(ack_datagram);
+                        rsocket->session_state = WAIT_FOR_ACK_OF_FIN;
                         printf("\n^^^^^^^^^^^^^ send out a fin");
                     } else {
                         //buffer is not empty, send buffer dates
                         send_buffer_data(rsocket);
                     }
+                    break;
+                case WAIT_FOR_ACK_OF_FIN:
+                    // get the reply for FIN, make a RUDP_EVENT_CLOSE event.
+                    rsocket->super_event_handler(rsocket, RUDP_EVENT_CLOSED, NULL);
+                    /* TODO: discuss if need free the resource,
+                     *  it is find to free the resource (rsocket)
+                     *  but what if upper layer get another ACK (a very late and slow one), 
+                     *  and this rsocket has been freed --------> Segment fault?
+                     */
+
                     break;
 
             }
@@ -207,6 +209,17 @@ int remove_allsessions(rudp_socket_t rsocket) {
 
 int handle_timeout(int fd, void* arg) {
     struct r_datagram* datagram = (struct r_datagram*) arg;
+
+    //TODO: these codes are used for debug, remove them before release:
+    if (datagram == NULL) {
+        printf("\n");
+    } else if (datagram->rsocket == NULL) {
+        printf("\n");
+    }
+
+
+    //end of DEBUG
+
     struct r_socket* rsocket = datagram->rsocket;
     rsocket->super_event_handler(rsocket, RUDP_EVENT_TIMEOUT, &(datagram->remote_addr));
     return 1;
@@ -234,7 +247,7 @@ rudp_socket_t rudp_socket(int port) {
     socket_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (port == 0) {
-        srand( time(NULL));
+        srand(time(NULL));
         if (0 == current_port) {
             current_port = rand() % 90 + 11240;
         }
@@ -445,7 +458,7 @@ void send_datagram(struct r_datagram* datagram) {
     if (datagram->header.type != RUDP_ACK) {
         struct timeval time_val = calc_next_timeout();
         //TODO use a counter to record timeout time and throw a TIME_OUT_EVENT
-        event_timeout(time_val, handle_timeout, datagram, "handle_time_out");
+        //   event_timeout(time_val, handle_timeout, datagram, "handle_time_out");
     }
 }
 
