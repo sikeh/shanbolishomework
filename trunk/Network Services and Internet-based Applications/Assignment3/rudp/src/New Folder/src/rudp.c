@@ -125,7 +125,7 @@ r_database_t get_database(rudp_socket_t r_socket, struct sockaddr_in* remote_add
                 iter_database->remote->sin_port == remote_addr->sin_port) {
             return iter_database;
         }
-        r_database_t last_valid = iter_database;
+        last_valid = iter_database;
         iter_database = iter_database->next;
     }
 
