@@ -27,8 +27,6 @@ typedef enum {
     RSESSION_START,
     RSESSION_TRANSFER,
     RSESSION_CLOSED,
-    RSESSION_RECIEVE,
-    RSESSION_WAIT_FOR_ACK_FIN,
 } enum_session;
 
 struct r_datagram {
