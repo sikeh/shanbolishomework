@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="45">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>src/event.h</itemPath>
+      <itemPath>src/rudp.h</itemPath>
+      <itemPath>src/rudp_api.h</itemPath>
+      <itemPath>src/vsftp.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>src/event.c</itemPath>
+      <itemPath>src/rudp.c</itemPath>
+      <itemPath>src/vs_recv.c</itemPath>
+      <itemPath>src/vs_send.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceEncoding>UTF-8</sourceEncoding>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="src/event.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/event.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/rudp.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp_api.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/vs_recv.c">
+        <itemExcluded>true</itemExcluded>
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vs_send.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vsftp.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cCompilerTool>
+          <developmentMode>5</developmentMode>
+        </cCompilerTool>
+        <ccCompilerTool>
+          <developmentMode>5</developmentMode>
+        </ccCompilerTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="src/event.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/event.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/rudp.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp_api.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/vs_recv.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vs_send.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vsftp.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+    <conf name="send" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="src/event.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/event.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/rudp.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp_api.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/vs_recv.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vs_send.c">
+        <itemExcluded>true</itemExcluded>
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vsftp.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+    <conf name="recv" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="src/event.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/event.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/rudp.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/rudp_api.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/vs_recv.c">
+        <itemExcluded>true</itemExcluded>
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vs_send.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/vsftp.h">
+        <itemTool>3</itemTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
