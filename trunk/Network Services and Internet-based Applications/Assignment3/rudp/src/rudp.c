@@ -37,7 +37,7 @@ struct r_datagram* free_buffer_header(struct r_datagram* buffer, int in_seq);
  * return  1 socket buffer is empty
  *        -1 socket buffer is NOT empty.
  */
-int is_buffer_empty(rudp_socket_t rsocket);
+int is_buffer_empty(r_database_t database);
 
 /**
  * check whether remote socket is in database
@@ -46,15 +46,22 @@ int is_buffer_empty(rudp_socket_t rsocket);
  */
 r_database_t get_database(rudp_socket_t r_socket, struct sockaddr_in* remote_addr);
 
+r_database_t get_sender_database(rudp_socket_t r_socket, struct sockaddr_in* remote_addr);
+
+int remove_database(rudp_socket_t rsocket, r_database_t target_database);
+
+int set_all_database_state_closed(rudp_socket_t rsocket);
+
 // check whether incoming packet is acceptable
 // if acceptable, then throw to upper layer, and return an ACK
 // otherwise ignore
 void handle_package(struct r_socket* rsocket, r_database_t database, struct r_datagram* in_datagram, struct sockaddr_in* remote_addr);
 
-int send_buffer_data(rudp_socket_t rsocket);
+int send_buffer_data(r_database_t database);
 void send_data(struct r_datagram* datagram);
 void send_datagram(struct r_datagram* datagram);
 
+int is_database_empty(rudp_socket_t rsocket);
 
 // --- method signature
 
@@ -93,7 +100,7 @@ int receiver_side_recv(int fd, void *arg) {
         case RUDP_FIN:
             ;
             ack_datagram
-                    = create_datagram(NULL, 0, RUDP_ACK, rsocket->last_recv_seq + 1, rsocket, remote_addr);
+                    = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, remote_addr);
             send_datagram(ack_datagram);
             break;
     }
@@ -102,6 +109,7 @@ int receiver_side_recv(int fd, void *arg) {
 
 /**
  * check whether remote socket is in database
+ * Use for receiver and sander(use for initial database)
  *
  * return database from socket
  */
@@ -112,10 +120,10 @@ r_database_t get_database(rudp_socket_t r_socket, struct sockaddr_in* remote_add
         // add remote to database
         iter_database = (struct r_database*) malloc(sizeof (struct r_database));
         memset(iter_database, 0, sizeof (struct r_database));
+        iter_database->is_initialed = -1;
         iter_database->remote = (struct sockaddr_in*) malloc(sizeof (struct sockaddr_in));
         memcpy(iter_database->remote, remote_addr, sizeof (struct sockaddr_in));
         r_socket->database = iter_database;
-        printf("\n--------------new a database 1\n");
         return iter_database;
     }
 
@@ -131,10 +139,10 @@ r_database_t get_database(rudp_socket_t r_socket, struct sockaddr_in* remote_add
 
     iter_database = (struct r_database*) malloc(sizeof (struct r_database));
     memset(iter_database, 0, sizeof (struct r_database));
+    iter_database->is_initialed = -1;
     iter_database->remote = (struct sockaddr_in*) malloc(sizeof (struct sockaddr_in));
     memcpy(iter_database->remote, remote_addr, sizeof (struct sockaddr_in));
     last_valid->next = iter_database;
-    printf("\n--------------new a database 2\n");
     return iter_database;
 
 }
@@ -153,16 +161,17 @@ void handle_package(struct r_socket* rsocket, r_database_t database, struct r_da
         ack_datagram
                 = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, *remote_addr);
         send_datagram(ack_datagram);
-    } else if ((rsocket->last_recv_seq + 1) > in_datagram->header.seqno) {
+    } else if ((database->last_recv_seq + 1) > in_datagram->header.seqno) {
         ack_datagram
                 = create_datagram(NULL, 0, RUDP_ACK, in_datagram->header.seqno + 1, rsocket, *remote_addr);
         send_datagram(ack_datagram);
     }
 };
 
-
-// ---- call back functions ( sender side), use for receiving ACK
-
+/**
+ * ---- call back functions ( sender side), use for receiving ACK
+ * Sender side only
+ */
 int handle_rudp_recv(int fd, void *arg) {
 
     rudp_socket_t rsocket = (rudp_socket_t) arg;
@@ -180,48 +189,63 @@ int handle_rudp_recv(int fd, void *arg) {
         perror("recvfrom:");
     }
 
+    r_database_t db = get_sender_database(rsocket, &remote_addr);
+    
+    if (db == NULL) {
+        return 0;
+    }
+
     struct r_datagram* ack_datagram;
     switch (in_datagram->header.type) {
         case RUDP_ACK:
             printf("RECV RUDP_ACK, seq:%d\n", in_datagram->header.seqno);
-            if (rsocket->last_recv_seq < in_datagram->header.seqno) {
+            if (db->last_recv_seq < in_datagram->header.seqno) {
                 // receive available ACK, free buffer, record new ACK seq which is used for forwarding window 
-                rsocket->datagram_buffer = free_buffer_header(rsocket->datagram_buffer, in_datagram->header.seqno);
-                rsocket->last_recv_seq = in_datagram->header.seqno;
+                db->datagram_buffer = free_buffer_header(db->datagram_buffer, in_datagram->header.seqno);
+                db->last_recv_seq = in_datagram->header.seqno;
             } else {
                 return 0;
             }
             // sender
-            switch (rsocket->session_state) {
+            switch (db->session_state) {
                 case RSESSION_START:
-                    rsocket->session_state = RSESSION_TRANSFER;
+                    db->session_state = RSESSION_TRANSFER;
                 case RSESSION_TRANSFER:
-                    send_buffer_data(rsocket);
+                    send_buffer_data(db);
                     break;
                 case RSESSION_CLOSED:
                     //check if the buffer is empty
-                    if (is_buffer_empty(rsocket) == 1) {
+                    if (is_buffer_empty(db) == 1) {
                         //buffer is empty, creat a FIN package and send
-                        rsocket->last_send_seq++;
+                        db->last_send_seq++;
                         ack_datagram
-                                = create_datagram(NULL, 0, RUDP_FIN, rsocket->last_send_seq, rsocket, remote_addr);
-                        rsocket->fin_seq = rsocket->last_send_seq;
+                                = create_datagram(NULL, 0, RUDP_FIN, db->last_send_seq, rsocket, remote_addr);
                         send_data(ack_datagram);
-                        rsocket->session_state = WAIT_FOR_ACK_OF_FIN;
+                        db->session_state = WAIT_FOR_ACK_OF_FIN;
                         printf("\n^^^^^^^^^^^^^ send out a fin");
                     } else {
                         //buffer is not empty, send buffer dates
-                        send_buffer_data(rsocket);
+                        send_buffer_data(db);
                     }
                     break;
                 case WAIT_FOR_ACK_OF_FIN:
-                    // get the reply for FIN, make a RUDP_EVENT_CLOSE event.
-                    rsocket->super_event_handler(rsocket, RUDP_EVENT_CLOSED, NULL);
+
+                    //TODO: remove this db from rsocket
+
+
+                    //TODO: if all db is empty, do RUDP_EVENT_CLOSED 
+                    if (is_database_empty(rsocket) > 0) {
+                        // get the reply for FIN, make a RUDP_EVENT_CLOSE event.
+                        rsocket->super_event_handler(rsocket, RUDP_EVENT_CLOSED, NULL);
+                       // free(rsocket);
+                    }
+
                     /* TODO: discuss if need free the resource,
                      *  it is find to free the resource (rsocket)
                      *  but what if upper layer get another ACK (a very late and slow one), 
                      *  and this rsocket has been freed --------> Segment fault?
                      */
+
 
                     break;
 
@@ -229,6 +253,54 @@ int handle_rudp_recv(int fd, void *arg) {
             break;
     }
     return 1;
+}
+
+/**
+ * Get sender database
+ * Use for sender only!
+ *
+ * return database from socket
+ *        NULL if no such database
+ */
+r_database_t get_sender_database(rudp_socket_t r_socket, struct sockaddr_in* remote_addr) {
+
+    r_database_t iter_database = r_socket->database;
+    
+    while (iter_database != NULL) {
+        if (iter_database->remote->sin_addr.s_addr == remote_addr->sin_addr.s_addr &&
+                iter_database->remote->sin_port == remote_addr->sin_port) {
+            return iter_database;
+        }
+        iter_database = iter_database->next;
+    }
+
+    return NULL;
+}
+
+int remove_database(rudp_socket_t rsocket, r_database_t target_database){
+    if (rsocket == NULL || rsocket->database == NULL){
+        return -1;
+    }
+    
+    //iter_database_p->next == iter_database_s
+    r_database_t iter_database_p = rsocket->database;
+    r_database_t iter_database_s = rsocket->database;
+    
+    while (iter_database_s != NULL) {
+        if (memcmp(iter_database_s,target_database,sizeof(struct r_database))== 0) {
+            iter_database_p->next = iter_database_s->next;
+            free (iter_database_s);
+            return 1;
+        }
+        iter_database_p = iter_database_s;
+        iter_database_s = iter_database_s->next;
+    }
+
+    return -1;
+}
+
+int is_database_empty(rudp_socket_t rsocket) {
+    return (rsocket->database == NULL) ? 1 : -1;
 }
 
 /*
@@ -272,16 +344,6 @@ int remove_allsessions(rudp_socket_t rsocket) {
 
 int handle_timeout(int fd, void* arg) {
     struct r_datagram* datagram = (struct r_datagram*) arg;
-
-    //TODO: these codes are used for debug, remove them before release:
-    if (datagram == NULL) {
-        printf("\n");
-    } else if (datagram->rsocket == NULL) {
-        printf("\n");
-    }
-
-
-    //end of DEBUG
 
     struct r_socket* rsocket = datagram->rsocket;
     rsocket->super_event_handler(rsocket, RUDP_EVENT_TIMEOUT, &(datagram->remote_addr));
@@ -330,9 +392,7 @@ rudp_socket_t rudp_socket(int port) {
     struct r_socket* session = NULL;
     session = (struct r_socket*) malloc(sizeof (struct r_socket));
     memset(session, 0, sizeof (struct r_socket));
-    session->is_initialed = -1;
     session->sd = sd;
-    session->local_socket_addr = &socket_addr;
 
     if (0 == port) {
         // this is sander side
@@ -358,8 +418,20 @@ rudp_socket_t rudp_socket(int port) {
  */
 
 int rudp_close(rudp_socket_t rsocket) {
-    rsocket->session_state = RSESSION_CLOSED;
+    set_all_database_state_closed(rsocket);
     return 0;
+}
+
+int set_all_database_state_closed(rudp_socket_t rsocket){
+    
+    r_database_t iter_database = rsocket->database;
+    
+    while (iter_database != NULL) {
+        iter_database->session_state = RSESSION_CLOSED;
+        iter_database = iter_database->next;
+    }
+
+    return 1;
 }
 
 /** 
@@ -386,50 +458,47 @@ int rudp_event_handler(rudp_socket_t rsocket, int (*handler)(rudp_socket_t, rudp
 int rudp_sendto(rudp_socket_t rsocket, void* data, int len,
         struct sockaddr_in* to) {
     // TODO check session list
-
-    if (rsocket->is_initialed < 0) {
-        rsocket->is_initialed = 1;
-        rsocket->last_recv_seq = -1;
-        rsocket->last_send_seq = -1;
-
-        rsocket->local_socket_addr = to;
-
-        struct sockaddr_in* a_socket =
-                (struct sockaddr_in*) malloc(sizeof (struct sockaddr_in));
-        memset(a_socket, 0, sizeof (struct sockaddr_in));
-        memcpy(a_socket, to, sizeof (struct sockaddr_in));
+    r_database_t db = get_database(rsocket, to);
+    if (db->is_initialed < 0) {
+        db->is_initialed = 1;
+        db->last_recv_seq = -1;
+        db->last_send_seq = -1;
 
         printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
         printf("here is a new session, sd = %d", rsocket->sd);
         printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
-        rsocket->datagram_buffer = NULL;
-        rsocket->local_socket_addr = a_socket;
-        rsocket->last_send_seq = 23;
-        rsocket->last_recv_seq = 23;
-        rsocket->socket_type = RSOCKET_SENDER;
-        rsocket->session_state = RSESSION_START;
+        db->datagram_buffer = NULL;
+        db->last_send_seq = 23;
+        db->last_recv_seq = 23;
+        db->session_state = RSESSION_START;
         // starting sequence from 24, which is a SYN packet
         struct r_datagram* syn_datagram =
-                create_datagram(NULL, 0, RUDP_SYN, 24, rsocket, *to);
+                create_datagram_for_sender(NULL, 0, RUDP_SYN, 24, rsocket, *to,db);
         printf("\nsend RUDP_SYN, seq 24\n");
         //TODO: change send_data signature to sute with rsocket
         send_data(syn_datagram);
 
         // send the first packet
-        rsocket->last_send_seq = 25;
-        struct r_datagram* data_datagram = create_datagram(data, len,
-                RUDP_DATA, rsocket->last_send_seq, rsocket, *to);
+        db->last_send_seq = 25;
+        struct r_datagram* data_datagram = create_datagram_for_sender(data, len,
+                RUDP_DATA, db->last_send_seq, rsocket, *to,db);
         send_data(data_datagram);
     } else {
-        rsocket->last_send_seq++;
-        struct r_datagram* datagram = create_datagram(data, len, RUDP_DATA,
-                rsocket->last_send_seq, rsocket, *to);
+        db->last_send_seq++;
+        struct r_datagram* datagram = create_datagram_for_sender(data, len, RUDP_DATA,
+                db->last_send_seq, rsocket, *to,db);
         send_data(datagram);
     }
 
     return 0;
 }
+
+int is_new_session(rudp_socket_t rsocket, struct sockaddr_in* to) {
+
+
+
+};
 
 struct r_datagram* create_datagram(void* data, int len, int type, int seq, struct r_socket* r_sock, struct sockaddr_in remote_addr) {
     struct r_datagram* datagram =
@@ -440,6 +509,21 @@ struct r_datagram* create_datagram(void* data, int len, int type, int seq, struc
     datagram->len = len;
     datagram->rsocket = r_sock;
     datagram->remote_addr = remote_addr;
+    memset(datagram->data, 0, RUDP_MAXPKTSIZE);
+    memcpy(datagram->data, data, len);
+    return datagram;
+}
+
+struct r_datagram* create_datagram_for_sender(void* data, int len, int type, int seq, struct r_socket* r_sock, struct sockaddr_in remote_addr, r_database_t db) {
+    struct r_datagram* datagram =
+            (struct r_datagram*) malloc(sizeof (struct r_datagram));
+    memset(datagram, 0, sizeof (struct r_datagram));
+    datagram->header.seqno = seq;
+    datagram->header.type = type;
+    datagram->len = len;
+    datagram->rsocket = r_sock;
+    datagram->remote_addr = remote_addr;
+    datagram->database = db;
     memset(datagram->data, 0, RUDP_MAXPKTSIZE);
     memcpy(datagram->data, data, len);
     return datagram;
@@ -475,6 +559,7 @@ struct r_datagram* push_data_to_buffer(struct r_datagram* buffer,
 }
 
 void send_data(struct r_datagram* datagram) {
+    //TODO: change rsocket to db
     rudp_socket_t rsocket = datagram->rsocket;
     //    struct sockaddr_in addr = datagram->remote_addr;
 
@@ -509,6 +594,7 @@ void send_datagram(struct r_datagram* datagram) {
     printf("len = %d\n", datagram->len);
     printf("\n");
 
+    //TODO change rsocket to db
     rudp_socket_t rsocket = datagram ->rsocket;
     struct sockaddr_in addr = datagram ->remote_addr;
 
@@ -525,15 +611,15 @@ void send_datagram(struct r_datagram* datagram) {
     }
 }
 
-int send_buffer_data(rudp_socket_t rsocket) {
+int send_buffer_data(r_database_t database) {
     printf("send_buffer_data\n");
-    if (rsocket == NULL) {
+    if (database == NULL) {
         return -2;
     }
-    if (rsocket->datagram_buffer == NULL) {
+    if (database->datagram_buffer == NULL) {
         return -2;
     }
-    struct r_datagram* a_datagram = rsocket->datagram_buffer;
+    struct r_datagram* a_datagram = database->datagram_buffer;
 
     //search buffer and send data, but limit with window size
     int i = 0;
@@ -554,11 +640,11 @@ int send_buffer_data(rudp_socket_t rsocket) {
  * return  1 socket buffer is empty
  *        -1 socket buffer is NOT empty.
  */
-int is_buffer_empty(rudp_socket_t rsocket) {
-    if (rsocket == NULL) {
+int is_buffer_empty(r_database_t database) {
+    if (database == NULL) {
         return 1;
     }
-    if (rsocket->datagram_buffer == NULL) {
+    if (database->datagram_buffer == NULL) {
         return 1;
     }
     return -1;
@@ -605,38 +691,3 @@ struct r_datagram* free_buffer_header(struct r_datagram* buffer, int in_seq) {
 
     return new_header;
 }
-
-/*
-void free_all(struct r_datagram* buffer) {
-
-    struct r_datagram* new_header = NULL;
-    if (buffer != NULL) {
-        new_header = buffer->next;
-    } else {
-        return buffer;
-    }
-    struct r_datagram* to_free = buffer;
-
-
-
-    while (new_header != NULL) {
-        if (event_timeout_delete(handle_timeout, to_free) < 0) {
-            printf("\n*************deregister failed*************** inwhile\n");
-        }else {
-            printf("\n$$$$$$$$$$$$$$$$$deregister successful$$$$$$$$$$$$$$$\n");
-        }
-        if (to_free != NULL) {
-            free(to_free);
-        }
-        to_free = new_header;
-        new_header = new_header->next;
-    }
-    if (event_timeout_delete(handle_timeout, to_free) < 0) {
-        printf("\n*************deregister failed***************in single\n");
-    }else {
-        printf("\n$$$$$$$$$$$$$$$$$deregister successful$$$$$$$$$$$$$$$\n");
-    }
-
-};
- */
-
