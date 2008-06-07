@@ -8,7 +8,6 @@
 #define RUDP_MAXPKTSIZE 1000	/* Number of data bytes that can sent in a
 				 * packet, RUDP header not included */
 
-
 /*
  * Event types for callback notifications
  */
@@ -39,37 +38,29 @@ struct r_datagram {
     struct r_datagram* next;
     struct sockaddr_in remote_addr;
     struct r_socket* rsocket;
+    struct r_database* database;
 };
 
-struct r_database{
+struct r_database {
     struct sockaddr_in *remote;
+    int is_initialed; // -1 = false; 1 = true;
     int last_recv_seq;
+    int last_send_seq;
+
+    enum_session session_state;
+
+    struct r_datagram* datagram_buffer;
     struct r_database* next;
 };
 typedef struct r_database* r_database_t;
 
 struct r_socket {
-    ;
     int (*super_rudp_receiver)(struct r_socket*, struct sockaddr_in*, char*, int);
     int (*super_event_handler)(struct r_socket*, rudp_event_t, struct sockaddr_in *);
-    
-    int is_initialed; // -1 = false; 1 = true;
 
-    enum_socket socket_type;
-    enum_session session_state;
 
     int sd;
-    int last_recv_seq;
-    int last_send_seq;
-    int tail_pkt_seq;
-    int fin_seq; // the last packet seq
-    
-    
-    
-    struct r_datagram* datagram_buffer;
 
-    struct sockaddr_in* local_socket_addr;
-    
     // used by recevier to filter incoming file (identified by remote_socket and seq)
     struct r_database* database;
 };
