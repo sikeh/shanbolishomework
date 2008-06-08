@@ -67,6 +67,7 @@ void handle_package(struct r_socket* rsocket, r_database_t database,
 int send_buffer_data(r_database_t database);
 void send_data(struct r_datagram* datagram);
 void send_datagram(struct r_datagram* datagram);
+void resend_datagram(struct r_datagram* datagram);
 
 int is_database_empty(rudp_socket_t rsocket);
 
@@ -327,10 +328,18 @@ int is_database_empty(rudp_socket_t rsocket) {
 
 int handle_timeout(int fd, void* arg) {
     struct r_datagram* datagram = (struct r_datagram*) arg;
-
     struct r_socket* rsocket = datagram->rsocket;
-    rsocket->super_event_handler(rsocket, RUDP_EVENT_TIMEOUT,
-            &(datagram->remote_addr));
+
+    datagram->retrans_num++;
+    if (datagram->retrans_num > RUDP_MAXRETRANS) {
+        rsocket->super_event_handler(rsocket, RUDP_EVENT_TIMEOUT,
+                &(datagram->remote_addr));
+        return -1;
+    }
+
+    resend_datagram(datagram);
+
+
     return 1;
 }
 // --- call back functions
@@ -584,6 +593,34 @@ void send_datagram(struct r_datagram* datagram) {
     if (datagram->header.type != RUDP_ACK) {
         struct timeval time_val = calc_next_timeout();
         //TODO use a counter to record timeout time and throw a TIME_OUT_EVENT
+        datagram->retrans_num = 0;
+        event_timeout(time_val, handle_timeout, datagram, "handle_time_out");
+    }
+}
+
+void resend_datagram(struct r_datagram* datagram) {
+    int bytessent;
+    printf("\nRESEND_datagram: \n");
+    printf("Type = %d\n", datagram->header.type);
+    printf("seqno = %d\n", datagram->header.seqno);
+    printf("data = %s\n", datagram->data);
+    printf("len = %d\n", datagram->len);
+    printf("\n");
+
+    rudp_socket_t rsocket = datagram ->rsocket;
+
+    struct sockaddr_in addr = datagram ->remote_addr;
+
+    bytessent = sendto(rsocket->sd, (void*) datagram,
+            sizeof (struct r_datagram), 0, (struct sockaddr*) & addr,
+            sizeof (struct sockaddr));
+    if (bytessent < 0) {
+        perror("senddatagram:");
+    }
+    datagram->has_send = 1;
+    if (datagram->header.type != RUDP_ACK) {
+        struct timeval time_val = calc_next_timeout();
+        //TODO use a counter to record timeout time and throw a TIME_OUT_EVENT
         event_timeout(time_val, handle_timeout, datagram, "handle_time_out");
     }
 }
@@ -627,36 +664,24 @@ int is_buffer_empty(r_database_t database) {
     return -1;
 }
 
-//TODO: check inside this method, espassially timeout handler.
 
 /**
  *free buffer, from current till in_seq - 1,
  * DO NOT free No. in_seq
  */
 struct r_datagram* free_buffer_header(struct r_datagram* buffer, int in_seq) {
-    struct r_datagram* new_header = NULL;
-    if (buffer != NULL) {
-        new_header = buffer->next;
-    } else {
-        return buffer;
+   
+    if (buffer == NULL){
+        return NULL;
     }
-
+    
+    struct r_datagram* datagram = buffer;
     struct r_datagram* to_free = buffer;
-    if (event_timeout_delete(handle_timeout, to_free) < 0) {
-        printf("\n*************deregister failed***************in single\n");
-    } else {
-        printf("\n$$$$$$$$$$$$$$$$$deregister successful$$$$$$$$$$$$$$$\n");
-    }
-    free(to_free);
 
-    while (new_header != NULL) {
-        if (new_header->header.seqno >= in_seq) {
-            break;
-        }
-
-        to_free = new_header;
-        new_header = new_header->next;
-        //TODO: check unregister timeout event
+    while (datagram != NULL && datagram->header.seqno < in_seq) {
+        to_free = datagram;
+        datagram = datagram->next;
+        
         if (event_timeout_delete(handle_timeout, to_free) < 0) {
             printf("\n*************deregister failed*************** inwhile\n");
         } else {
@@ -664,6 +689,7 @@ struct r_datagram* free_buffer_header(struct r_datagram* buffer, int in_seq) {
         }
         free(to_free);
     }
+    
+    return datagram;
 
-    return new_header;
 }
