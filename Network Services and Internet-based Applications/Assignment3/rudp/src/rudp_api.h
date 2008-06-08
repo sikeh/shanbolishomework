@@ -35,7 +35,7 @@ struct r_datagram {
     int len;
     int has_ack;
     int has_send;
-    int num_retrans;
+    int retrans_num;
     struct r_datagram* next;
     struct sockaddr_in remote_addr;
     struct r_socket* rsocket;
