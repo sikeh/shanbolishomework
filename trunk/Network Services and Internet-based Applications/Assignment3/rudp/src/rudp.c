@@ -487,6 +487,7 @@ struct r_datagram* create_datagram(void* data, int len, int type, int seq,
     datagram->header.seqno = seq;
     datagram->header.type = type;
     datagram->len = len;
+    datagram->has_send = -1;
     datagram->rsocket = r_sock;
     datagram->remote_addr = remote_addr;
     memset(datagram->data, 0, RUDP_MAXPKTSIZE);
@@ -503,6 +504,7 @@ struct r_datagram* create_datagram_for_sender(void* data, int len, int type,
     datagram->header.seqno = seq;
     datagram->header.type = type;
     datagram->len = len;
+    datagram->has_send = -1;
     datagram->rsocket = r_sock;
     datagram->remote_addr = remote_addr;
     datagram->database = db;
@@ -580,6 +582,7 @@ void send_datagram(struct r_datagram* datagram) {
     if (bytessent < 0) {
         perror("senddatagram:");
     }
+    datagram->has_send = 1;
     if (datagram->header.type != RUDP_ACK) {
         struct timeval time_val = calc_next_timeout();
         //TODO use a counter to record timeout time and throw a TIME_OUT_EVENT
@@ -600,7 +603,7 @@ int send_buffer_data(r_database_t database) {
     //search buffer and send data, but limit with window size
     int i = 0;
     for (i = 0; i < RUDP_WINDOW; i++) {
-        if (a_datagram != NULL) {
+        if (a_datagram != NULL && a_datagram->has_send != 1) {
             send_datagram(a_datagram);
             a_datagram = a_datagram->next;
         } else {
