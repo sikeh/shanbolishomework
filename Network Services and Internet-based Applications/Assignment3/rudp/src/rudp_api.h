@@ -34,6 +34,7 @@ struct r_datagram {
     char data[RUDP_MAXPKTSIZE];
     int len;
     int has_ack;
+    int has_send;
     int num_retrans;
     struct r_datagram* next;
     struct sockaddr_in remote_addr;
