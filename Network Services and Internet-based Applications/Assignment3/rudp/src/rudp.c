@@ -244,10 +244,9 @@ int handle_rudp_recv(int fd, void *arg) {
                     break;
                 case WAIT_FOR_ACK_OF_FIN:
 
-                    //TODO: remove this db from rsocket
-
+                    // remove this db from rsocket
                     remove_database(rsocket, db);
-                    //TODO: if all db is empty, do RUDP_EVENT_CLOSED 
+                    // if all db is empty, do RUDP_EVENT_CLOSED 
                     if (is_database_empty(rsocket) > 0) {
                         // get the reply for FIN, make a RUDP_EVENT_CLOSE event.
                         rsocket->super_event_handler(rsocket, RUDP_EVENT_CLOSED, NULL);
@@ -440,7 +439,7 @@ int rudp_event_handler(rudp_socket_t rsocket, int (*handler)(rudp_socket_t, rudp
  */
 int rudp_sendto(rudp_socket_t rsocket, void* data, int len,
         struct sockaddr_in* to) {
-    // TODO check session list
+
     r_database_t db = get_database(rsocket, to);
     if (db->is_initialed < 0) {
         db->is_initialed = 1;
@@ -460,7 +459,6 @@ int rudp_sendto(rudp_socket_t rsocket, void* data, int len,
                 * syn_datagram =
                 create_datagram_for_sender(NULL, 0, RUDP_SYN, 24, rsocket, *to, db);
         printf("\nsend RUDP_SYN, seq 24\n");
-        //TODO: change send_data signature to sute with rsocket
         send_data(syn_datagram);
 
         // send the first packet
@@ -586,7 +584,7 @@ void send_datagram(struct r_datagram* datagram) {
     if (datagram->header.type != RUDP_ACK) {
         struct timeval time_val = calc_next_timeout();
         //TODO use a counter to record timeout time and throw a TIME_OUT_EVENT
-        //   event_timeout(time_val, handle_timeout, datagram, "handle_time_out");
+        event_timeout(time_val, handle_timeout, datagram, "handle_time_out");
     }
 }
 
