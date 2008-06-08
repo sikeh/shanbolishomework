@@ -51,6 +51,7 @@ struct r_database {
 
     struct r_datagram* datagram_buffer;
     struct r_database* next;
+    struct r_database* pre;
 };
 typedef struct r_database* r_database_t;
 
