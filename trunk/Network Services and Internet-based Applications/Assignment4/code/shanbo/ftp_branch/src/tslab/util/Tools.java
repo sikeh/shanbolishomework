@@ -16,6 +16,8 @@ import java.util.Arrays;
 
 import com.sun.snoop.TCPHeader;
 import com.sun.snoop.SnoopException;
+import com.sun.snoop.IPv4Header;
+import tslab.exception.ValidationFailedException;
 
 
 /**
@@ -26,42 +28,64 @@ import com.sun.snoop.SnoopException;
  * Time: 11:07:52 PM
  */
 public class Tools {
-    private static byte[] header;
 
-
-    public static boolean validateIPPacket(IPPacket ipPacket) {
-//        The packet length reported by the Link Layer must be large enough to hold the minimum length legal IP datagram (20 bytes).
-        try {
-            if (ipPacket.length < 20) return false;
-//        The IP version number must be 4. If the version number is not 4 then the packet may be another version of IP, such as IPng or ST-II.
-            if (ipPacket.version != ((byte) 4)) return false;
-
-            header = ipPacket.header;
-//        IPv4Header ipv4Header = IPv4Header.decodeIPv4Header(header, 0);
-
-            int originalChecksum1 = header[10];
-            int originalChecksum2 = header[11];
-            header[10] = 0x0;
-            header[11] = 0x0;
-            CheckCRC16 crc = new CheckCRC16();
-            crc.crc16(header);
-        } catch (Exception e) {
-            return false;
+    /**
+     * Validate IP Packet
+     *
+     * @param ipPacket the ip packet
+     * @throws ValidationFailedException validate failed.
+     * @throws NullPointerException ipPacket is null.
+     */
+    public static void validateIPPacket(IPPacket ipPacket) throws ValidationFailedException, NullPointerException {
+        if (ipPacket == null){
+            throw new NullPointerException("ipPacket is null");
         }
-        return true;
+//        The packet length reported by the Link Layer must be large enough to hold the minimum length legal IP datagram (20 bytes).
+        if (ipPacket.length < 20) {
+            throw new ValidationFailedException("Invalid length");
+        };
+//        The IP version number must be 4. If the version number is not 4 then the packet may be another version of IP, such as IPng or ST-II.
+        if (ipPacket.version != ((byte) 4)){
+            throw new ValidationFailedException("Invalid IP version");
+        };
+
+        byte[] header = ipPacket.header;
+        IPv4Header sunHeader = null;
+        try {
+             sunHeader = IPv4Header.decodeIPv4Header(header,14);
+        } catch (SnoopException e) {
+            throw new ValidationFailedException(e.getMessage());
+        }
+        byte[] ipHeader = Arrays.copyOfRange(header,14,header.length);
+        org.savarese.vserv.tcpip.IPPacket p = new org.savarese.vserv.tcpip.IPPacket(ipHeader.length);
+        try {
+            p.setData(ipHeader);
+        } catch (Exception e) {
+            throw new ValidationFailedException("Invalid Packet");
+        }
+        int crc4 = 0;
+        try {
+            crc4 = p.computeIPChecksum();
+        } catch (Exception e) {
+            throw new ValidationFailedException("Invalid Packet");
+        }
+
+        if (crc4 != sunHeader.getHeaderChecksum()){
+            throw new ValidationFailedException("Invalid Checksum");
+        };
     }
 
     public static boolean validateTCPPacket(TCPPacket tcpPacket) {
         try {
             TCPHeader tcpHeader = null;
+
+            //TODO: What is this?
             try {
                 tcpHeader = TCPHeader.decodeTCPHeader(tcpPacket.header, 43);
             } catch (SnoopException e) {
                 return false;
             }
 
-            CheckCRC16 crc = new CheckCRC16();
-            crc.crc16(tcpHeader.getHeader());
         } catch (Exception e) {
             return false;
         }
@@ -155,7 +179,4 @@ public class Tools {
         }
     }
 
-    class CRC16 {
-
-    }
 }
