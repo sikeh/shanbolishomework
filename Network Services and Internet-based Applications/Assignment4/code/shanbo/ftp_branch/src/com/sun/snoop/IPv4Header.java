@@ -141,9 +141,9 @@ public class IPv4Header {
 
 
         byte ipVersion = (byte) ((headerBytes[offset] >>> 4) & 0xFF);
-//        if (ipVersion != 0x04) {
-//            throw new SnoopException("IP version is not 4");
-//        }
+        if (ipVersion != 0x04) {
+            throw new SnoopException("IP version is not 4");
+        }
 
 
         int ipHeaderWords = (headerBytes[offset] & 0x0F);
@@ -170,11 +170,15 @@ public class IPv4Header {
         int sourceIP = SnoopDecoder.byteArrayToInt(headerBytes, offset + 12, 4);
         int destinationIP = SnoopDecoder.byteArrayToInt(headerBytes, offset + 16, 4);
 
-        byte[] optionBytes;
+        byte[] optionBytes = null;
         if (ipHeaderWords == 5) {
             optionBytes = new byte[0];
         } else {
-            optionBytes = new byte[(ipHeaderWords - 5) * 4];
+            try {
+                optionBytes = new byte[(ipHeaderWords - 5) * 4];
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             System.arraycopy(headerBytes, offset + 20, optionBytes, 0,
                     optionBytes.length);
         }
