@@ -11,6 +11,7 @@ import tslab.factory.PacketFactory;
 import tslab.factory.TCPFactory;
 import tslab.factory.FTPDataPacketFactory;
 import tslab.exception.WrongInputPacketException;
+import tslab.exception.ValidationFailedException;
 import tslab.util.Tools;
 
 /**
@@ -65,12 +66,22 @@ class MyPacketHandler implements PacketReceiver {
         String packetType = null;
         if (packet instanceof ICMPPacket) {
             //validate IP packet
-            Tools.validateIPPacket((IPPacket) packet);
+            try {
+                Tools.validateIPPacket((IPPacket) packet);
+            } catch (ValidationFailedException e) {
+                //TODO change to print message and return
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             packetType = "icmp -> ";
             factory = icmpFactory;
         } else if (packet instanceof TCPPacket) {
             //validate TCP packet
-            Tools.validateTCPPacket((TCPPacket) packet);
+            try {
+                Tools.validateTCPPacket((TCPPacket) packet);
+            } catch (ValidationFailedException e) {
+                //TODO change to print message and return                
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
             packetType = "tcp -> ";
             if (isFtpData(packet)) {
                 factory = ftpFactory;
