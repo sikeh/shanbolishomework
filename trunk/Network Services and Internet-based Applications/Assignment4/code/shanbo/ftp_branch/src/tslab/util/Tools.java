@@ -36,9 +36,9 @@ public class Tools {
      * @throws ValidationFailedException validate failed.
      * @throws NullPointerException ipPacket is null.
      */
-    public static void validateIPPacket(IPPacket ipPacket) throws ValidationFailedException, NullPointerException {
+    public static void validateIPPacket(IPPacket ipPacket) throws ValidationFailedException{
         if (ipPacket == null){
-            throw new NullPointerException("ipPacket is null");
+            throw new ValidationFailedException("ipPacket is null");
         }
 //        The packet length reported by the Link Layer must be large enough to hold the minimum length legal IP datagram (20 bytes).
         if (ipPacket.length < 20) {
@@ -75,7 +75,12 @@ public class Tools {
         };
     }
 
-    public static boolean validateTCPPacket(TCPPacket tcpPacket) {
+    public static boolean validateTCPPacket(TCPPacket tcpPacket)throws ValidationFailedException{
+        if (tcpPacket == null){
+            throw new ValidationFailedException("ipPacket is null");
+        }
+
+        //TODO: finish TCP pacekt validation
         try {
             TCPHeader tcpHeader = null;
 
