@@ -64,14 +64,23 @@ class MyPacketHandler implements PacketReceiver {
     public void receivePacket(Packet packet) {
         PacketFactory factory = null;
         String packetType = null;
-        if (packet instanceof ICMPPacket) {
-            //validate IP packet
+
+        //validate ip packet
+        if (packet instanceof IPPacket) {
             try {
                 Tools.validateIPPacket((IPPacket) packet);
             } catch (ValidationFailedException e) {
                 //TODO change to print message and return
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+        } else{
+            return;
+        }
+
+
+        if (packet instanceof ICMPPacket) {
+            //validate IP packet
+
             packetType = "icmp -> ";
             factory = icmpFactory;
         } else if (packet instanceof TCPPacket) {

@@ -34,35 +34,37 @@ public class Tools {
      *
      * @param ipPacket the ip packet
      * @throws ValidationFailedException validate failed.
-     * @throws NullPointerException ipPacket is null.
+     * @throws NullPointerException      ipPacket is null.
      */
-    public static void validateIPPacket(IPPacket ipPacket) throws ValidationFailedException{
-        if (ipPacket == null){
+    public static void validateIPPacket(IPPacket ipPacket) throws ValidationFailedException {
+        if (ipPacket == null) {
             throw new ValidationFailedException("ipPacket is null");
         }
 //        The packet length reported by the Link Layer must be large enough to hold the minimum length legal IP datagram (20 bytes).
         if (ipPacket.length < 20) {
             throw new ValidationFailedException("Invalid length");
-        };
+        }
 //        The IP version number must be 4. If the version number is not 4 then the packet may be another version of IP, such as IPng or ST-II.
-        if (ipPacket.version != ((byte) 4)){
+        if (ipPacket.version != ((byte) 4)) {
             throw new ValidationFailedException("Invalid IP version");
-        };
+        }
 
         byte[] header = ipPacket.header;
         IPv4Header sunHeader = null;
         try {
-             sunHeader = IPv4Header.decodeIPv4Header(header,14);
+            sunHeader = IPv4Header.decodeIPv4Header(header, 14);
         } catch (SnoopException e) {
             throw new ValidationFailedException(e.getMessage());
         }
-        byte[] ipHeader = Arrays.copyOfRange(header,14,header.length);
+        byte[] ipHeader = Arrays.copyOfRange(header, 14, header.length);
         org.savarese.vserv.tcpip.IPPacket p = new org.savarese.vserv.tcpip.IPPacket(ipHeader.length);
         try {
             p.setData(ipHeader);
         } catch (Exception e) {
             throw new ValidationFailedException("Invalid Packet");
         }
+
+
         int crc4 = 0;
         try {
             crc4 = p.computeIPChecksum();
@@ -70,31 +72,52 @@ public class Tools {
             throw new ValidationFailedException("Invalid Packet");
         }
 
-        if (crc4 != sunHeader.getHeaderChecksum()){
+        if (crc4 != sunHeader.getHeaderChecksum()) {
             throw new ValidationFailedException("Invalid Checksum");
-        };
+        }
     }
 
-    public static boolean validateTCPPacket(TCPPacket tcpPacket)throws ValidationFailedException{
-        if (tcpPacket == null){
+    public static void validateTCPPacket(TCPPacket tcpPacket) throws ValidationFailedException {
+        if (tcpPacket == null) {
             throw new ValidationFailedException("ipPacket is null");
         }
 
-        //TODO: finish TCP pacekt validation
+        IPPacket ipPacket = tcpPacket;
+
+        byte[] ipHeader = ipPacket.header;
+
+        IPv4Header sunIpHeader = null;
         try {
-            TCPHeader tcpHeader = null;
-
-            //TODO: What is this?
-            try {
-                tcpHeader = TCPHeader.decodeTCPHeader(tcpPacket.header, 43);
-            } catch (SnoopException e) {
-                return false;
-            }
-
-        } catch (Exception e) {
-            return false;
+            sunIpHeader = IPv4Header.decodeIPv4Header(ipHeader, 14);
+        } catch (SnoopException e) {
+            throw new ValidationFailedException(e.getMessage());
         }
-        return true;
+
+        int sunIpLength = sunIpHeader.getIPHeaderLength();
+
+        TCPHeader sunTcpHeader = null;
+        try {
+            sunTcpHeader = TCPHeader.decodeTCPHeader(ipHeader, 14 + sunIpLength);
+        } catch (SnoopException e) {
+            throw new ValidationFailedException(e.getMessage());
+        }
+
+        int originalTcpCheckSum = sunTcpHeader.getChecksum();
+
+        org.savarese.vserv.tcpip.TCPPacket p = new org.savarese.vserv.tcpip.TCPPacket(1124);
+        byte[] savareseIpHeader = Arrays.copyOfRange(ipHeader, 14, ipHeader.length);
+        int calculatedChecksum = -1;
+        try {
+            p.setData(savareseIpHeader);
+            calculatedChecksum = p.computeTCPChecksum();
+        } catch (Exception e) {
+            throw new ValidationFailedException("Invalid Packet");
+        }
+
+        if (originalTcpCheckSum != calculatedChecksum) {
+            throw new ValidationFailedException("Invalid TCP checksum");
+        }
+
     }
 
     /**
