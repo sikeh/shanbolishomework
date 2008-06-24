@@ -106,13 +106,31 @@ public class Tools {
         } catch (SnoopException e) {
             throw new ValidationFailedException(e.getMessage());
         }
+
         int originalTcpCheckSum = sunTcpHeader.getChecksum();
+
         org.savarese.vserv.tcpip.TCPPacket p = new org.savarese.vserv.tcpip.TCPPacket(1124);
-        byte[] savareseIpHeader = Arrays.copyOfRange(ipHeader, 14, ipHeader.length);
+        byte[] tcpHeader = Arrays.copyOfRange(ipHeader, 14 + sunIpLength, ipHeader.length);
+        byte[] data = tcpPacket.data;
+
+        //TODO: wholeData = "Pseudo Header" + "TCP header" + " TCP Data"
+        byte[] wholeData = new byte[12 + tcpHeader.length + data.length];
+        System.arraycopy(ipHeader, 12, wholeData, 0, 8);
+        wholeData[8] = 0x0;
+        wholeData[9] = 0x4;
+        wholeData[10] = intToByteArray(tcpHeader.length + data.length)[0];
+        wholeData[11] = intToByteArray(tcpHeader.length + data.length)[1];
+        System.arraycopy(tcpHeader, 0, wholeData, 12, tcpHeader.length);
+        System.arraycopy(data, 0, wholeData, 12 + tcpHeader.length, data.length);
+
+
         int calculatedChecksum = -1;
+
+        //TODO: this is correct!
+        byte[] savareseIpHeader = Arrays.copyOfRange(ipHeader, 14, ipHeader.length);
+
         try {
-            p.setData(savareseIpHeader);
-            calculatedChecksum = p.computeTCPChecksum();
+            calculatedChecksum = computeChecksum(0, 12 + 16, wholeData.length, 0, false, wholeData);
         } catch (Exception e) {
             throw new ValidationFailedException("Invalid Packet");
         }
@@ -159,7 +177,7 @@ public class Tools {
         }
 
 
-        originalTcpCheckSum = SnoopDecoder.byteArrayToInt(icmpHeader,2,2);
+        originalTcpCheckSum = SnoopDecoder.byteArrayToInt(icmpHeader, 2, 2);
 
         byte[] data = icmpPacket.data;
 
@@ -313,7 +331,11 @@ public class Tools {
         return total;
     }
 
-
+    private static final byte[] intToByteArray(int value) {
+        return new byte[]{
+                (byte) (value >>> 8),
+                (byte) value};
+    }
 
 
 }

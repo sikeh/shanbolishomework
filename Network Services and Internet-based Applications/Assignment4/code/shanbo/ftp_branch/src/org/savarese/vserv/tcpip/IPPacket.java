@@ -362,13 +362,15 @@ public class IPPacket {
 
     imax = length - (length % 2);
 
-    while(i < imax)
-      total+=(((_data_[i++] & 0xff) << 8) | (_data_[i++] & 0xff));
 
-    if(i < length)
-      total+=((_data_[i] & 0xff) << 8);
+          while(i < imax)
+            total+=(((_data_[i++] & 0xff) << 8) | (_data_[i++] & 0xff));
 
-    total+=virtualHeaderTotal;
+
+          if(i < length)
+          total+=((_data_[i] & 0xff) << 8);
+    
+      total+=virtualHeaderTotal;
 
     // Fold to 16 bits
     while((total & 0xffff0000) != 0)

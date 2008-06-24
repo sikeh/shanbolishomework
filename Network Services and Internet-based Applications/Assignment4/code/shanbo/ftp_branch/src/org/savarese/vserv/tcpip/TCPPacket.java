@@ -478,6 +478,11 @@ public class TCPPacket extends IPPacket {
     return _computeChecksum_(__offset, __offset + OFFSET_TCP_CHECKSUM,
                              getIPPacketLength(), __getVirtualHeaderTotal(),
                              update);
+//
+//       return _computeChecksum_(__offset, __offset + OFFSET_TCP_CHECKSUM,
+//                             _data_.length - __offset, __getVirtualHeaderTotal(),
+//                             update);
+
   }
 
 
