@@ -14,6 +14,7 @@ import java.util.Arrays;
 import com.sun.snoop.TCPHeader;
 import com.sun.snoop.SnoopException;
 import com.sun.snoop.IPv4Header;
+import com.sun.snoop.SnoopDecoder;
 import tslab.exception.ValidationFailedException;
 import org.savarese.vserv.tcpip.ICMPEchoPacket;
 import org.opennms.protocols.icmp.ICMPHeader;
@@ -141,55 +142,45 @@ public class Tools {
             throw new ValidationFailedException(e.getMessage());
         }
 
-        org.savarese.vserv.tcpip.ICMPEchoPacket p = new ICMPEchoPacket(24);
-        byte[] savareseIpHeader = Arrays.copyOfRange(ipHeader, 14, ipHeader.length);
         int calculatedChecksum = -1;
         int originalTcpCheckSum = -2;
 
-        byte[] icmpHeader = Arrays.copyOfRange(ipHeader, ipHeader.length - 8, ipHeader.length);
+        byte[] icmpHeader = Arrays.copyOfRange(ipHeader, 14 + sunIpHeader.getIPHeaderLength(), ipHeader.length);
 
 
         ICMPHeader icmpHeader2 = new ICMPHeader(icmpHeader, 0);
-        short beforeCalculate = icmpHeader2.getChecksum();
-        short oppositeChecksum = (short) ~beforeCalculate;
-        icmpHeader2.computeChecksum();
-        icmpHeader2.getChecksum();
+
+        if (icmpHeader2.getCode() < 0) {
+            throw new ValidationFailedException("Invalid ICMP Packet");
+        }
+
+        if (icmpHeader2.getType() < 0) {
+            throw new ValidationFailedException("Invalid ICMP Packet");
+        }
+
+
+        originalTcpCheckSum = SnoopDecoder.byteArrayToInt(icmpHeader,2,2);
 
         byte[] data = icmpPacket.data;
 
-        byte[] all = new byte[8 + data.length];
+        byte[] all = new byte[icmpHeader.length + data.length];
         try {
-            System.arraycopy(icmpHeader, 0, all, 0, 8);
-            System.arraycopy(data, 0, all, 8, data.length);
+            System.arraycopy(icmpHeader, 0, all, 0, icmpHeader.length);
+            System.arraycopy(data, 0, all, icmpHeader.length, data.length);
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new ValidationFailedException("Invalid ICMP packet");
         }
 
 
         try {
-            p.setData(savareseIpHeader);
-            originalTcpCheckSum = p.getICMPChecksum();
-            int calculatedChecksum1 = computeChecksum(0, 2, 8, 0, false, all);
-//            int calculatedChecksum2 = computeChecksum(0, 3, 8, 0, false, icmpHeader);
-            int calculatedChecksum3 = computeChecksum(0, 4, 8, 0, false, all);
-            CRC16 crc16 = new CRC16();
-            crc16.update(icmpHeader, 0, icmpHeader.length);
-            String calculatedChecksum4 = Long.toHexString(crc16.getValue());
-            int calculatedChecksum5 = CheckCRC16.crc16(icmpHeader);
-            int calculatedChecksum6 = icmpHeader2.getChecksum();
-            int calculatedChecksum7 = crc16_v2(icmpHeader, data);
-            int calculatedChecksum8 = crc16_v3(icmpHeader, data);
-            int calculatedChecksum9 = crc16_v4(icmpHeader, data);
-            int calculatedChecksum10 = crc16_v5(all);
-
-            System.out.println("");
+            calculatedChecksum = computeChecksum(0, 2, all.length, 0, false, all);
         } catch (Exception e) {
-            throw new ValidationFailedException(e);
+            throw new ValidationFailedException(e.getMessage());
         }
 
 
         if (originalTcpCheckSum != calculatedChecksum) {
-            //   throw new ValidationFailedException("Invalid ICMP checksum");
+            throw new ValidationFailedException("Invalid ICMP checksum");
         }
 
 
@@ -322,56 +313,7 @@ public class Tools {
         return total;
     }
 
-    private static int crc16_v3(byte[] h, byte[] datas) {
-        int sum = 0;
-        int i = 0;
-        while (i < 8) {
-            sum += (((h[i++] & 0xff) << 8) | (h[i++] & 0xff));
-        }
-        i = 0;
-        while (i < datas.length) {
-            sum += (((datas[i++] & 0xff) << 8) | (datas[i++] & 0xff));
-        }
-        return sum;
-    }
-
-    private static int crc16_v4(byte[] h, byte[] datas) {
-        int sum = 0;
-        int i = 0;
-        while (i < 8) {
-            sum += (((h[i++]) * 256) + (h[i++]));
-        }
-        i = 0;
-        while (i < datas.length) {
-            sum += (((datas[i++]) * 256) + (datas[i++]));
-        }
-        return sum;
-    }
-
-    private static int crc16_v5(byte[] datas) {
-        int sum = 0;
-        int i = 0;
-        while (i < datas.length) {
-            sum += datas[i] * 256;
-            i++;
-            sum += datas[i];
-            i++;
-        }
-        return sum;
-    }
 
 
-    private static short crc16_v2(byte[] h, byte[] datas) {
-        OC16ChecksumProducer summer = new OC16ChecksumProducer();
-
-        summer.add(h[0], h[1]);
-        summer.add(h[4], h[5]);
-        summer.add(h[6], h[7]);
-
-        for (byte data : datas) {
-            summer.add(data);
-        }
-        return summer.getChecksum();
-    }
 
 }
