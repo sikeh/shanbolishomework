@@ -73,13 +73,19 @@ class MyPacketHandler implements PacketReceiver {
                 //TODO change to print message and return
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-        } else{
+        } else {
             return;
         }
 
 
         if (packet instanceof ICMPPacket) {
-            //validate IP packet
+            //validate ICMP packet
+            try {
+                Tools.validateICMPPacket((ICMPPacket) packet);
+            } catch (ValidationFailedException e) {
+                //TODO change to print message and return
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
 
             packetType = "icmp -> ";
             factory = icmpFactory;
