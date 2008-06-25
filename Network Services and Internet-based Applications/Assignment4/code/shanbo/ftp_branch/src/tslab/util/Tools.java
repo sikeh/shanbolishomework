@@ -27,6 +27,7 @@ import org.opennms.protocols.ip.OC16ChecksumProducer;
  * User: Shanbo Li
  * Date: May 17, 2008
  * Time: 11:07:52 PM
+ *
  * @author Sike Huang and Shanbo Li
  */
 public class Tools {
@@ -152,7 +153,7 @@ public class Tools {
         int calculatedChecksum = -1;
         int originalTcpCheckSum = -2;
 
-        byte[] icmpHeader = Arrays.copyOfRange(ipHeader, 14 + sunIpHeader.getIPHeaderLength(), ipHeader.length);
+        byte[] icmpHeader = copyOfRange(ipHeader, 14 + sunIpHeader.getIPHeaderLength(), ipHeader.length);
 
 
         ICMPHeader icmpHeader2 = new ICMPHeader(icmpHeader, 0);
@@ -324,6 +325,16 @@ public class Tools {
         return new byte[]{
                 (byte) (value >>> 8),
                 (byte) value};
+    }
+
+    private static byte[] copyOfRange(byte[] original, int from, int to) {
+        int newLength = to - from;
+        if (newLength < 0)
+            throw new IllegalArgumentException(from + " > " + to);
+        byte[] copy = new byte[newLength];
+        System.arraycopy(original, from, copy, 0,
+                Math.min(original.length - from, newLength));
+        return copy;
     }
 
 
