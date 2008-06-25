@@ -108,31 +108,19 @@ public class Tools {
         }
 
         int originalTcpCheckSum = sunTcpHeader.getChecksum();
-
-        org.savarese.vserv.tcpip.TCPPacket p = new org.savarese.vserv.tcpip.TCPPacket(1124);
-        byte[] tcpHeader = Arrays.copyOfRange(ipHeader, 14 + sunIpLength, ipHeader.length);
-        byte[] data = tcpPacket.data;
-
-        //TODO: wholeData = "Pseudo Header" + "TCP header" + " TCP Data"
-        byte[] wholeData = new byte[12 + tcpHeader.length + data.length];
-        System.arraycopy(ipHeader, 12, wholeData, 0, 8);
-        wholeData[8] = 0x0;
-        wholeData[9] = 0x4;
-        wholeData[10] = intToByteArray(tcpHeader.length + data.length)[0];
-        wholeData[11] = intToByteArray(tcpHeader.length + data.length)[1];
-        System.arraycopy(tcpHeader, 0, wholeData, 12, tcpHeader.length);
-        System.arraycopy(data, 0, wholeData, 12 + tcpHeader.length, data.length);
-
-
         int calculatedChecksum = -1;
+        org.savarese.vserv.tcpip.TCPPacket myTcpPacket = new org.savarese.vserv.tcpip.TCPPacket(1124);
+        byte[] tcpSeg = new byte[ipHeader.length - 14 + ipPacket.data.length];
 
-        //TODO: this is correct!
-        byte[] savareseIpHeader = Arrays.copyOfRange(ipHeader, 14, ipHeader.length);
+        System.arraycopy(ipHeader, 14, tcpSeg, 0, ipHeader.length - 14);
+        System.arraycopy(ipPacket.data, 0, tcpSeg, ipHeader.length - 14, ipPacket.data.length);
+
+        myTcpPacket.setData(tcpSeg);
 
         try {
-            calculatedChecksum = computeChecksum(0, 12 + 16, wholeData.length, 0, false, wholeData);
+            calculatedChecksum = myTcpPacket.computeTCPChecksum(false);
         } catch (Exception e) {
-            throw new ValidationFailedException("Invalid Packet");
+            throw new ValidationFailedException("Invalid TCP Packet");
         }
 
         if (originalTcpCheckSum != calculatedChecksum) {

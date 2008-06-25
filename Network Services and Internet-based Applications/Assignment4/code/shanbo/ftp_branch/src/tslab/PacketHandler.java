@@ -70,8 +70,8 @@ class MyPacketHandler implements PacketReceiver {
             try {
                 Tools.validateIPPacket((IPPacket) packet);
             } catch (ValidationFailedException e) {
-                //TODO change to print message and return
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                System.out.println(e.getMessage());
+                return;
             }
         } else {
             return;
@@ -83,8 +83,8 @@ class MyPacketHandler implements PacketReceiver {
             try {
                 Tools.validateICMPPacket((ICMPPacket) packet);
             } catch (ValidationFailedException e) {
-                //TODO change to print message and return
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                System.out.println(e.getMessage());
+                return;
             }
 
             packetType = "icmp -> ";
@@ -94,8 +94,8 @@ class MyPacketHandler implements PacketReceiver {
             try {
                 Tools.validateTCPPacket((TCPPacket) packet);
             } catch (ValidationFailedException e) {
-                //TODO change to print message and return                
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                System.out.println(e.getMessage());
+                return;
             }
             packetType = "tcp -> ";
             if (isFtpData(packet)) {

@@ -67,7 +67,7 @@ public class TCPFactory extends PacketFactory {
         }
     }
 
-    //TODO ADJUST THE ACK EVERY TIME
+
 
     public IPPacket toServer(IPPacket ipPacket) throws WrongInputPacketException {
         //bouncer's source port for server
