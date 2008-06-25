@@ -58,7 +58,7 @@ public class Tools {
         } catch (SnoopException e) {
             throw new ValidationFailedException(e.getMessage());
         }
-        byte[] ipHeader = Arrays.copyOfRange(header, 14, header.length);
+        byte[] ipHeader = copyOfRange(header, 14, header.length);
         org.savarese.vserv.tcpip.IPPacket p = new org.savarese.vserv.tcpip.IPPacket(ipHeader.length);
         try {
             p.setData(ipHeader);
