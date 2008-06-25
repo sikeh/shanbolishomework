@@ -27,6 +27,7 @@ import org.opennms.protocols.ip.OC16ChecksumProducer;
  * User: Shanbo Li
  * Date: May 17, 2008
  * Time: 11:07:52 PM
+ * @author Sike Huang and Shanbo Li
  */
 public class Tools {
 
